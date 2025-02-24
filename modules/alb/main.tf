@@ -12,7 +12,7 @@ resource "aws_lb" "app_lb" {
 
 resource "aws_lb_target_group" "app_tg" {
   name        = "${var.instance_name}-tg"
-  port        = tonumber(var.app_port)
+  port        = 80
   protocol    = "HTTP"
   target_type = "instance"
   vpc_id      = var.vpc_id
@@ -42,5 +42,5 @@ resource "aws_lb_target_group_attachment" "app_attachment" {
   count            = length(var.instance_ids)
   target_group_arn = aws_lb_target_group.app_tg.arn
   target_id        = var.instance_ids[count.index]
-  port             = tonumber(var.app_port)
+  port             = 80
 }
