@@ -101,44 +101,12 @@ resource "aws_instance" "my_ec2" {
   subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.instance_sg.id]
 
-  # The user_data installs Docker, NGINX, Certbot,
-  # pulls your Docker image, runs the container,
-  # configures NGINX as a reverse proxy, and obtains an SSL certificate.
-  user_data = <<-EOF
-    #!/bin/bash
-    apt-get update -y
-    apt-get install -y docker.io nginx certbot python3-certbot-nginx
-    usermod -aG docker ubuntu
-    systemctl start docker
-    systemctl enable docker
-    docker pull ${var.docker_image}
-    docker stop site_spidey_app || true
-    docker rm site_spidey_app || true
-    # Run the container exposing port 5000 internally
-    docker run -d --name site_spidey_app -p 5000:5000 ${var.docker_image}
-
-    # Configure NGINX to reverse proxy HTTP to the Docker container
-    cat > /etc/nginx/sites-available/default << 'EOL'
-    server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
-        server_name ${var.dns_name};
-
-        location / {
-            proxy_pass http://127.0.0.1:5000;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
-    }
-    EOL
-
-    systemctl restart nginx
-
-    # Use Certbot to obtain an SSL certificate and configure NGINX for HTTPS.
-    certbot --nginx --non-interactive --agree-tos --email ${var.certbot_email} -d ${var.dns_name}
-  EOF
+  # Load the user_data from an external file using templatefile().
+  user_data = templatefile("${path.module}/user_data.sh", {
+    docker_image  = var.docker_image
+    dns_name      = var.dns_name
+    certbot_email = var.certbot_email
+  })
 
   tags = {
     Name = var.instance_name
