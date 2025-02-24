@@ -75,3 +75,9 @@ variable "enable_load_balancer" {
   type        = bool
   default     = false
 }
+
+variable "route53_zone_id" {
+  description = "The Route53 hosted zone ID for creating DNS records"
+  type        = string
+}
+
