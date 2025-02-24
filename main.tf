@@ -148,12 +148,3 @@ resource "aws_instance" "my_ec2" {
     ignore_changes = [user_data]
   }
 }
-
-# Create a Route53 DNS record for the EC2 instance
-resource "aws_route53_record" "ec2_dns" {
-  zone_id = var.route53_zone_id
-  name    = var.dns_name
-  type    = "A"
-  ttl     = 300
-  records = [aws_instance.my_ec2.public_ip]
-}
