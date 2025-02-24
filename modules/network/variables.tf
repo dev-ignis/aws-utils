@@ -17,3 +17,8 @@ variable "availability_zones" {
   description = "List of availability zones for the subnets (at least two)"
   type        = list(string)
 }
+
+variable "app_port" {
+  description = "The port on which the application runs"
+  type        = string
+}
