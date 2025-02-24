@@ -15,5 +15,5 @@ output "ssh_command" {
 
 output "load_balancer_dns" {
   description = "DNS name of the load balancer, if enabled"
-  value       = var.enable_load_balancer ? aws_lb.app_lb[0].dns_name : ""
+  value       = var.enable_load_balancer ? module.alb[0].dns_name : ""
 }
