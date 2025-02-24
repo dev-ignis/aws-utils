@@ -44,6 +44,12 @@ variable "certbot_email" {
   type        = string
 }
 
+variable "vpc_cidr" {
+  description = "CIDR block for the custom VPC"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
 variable "subnet_cidrs" {
   description = "List of CIDRs for the subnets (at least two, for instance and LB)"
   type        = list(string)
