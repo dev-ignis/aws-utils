@@ -39,7 +39,8 @@ resource "aws_lb_listener" "app_listener" {
 }
 
 resource "aws_lb_target_group_attachment" "app_attachment" {
+  count            = length(var.instance_ids)
   target_group_arn = aws_lb_target_group.app_tg.arn
-  target_id        = var.instance_id
+  target_id        = var.instance_ids[count.index]
   port             = tonumber(var.app_port)
 }

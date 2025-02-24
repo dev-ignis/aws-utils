@@ -23,7 +23,7 @@ variable "security_group_id" {
   type        = string
 }
 
-variable "instance_id" {
-  description = "The EC2 instance ID to attach to the target group"
-  type        = string
+variable "instance_ids" {
+  description = "The list of EC2 instance IDs to attach to the target group"
+  type        = list(string)
 }
