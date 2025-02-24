@@ -44,16 +44,16 @@ variable "certbot_email" {
   type        = string
 }
 
-variable "vpc_cidr" {
-  description = "CIDR block for the custom VPC"
-  type        = string
-  default     = "10.0.0.0/16"
+variable "subnet_cidrs" {
+  description = "List of CIDRs for the subnets (at least two, for instance and LB)"
+  type        = list(string)
+  default     = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
-variable "subnet_cidr" {
-  description = "CIDR block for the public subnet"
-  type        = string
-  default     = "10.0.1.0/24"
+variable "availability_zones" {
+  description = "List of availability zones to use for subnets"
+  type        = list(string)
+  default     = ["us-west-2a", "us-west-2b"]
 }
 
 variable "availability_zone" {
@@ -78,4 +78,14 @@ variable "enable_load_balancer" {
   description = "Enable or disable the load balancer"
   type        = bool
   default     = false
+}
+
+variable "lb_subnets" {
+  description = "List of subnet IDs for the load balancer. Must contain at least two subnets in different Availability Zones when load balancer is enabled."
+  type        = list(string)
+  default     = []
+  validation {
+    condition     = length(var.lb_subnets) == 0 || length(var.lb_subnets) >= 2
+    error_message = "When enabling load balancer, lb_subnets must contain at least two subnet IDs in different Availability Zones."
+  }
 }

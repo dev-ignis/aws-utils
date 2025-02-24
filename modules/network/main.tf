@@ -2,28 +2,35 @@ resource "aws_vpc" "this" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
-
   tags = {
     Name = "${var.instance_name}-vpc"
   }
 }
 
-resource "aws_subnet" "this" {
-  vpc_id                  = aws_vpc.this.id
-  cidr_block              = var.subnet_cidr
-  availability_zone       = var.availability_zone
-  map_public_ip_on_launch = true
-
+resource "aws_internet_gateway" "this" {
+  vpc_id = aws_vpc.this.id
   tags = {
-    Name = "${var.instance_name}-subnet"
+    Name = "${var.instance_name}-igw"
   }
 }
 
-resource "aws_internet_gateway" "this" {
-  vpc_id = aws_vpc.this.id
-
+resource "aws_subnet" "subnet1" {
+  vpc_id            = aws_vpc.this.id
+  cidr_block        = var.subnet_cidrs[0]
+  availability_zone = var.availability_zones[0]
+  map_public_ip_on_launch = true
   tags = {
-    Name = "${var.instance_name}-igw"
+    Name = "${var.instance_name}-subnet-1"
+  }
+}
+
+resource "aws_subnet" "subnet2" {
+  vpc_id            = aws_vpc.this.id
+  cidr_block        = var.subnet_cidrs[1]
+  availability_zone = var.availability_zones[1]
+  map_public_ip_on_launch = true
+  tags = {
+    Name = "${var.instance_name}-subnet-2"
   }
 }
 
@@ -40,8 +47,13 @@ resource "aws_route_table" "this" {
   }
 }
 
-resource "aws_route_table_association" "this" {
-  subnet_id      = aws_subnet.this.id
+resource "aws_route_table_association" "subnet1_assoc" {
+  subnet_id      = aws_subnet.subnet1.id
+  route_table_id = aws_route_table.this.id
+}
+
+resource "aws_route_table_association" "subnet2_assoc" {
+  subnet_id      = aws_subnet.subnet2.id
   route_table_id = aws_route_table.this.id
 }
 

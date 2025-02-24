@@ -3,26 +3,26 @@ provider "aws" {
 }
 
 module "network" {
-  source            = "./modules/network"
-  instance_name     = var.instance_name
-  vpc_cidr          = var.vpc_cidr
-  subnet_cidr       = var.subnet_cidr
-  availability_zone = var.availability_zone
+  source             = "./modules/network"
+  instance_name      = var.instance_name
+  vpc_cidr           = var.vpc_cidr
+  subnet_cidrs       = var.subnet_cidrs
+  availability_zones = var.availability_zones
 }
 
 resource "aws_instance" "my_ec2" {
   ami                    = var.ami
   instance_type          = var.instance_type
   key_name               = var.key_name
-  subnet_id              = module.network.subnet_id
+  subnet_id              = module.network.instance_subnet_id
   vpc_security_group_ids = [module.network.security_group_id]
 
   user_data = templatefile("${path.module}/user_data.sh", {
-    docker_image       = var.docker_image
-    dns_name           = var.dns_name
-    certbot_email      = var.certbot_email
-    app_port           = var.app_port
-    app_container_name = var.app_container_name
+    docker_image        = var.docker_image
+    dns_name            = var.dns_name
+    certbot_email       = var.certbot_email
+    app_port            = var.app_port
+    app_container_name  = var.app_container_name
   })
 
   tags = {
@@ -34,14 +34,14 @@ resource "aws_instance" "my_ec2" {
   }
 }
 
-# Create an ALB, target group, listener, and target group attachment only if load balancer is enabled
+# ALB resources are created only if enable_load_balancer is true
 resource "aws_lb" "app_lb" {
   count              = var.enable_load_balancer ? 1 : 0
   name               = "${var.instance_name}-lb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [module.network.security_group_id]
-  subnets            = [module.network.subnet_id]
+  subnets            = module.network.lb_subnet_ids
 
   tags = {
     Name = "${var.instance_name}-lb"
