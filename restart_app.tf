@@ -11,7 +11,7 @@ resource "null_resource" "restart_app" {
     inline = [
       "docker stop ${var.app_container_name} || true",
       "docker rm ${var.app_container_name} || true",
-      "docker run -d --name ${var.app_container_name} -p ${var.app_port}:${var.app_port} ${var.docker_image}"
+      "docker run -d --env-file /home/ubuntu/.env --name ${var.app_container_name} -p ${var.app_port}:${var.app_port} ${var.docker_image}"
     ]
   }
 }
