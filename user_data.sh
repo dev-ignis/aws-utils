@@ -33,11 +33,11 @@ server {
     }
 
     location /ask-specialist {
-        proxy_pass http://localhost:8080/chatgpt;
+        proxy_pass http://localhost:8080/chatgpt/;
     }
 
     location /specifics-list {
-        proxy_pass http://localhost:8080/concern;
+        proxy_pass http://localhost:8080/concern/;
     }
 }
 EOL
