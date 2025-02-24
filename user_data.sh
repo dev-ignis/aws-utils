@@ -5,10 +5,10 @@ usermod -aG docker ubuntu
 systemctl start docker
 systemctl enable docker
 docker pull ${docker_image}
-docker stop site_spidey_app || true
-docker rm site_spidey_app || true
+docker stop ${app_container_name} || true
+docker rm ${app_container_name} || true
 # Run the container exposing the application port
-docker run -d --name site_spidey_app -p ${app_port}:${app_port} ${docker_image}
+docker run -d --name ${app_container_name} -p ${app_port}:${app_port} ${docker_image}
 
 # Determine server name: if dns_name is provided, use it; otherwise, get the EC2 public IP from metadata
 if [ -z "${dns_name}" ]; then
