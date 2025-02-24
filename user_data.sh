@@ -17,7 +17,6 @@ else
   server_name=${dns_name}
 fi
 
-# Configure NGINX to reverse proxy HTTP to the Docker container
 cat > /etc/nginx/sites-available/default << EOL
 server {
     listen 80 default_server;
@@ -33,11 +32,11 @@ server {
     }
 
     location /ask-specialist {
-        proxy_pass http://localhost:8080/chatgpt/;
+        proxy_pass http://localhost:8080/chatgpt;
     }
 
     location /specifics-list {
-        proxy_pass http://localhost:8080/concern/;
+        proxy_pass http://localhost:8080/concern;
     }
 }
 EOL
