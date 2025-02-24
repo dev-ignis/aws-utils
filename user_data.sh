@@ -10,24 +10,33 @@ docker rm site_spidey_app || true
 # Run the container exposing port 5000 internally
 docker run -d --name site_spidey_app -p 5000:5000 ${docker_image}
 
+# Determine server name: if dns_name is provided, use it; otherwise, get the EC2 public IP from metadata
+if [ -z "${dns_name}" ]; then
+  server_name=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+else
+  server_name=${dns_name}
+fi
+
 # Configure NGINX to reverse proxy HTTP to the Docker container
-cat > /etc/nginx/sites-available/default << 'EOL'
+cat > /etc/nginx/sites-available/default << EOL
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
-    server_name ${dns_name};
+    server_name ${server_name};
 
     location / {
         proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host $$host;
-        proxy_set_header X-Real-IP $$remote_addr;
-        proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $$scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 }
 EOL
 
 systemctl restart nginx
 
-# Use Certbot to obtain an SSL certificate and configure NGINX for HTTPS.
-certbot --nginx --non-interactive --agree-tos --email ${certbot_email} -d ${dns_name}
+# Run Certbot only if a dns_name was provided
+if [ ! -z "${dns_name}" ]; then
+  certbot --nginx --non-interactive --agree-tos --email ${certbot_email} -d ${dns_name}
+fi
