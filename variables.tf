@@ -61,3 +61,9 @@ variable "availability_zone" {
   type        = string
   default     = "us-west-2a"
 }
+
+variable "app_port" {
+  description = "The port on which the application runs"
+  type        = string
+  default     = "5000"
+}

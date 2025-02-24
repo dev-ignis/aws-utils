@@ -106,6 +106,7 @@ resource "aws_instance" "my_ec2" {
     docker_image  = var.docker_image
     dns_name      = var.dns_name
     certbot_email = var.certbot_email
+    app_port      = var.app_port
   })
 
   tags = {

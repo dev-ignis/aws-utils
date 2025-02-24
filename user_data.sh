@@ -7,8 +7,8 @@ systemctl enable docker
 docker pull ${docker_image}
 docker stop site_spidey_app || true
 docker rm site_spidey_app || true
-# Run the container exposing port 5000 internally
-docker run -d --name site_spidey_app -p 5000:5000 ${docker_image}
+# Run the container exposing the application port
+docker run -d --name site_spidey_app -p ${app_port}:${app_port} ${docker_image}
 
 # Determine server name: if dns_name is provided, use it; otherwise, get the EC2 public IP from metadata
 if [ -z "${dns_name}" ]; then
@@ -25,7 +25,7 @@ server {
     server_name $${server_name};
 
     location / {
-        proxy_pass http://127.0.0.1:5000;
+        proxy_pass http://127.0.0.1:${app_port};
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
