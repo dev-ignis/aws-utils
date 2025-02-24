@@ -8,6 +8,7 @@ module "network" {
   vpc_cidr           = var.vpc_cidr
   subnet_cidrs       = var.subnet_cidrs
   availability_zones = var.availability_zones
+  app_port           = var.app_port
 }
 
 resource "aws_instance" "my_ec2" {
