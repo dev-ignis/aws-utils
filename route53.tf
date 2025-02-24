@@ -5,5 +5,5 @@ resource "aws_route53_record" "ec2_dns" {
   name    = var.dns_name
   type    = "A"
   ttl     = 300
-  records = [aws_instance.my_ec2.public_ip]
+  records = [aws_instance.my_ec2[0].public_ip]
 }
