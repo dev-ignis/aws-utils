@@ -73,3 +73,9 @@ variable "app_container_name" {
   type        = string
   default     = "default_app"
 }
+
+variable "enable_load_balancer" {
+  description = "Enable or disable the load balancer"
+  type        = bool
+  default     = false
+}
