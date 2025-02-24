@@ -20,10 +20,11 @@ resource "aws_instance" "my_ec2" {
 
   # Load the user_data from an external file using templatefile().
   user_data = templatefile("${path.module}/user_data.sh", {
-    docker_image  = var.docker_image
-    dns_name      = var.dns_name
-    certbot_email = var.certbot_email
-    app_port      = var.app_port
+    docker_image        = var.docker_image
+    dns_name            = var.dns_name
+    certbot_email       = var.certbot_email
+    app_port            = var.app_port
+    app_container_name  = var.app_container_name
   })
 
   tags = {

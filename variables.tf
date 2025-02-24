@@ -67,3 +67,9 @@ variable "app_port" {
   type        = string
   default     = "5000"
 }
+
+variable "app_container_name" {
+  description = "Name for the Docker container running the application"
+  type        = string
+  default     = "default_app"
+}
