@@ -1,0 +1,42 @@
+name: Deploy App
+
+#on:
+#  push:
+#    branches: [ main ]
+#  pull_request:
+#    branches: [ main ]
+
+env:
+  DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}     # e.g., rollg/site-spidey
+  DOCKER_TAG: ${{ secrets.DOCKER_TAG }}           # e.g., latest
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.EC2_DNS }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            docker system prune -f
+            docker pull ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
+            docker stop site_spidey_app || true
+            docker rm site_spidey_app || true
+            docker run -d --name site_spidey_app -p 5000:5000 ${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}

@@ -1,0 +1,27 @@
+.idea
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+
+# Docker artifacts (if any build artifacts are generated locally)
+docker-compose.override.yml
+*.log
+
+# Local cache files
+*.tmp
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Other potentially sensitive files
+.env
