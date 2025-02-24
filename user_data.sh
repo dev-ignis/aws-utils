@@ -22,7 +22,7 @@ cat > /etc/nginx/sites-available/default << EOL
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
-    server_name ${server_name};
+    server_name $${server_name};
 
     location / {
         proxy_pass http://127.0.0.1:5000;
