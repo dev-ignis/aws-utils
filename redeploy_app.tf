@@ -1,6 +1,10 @@
 resource "null_resource" "redeploy_app" {
   count = length(aws_instance.my_ec2)
 
+  triggers = {
+    redeploy = var.go_gin_app_image
+  }
+
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
