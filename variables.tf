@@ -81,3 +81,7 @@ variable "route53_zone_id" {
   type        = string
 }
 
+variable "go_gin_app_image" {
+  description = "Docker image for the Go Gin application"
+  type        = string
+}
