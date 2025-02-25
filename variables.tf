@@ -85,3 +85,9 @@ variable "go_gin_app_image" {
   description = "Docker image for the Go Gin application"
   type        = string
 }
+
+variable "ssh_private_key_path" {
+  description = "Path to the SSH private key used for connecting to EC2 instances"
+  type        = string
+  default     = "~/.ssh/id_rsa_github"
+}

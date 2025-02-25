@@ -6,7 +6,7 @@ resource "null_resource" "redeploy_app" {
       type        = "ssh"
       host        = aws_instance.my_ec2[count.index].public_ip
       user        = "ubuntu"
-      private_key = file("~/.ssh/id_rsa_github")
+      private_key = file(var.ssh_private_key_path)
     }
     inline = [
       "docker pull ${var.go_gin_app_image}",
