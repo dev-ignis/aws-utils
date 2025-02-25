@@ -18,8 +18,11 @@ resource "aws_lb_target_group" "app_tg" {
   vpc_id      = var.vpc_id
 
   health_check {
-    path     = "/"
-    protocol = "HTTP"
+    path                = "/health"
+    protocol            = "HTTP"
+    interval            = 30
+    healthy_threshold   = 3
+    unhealthy_threshold = 3
   }
 
   tags = {

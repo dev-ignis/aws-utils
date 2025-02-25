@@ -7,7 +7,6 @@ systemctl enable docker
 docker pull ${docker_image}
 docker stop ${app_container_name} || true
 docker rm ${app_container_name} || true
-# Run the container exposing the application port
 docker run -d --name ${app_container_name} -p ${app_port}:${app_port} ${docker_image}
 
 # Determine server name: if dns_name is provided, use it; otherwise, get the EC2 public IP from metadata
@@ -29,6 +28,11 @@ server {
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+
+    location /health {
+        access_log off;
+        return 200 'OK';
     }
 
     location /ask-specialist {
