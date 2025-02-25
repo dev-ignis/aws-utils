@@ -1,0 +1,23 @@
+---
+- hosts: all
+  gather_facts: false
+  vars:
+    go_gin_app_image: "{{ lookup('env', 'GO_GIN_APP_IMAGE') }}"
+    app_container_name: "{{ lookup('env', 'APP_CONTAINER_NAME') }}"
+    app_port: "{{ lookup('env', 'APP_PORT') }}"
+  tasks:
+    - name: Pull the latest Docker image
+      command: docker pull {{ go_gin_app_image }}
+
+    - name: Stop the running container (if any)
+      command: docker stop {{ app_container_name }}
+      ignore_errors: yes
+
+    - name: Remove the container (if any)
+      command: docker rm {{ app_container_name }}
+      ignore_errors: yes
+
+    - name: Run the container with environment file
+      command: >
+        docker run -d --env-file /home/ubuntu/.env
+        --name {{ app_container_name }} -p {{ app_port }}:{{ app_port }} {{ go_gin_app_image }}

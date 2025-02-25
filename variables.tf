@@ -61,13 +61,13 @@ variable "availability_zones" {
 variable "app_port" {
   description = "The port on which the application runs"
   type        = string
-  default     = "5000"
+  default     = "8080"
 }
 
 variable "app_container_name" {
   description = "Name for the Docker container running the application"
   type        = string
-  default     = "site_spidey_app"
+  default     = "mht-api-app"
 }
 
 variable "enable_load_balancer" {
