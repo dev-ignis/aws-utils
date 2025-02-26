@@ -104,3 +104,14 @@ variable "prod_api_dns_name" {
   default     = ""
 }
 
+variable "create_hosted_zone" {
+  description = "Whether to create a new Route53 hosted zone if not already available"
+  type        = bool
+  default     = false
+}
+
+variable "hosted_zone_name" {
+  description = "The name of the hosted zone to create (e.g., amygdalas.com)"
+  type        = string
+  default     = ""
+}
