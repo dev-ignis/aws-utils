@@ -76,11 +76,6 @@ variable "enable_load_balancer" {
   default     = false
 }
 
-variable "route53_zone_id" {
-  description = "The Route53 hosted zone ID for creating DNS records"
-  type        = string
-}
-
 variable "go_gin_app_image" {
   description = "Docker image for the Go Gin application"
   type        = string
@@ -91,3 +86,21 @@ variable "ssh_private_key_path" {
   type        = string
   default     = "~/.ssh/id_rsa_github"
 }
+
+variable "route53_zone_id" {
+  description = "The ID of the Route53 hosted zone"
+  type        = string
+}
+
+variable "staging_api_dns_name" {
+  description = "DNS name for the staging API endpoint"
+  type        = string
+  default     = ""
+}
+
+variable "prod_api_dns_name" {
+  description = "DNS name for the staging API endpoint"
+  type        = string
+  default     = ""
+}
+

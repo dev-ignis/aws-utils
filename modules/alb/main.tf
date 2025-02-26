@@ -41,6 +41,22 @@ resource "aws_lb_listener" "app_listener" {
   }
 }
 
+resource "aws_lb_listener_rule" "staging_rule" {
+  listener_arn = aws_lb_listener.app_listener.arn
+  priority     = 100
+
+  condition {
+    host_header {
+      values = [var.staging_api_dns_name]
+    }
+  }
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app_tg.arn
+  }
+}
+
 resource "aws_lb_target_group_attachment" "app_attachment" {
   count            = length(var.instance_ids)
   target_group_arn = aws_lb_target_group.app_tg.arn
