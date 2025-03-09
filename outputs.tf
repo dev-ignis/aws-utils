@@ -31,8 +31,8 @@ output "production_api_url" {
 output "route53_records" {
   value = {
     ec2_dns_record = var.dns_name != "" ? aws_route53_record.ec2_dns[0] : null,
-    api_production = aws_route53_record.api_production,
-    api_staging    = aws_route53_record.api_staging
+    api_production_name = aws_route53_record.api_production.name,
+    api_staging_name    = aws_route53_record.api_staging.name
   }
   description = "Route53 records for EC2 (if any), production API, and staging API."
 }
