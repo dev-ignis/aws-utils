@@ -13,11 +13,11 @@ module "network" {
 
 # Create two EC2 instances, one in each subnet provided by the network module
 resource "aws_instance" "my_ec2" {
-  count                = 2
-  ami                  = var.ami
-  instance_type        = var.instance_type
-  key_name             = var.key_name
-  subnet_id            = module.network.lb_subnet_ids[count.index]
+  count                  = 2
+  ami                    = var.ami
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  subnet_id              = module.network.lb_subnet_ids[count.index]
   vpc_security_group_ids = [module.network.security_group_id]
 
   user_data = templatefile("${path.module}/user_data.sh", {
@@ -37,7 +37,7 @@ resource "aws_instance" "my_ec2" {
   }
 }
 
-# Pass a list of instance IDs to the ALB module
+# Pass required values to the ALB module, including the staging DNS name.
 module "alb" {
   count             = var.enable_load_balancer ? 1 : 0
   source            = "./modules/alb"
@@ -47,4 +47,5 @@ module "alb" {
   lb_subnet_ids     = module.network.lb_subnet_ids
   security_group_id = module.network.security_group_id
   instance_ids      = aws_instance.my_ec2[*].id
+  staging_api_dns_name = var.staging_api_dns_name
 }

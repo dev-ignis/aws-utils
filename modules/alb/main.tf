@@ -41,6 +41,7 @@ resource "aws_lb_listener" "app_listener" {
   }
 }
 
+# Host-based routing rule for the staging domain
 resource "aws_lb_listener_rule" "staging_rule" {
   listener_arn = aws_lb_listener.app_listener.arn
   priority     = 100
@@ -62,4 +63,15 @@ resource "aws_lb_target_group_attachment" "app_attachment" {
   target_group_arn = aws_lb_target_group.app_tg.arn
   target_id        = var.instance_ids[count.index]
   port             = 80
+}
+
+# Outputs for referencing the ALB in the root module
+output "lb_dns_name" {
+  description = "The DNS name of the load balancer"
+  value       = aws_lb.app_lb.dns_name
+}
+
+output "lb_zone_id" {
+  description = "The hosted zone ID associated with the load balancer"
+  value       = aws_lb.app_lb.zone_id
 }

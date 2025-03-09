@@ -1,29 +1,34 @@
 variable "instance_name" {
-  description = "Name tag for resources"
+  description = "The instance name used in naming resources"
   type        = string
 }
 
 variable "app_port" {
-  description = "The port on which the application runs"
+  description = "Port on which the app listens"
   type        = string
 }
 
 variable "vpc_id" {
-  description = "The ID of the VPC"
+  description = "VPC ID for the target group"
   type        = string
 }
 
 variable "lb_subnet_ids" {
-  description = "List of subnet IDs for the load balancer"
+  description = "Subnets for the ALB"
   type        = list(string)
 }
 
 variable "security_group_id" {
-  description = "The ID of the security group for the load balancer"
+  description = "Security Group ID for the ALB"
   type        = string
 }
 
 variable "instance_ids" {
-  description = "The list of EC2 instance IDs to attach to the target group"
+  description = "List of instance IDs for the target group attachment"
   type        = list(string)
+}
+
+variable "staging_api_dns_name" {
+  description = "DNS name for the staging API endpoint used in the ALB listener rule"
+  type        = string
 }

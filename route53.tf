@@ -26,8 +26,8 @@ resource "aws_route53_record" "api_production" {
   type    = "A"
 
   alias {
-    name                   = aws_lb.app_lb.dns_name
-    zone_id                = aws_lb.app_lb.zone_id
+    name                   = module.alb[0].lb_dns_name
+    zone_id                = module.alb[0].lb_zone_id
     evaluate_target_health = true
   }
 }
@@ -39,8 +39,8 @@ resource "aws_route53_record" "api_staging" {
   type    = "A"
 
   alias {
-    name                   = aws_lb.app_lb.dns_name
-    zone_id                = aws_lb.app_lb.zone_id
+    name                   = module.alb[0].lb_dns_name
+    zone_id                = module.alb[0].lb_zone_id
     evaluate_target_health = true
   }
 }
