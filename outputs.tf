@@ -17,3 +17,22 @@ output "load_balancer_dns" {
   description = "DNS name of the load balancer, if enabled"
   value       = var.enable_load_balancer ? module.alb[0].dns_name : ""
 }
+
+output "staging_api_url" {
+  description = "The DNS name for the staging API endpoint"
+  value       = var.staging_api_dns_name
+}
+
+output "production_api_url" {
+  description = "The DNS name for the production API endpoint"
+  value       = var.prod_api_dns_name
+}
+
+output "route53_records" {
+  value = {
+    ec2_dns_record = var.dns_name != "" ? aws_route53_record.ec2_dns[0] : null,
+    api_production = aws_route53_record.api_production,
+    api_staging    = aws_route53_record.api_staging
+  }
+  description = "Route53 records for EC2 (if any), production API, and staging API."
+}
