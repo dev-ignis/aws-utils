@@ -143,5 +143,4 @@ variable "backend_encrypt" {
 variable "backend_dynamodb_table" {
   description = "The DynamoDB table for state locking"
   type        = string
-  default     = "my-terraform-lock-table"
 }
