@@ -144,3 +144,9 @@ variable "hosted_zone_name" {
 #  description = "The DynamoDB table for state locking"
 #  type        = string
 #}
+
+variable "skip_route53" {
+  description = "Skip creating Route53 DNS records if true (e.g., in CI)"
+  type        = bool
+  default     = false
+}
