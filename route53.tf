@@ -22,7 +22,7 @@ resource "aws_route53_record" "ec2_dns" {
 # Production API endpoint
 resource "aws_route53_record" "api_production" {
   zone_id = local.zone_id
-  name    = "api.amygdalas.com"
+  name    = var.prod_api_dns_name
   type    = "A"
 
   alias {
