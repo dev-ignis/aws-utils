@@ -29,10 +29,10 @@ output "production_api_url" {
 }
 
 output "route53_records" {
-  value = var.skip_route53 ? {} : {
-    ec2_dns_record = (var.dns_name != "" && length(aws_route53_record.ec2_dns) > 0) ? aws_route53_record.ec2_dns[0] : null,
-    api_production_name = length(aws_route53_record.api_production) > 0 ? aws_route53_record.api_production[0].name : null,
-    api_staging_name    = length(aws_route53_record.api_staging) > 0 ? aws_route53_record.api_staging[0].name : null
-  }
   description = "Route53 records for EC2 (if any), production API, and staging API."
+  value = {
+    ec2_dns_record = (var.skip_route53 || var.dns_name == "" || length(aws_route53_record.ec2_dns) == 0) ? null : aws_route53_record.ec2_dns[0].name,
+    api_production = (var.skip_route53 || length(aws_route53_record.api_production) == 0) ? null : aws_route53_record.api_production[0].name,
+    api_staging    = (var.skip_route53 || length(aws_route53_record.api_staging) == 0) ? null : aws_route53_record.api_staging[0].name,
+  }
 }
