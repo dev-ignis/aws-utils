@@ -115,3 +115,33 @@ variable "hosted_zone_name" {
   type        = string
   default     = ""
 }
+
+# Remote Backend
+variable "backend_bucket" {
+  description = "The S3 bucket for storing Terraform state"
+  type        = string
+}
+
+variable "backend_key" {
+  description = "The path inside the S3 bucket for the state file"
+  type        = string
+  default     = "terraform/state/terraform.tfstate"
+}
+
+variable "backend_region" {
+  description = "The AWS region where the S3 bucket is located"
+  type        = string
+  default     = "us-west-2"
+}
+
+variable "backend_encrypt" {
+  description = "Whether to encrypt the state file"
+  type        = bool
+  default     = true
+}
+
+variable "backend_dynamodb_table" {
+  description = "The DynamoDB table for state locking"
+  type        = string
+  default     = "my-terraform-lock-table"
+}
