@@ -150,3 +150,8 @@ variable "skip_route53" {
   type        = bool
   default     = false
 }
+
+variable "environment" {
+  description = "The environment in which resources are deployed (e.g., dev, staging, prod)"
+  type        = string
+}

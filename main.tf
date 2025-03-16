@@ -11,6 +11,18 @@ module "network" {
   app_port           = var.app_port
 }
 
+module "dynamodb" {
+  source       = "./modules/dynamodb"
+  table_name   = "${var.instance_name}-table"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "Id"
+  hash_key_type = "S"
+  tags = {
+    Environment = var.environment
+    Name        = "${var.instance_name}-dynamodb"
+  }
+}
+
 # Create two EC2 instances, one in each subnet provided by the network module
 resource "aws_instance" "my_ec2" {
   count                  = 2
