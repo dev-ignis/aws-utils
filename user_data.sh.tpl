@@ -34,54 +34,13 @@ else
   server_name=${dns_name}
 fi
 
-# Write Nginx configuration
-# If front_end_image is provided, use front_end_port for the default location; otherwise, use backend_port.
+# Write Nginx configuration using the external template file
 cat > /etc/nginx/sites-available/default << EOL
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    server_name $${server_name};
-
-    location / {
-        proxy_pass http://127.0.0.1:$([ -n "${front_end_image}" ] && echo ${front_end_port} || echo ${backend_port});
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-    }
-
-    location /health {
-        proxy_pass http://127.0.0.1:${backend_port}/health;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-    }
-
-    location /ask-specialist {
-        proxy_pass http://localhost:8080/chatgpt;
-    }
-
-    location /specifics-list {
-        proxy_pass http://localhost:8080/concern;
-    }
-
-    location /swagger/ {
-        proxy_pass http://127.0.0.1:${backend_port}/swagger/;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-    }
-
-    location /users {
-        proxy_pass http://127.0.0.1:${backend_port}/users;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-    }
-}
+${templatefile("${path.module}/nginx.config.tpl", {
+  server_name    = server_name,
+  backend_port   = backend_port,
+  front_end_port = front_end_port,
+})}
 EOL
 
 systemctl restart nginx
