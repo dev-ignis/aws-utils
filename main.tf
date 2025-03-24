@@ -32,12 +32,18 @@ resource "aws_instance" "my_ec2" {
   subnet_id              = module.network.lb_subnet_ids[count.index]
   vpc_security_group_ids = [module.network.security_group_id]
 
-  user_data = templatefile("${path.module}/user_data.sh", {
-    docker_image       = var.docker_image
-    dns_name           = var.dns_name
-    certbot_email      = var.certbot_email
-    app_port           = var.app_port
-    app_container_name = var.app_container_name
+  user_data = templatefile("${path.module}/user_data.sh.tpl", {
+    docker_image               = var.docker_image         // May no longer be used if only using backend_image & front_end_image
+    backend_image              = var.backend_image
+    front_end_image            = var.front_end_image
+    backend_container_name     = var.backend_container_name
+    front_end_container_name   = var.front_end_container_name
+    backend_port               = var.backend_port
+    front_end_port             = var.front_end_port
+    dns_name                   = var.dns_name
+    certbot_email              = var.certbot_email
+#    front_end_repo             = var.front_end_repo      // Only if you’re cloning/building instead of using a Docker image
+#    front_end_branch           = var.front_end_branch    // Same as above
   })
 
   tags = {

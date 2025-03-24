@@ -155,3 +155,38 @@ variable "environment" {
   description = "The environment in which resources are deployed (e.g., dev, staging, prod)"
   type        = string
 }
+
+variable "backend_image" {
+  description = "Docker image for the backend app (e.g. Go Gin app)"
+  type        = string
+  default     = "rollg/go-gin-app"
+}
+
+variable "front_end_image" {
+  description = "Docker image for the front-end app"
+  type        = string
+}
+
+variable "backend_container_name" {
+  description = "Container name for the backend app"
+  type        = string
+  default     = "backend_app"
+}
+
+variable "front_end_container_name" {
+  description = "Container name for the front-end app"
+  type        = string
+  default     = "front_end_app"
+}
+
+variable "backend_port" {
+  description = "Port on which the backend app listens"
+  type        = string
+  default     = "5000"
+}
+
+variable "front_end_port" {
+  description = "Port on which the front-end app listens"
+  type        = string
+  default     = "3000"
+}
