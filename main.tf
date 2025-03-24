@@ -59,7 +59,7 @@ module "alb" {
   count             = var.enable_load_balancer ? 1 : 0
   source            = "./modules/alb"
   instance_name     = var.instance_name
-  app_port          = var.app_port
+  app_port          = var.backend_port
   vpc_id            = module.network.vpc_id
   lb_subnet_ids     = module.network.lb_subnet_ids
   security_group_id = module.network.security_group_id
