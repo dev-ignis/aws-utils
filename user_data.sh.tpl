@@ -37,9 +37,9 @@ fi
 # Write Nginx configuration using the external template file
 cat > /etc/nginx/sites-available/default << EOL
 ${templatefile("./nginx.config.tpl", {
-  server_name    = server_name,
-  backend_port   = backend_port,
-  front_end_port = front_end_port,
+  server_name    = $${server_name},
+  backend_port   = $${backend_port},
+  front_end_port = $${front_end_port},
 })}
 EOL
 
