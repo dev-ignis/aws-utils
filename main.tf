@@ -33,7 +33,6 @@ resource "aws_instance" "my_ec2" {
   vpc_security_group_ids = [module.network.security_group_id]
 
   user_data = templatefile("${path.module}/user_data.sh.tpl", {
-    docker_image               = var.docker_image         // May no longer be used if only using backend_image & front_end_image
     backend_image              = var.backend_image
     front_end_image            = var.front_end_image
     backend_container_name     = var.backend_container_name
