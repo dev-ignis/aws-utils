@@ -18,7 +18,7 @@ variable "availability_zones" {
   type        = list(string)
 }
 
-variable "app_port" {
+variable "backend_port" {
   description = "The port on which the application runs"
   type        = string
 }

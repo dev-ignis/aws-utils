@@ -59,7 +59,7 @@ resource "aws_route_table_association" "subnet2_assoc" {
 
 resource "aws_security_group" "instance_sg" {
   name        = "${var.instance_name}-sg"
-  description = "Allow inbound SSH, HTTP, HTTPS, and app port traffic"
+  description = "Allow inbound SSH, HTTP, HTTPS, and backend port traffic"
   vpc_id      = aws_vpc.this.id
 
   ingress {
@@ -88,9 +88,9 @@ resource "aws_security_group" "instance_sg" {
 
   # Allow traffic on the app port from resources within the same security group
   ingress {
-    description = "Allow ALB to access app port"
-    from_port   = tonumber(var.app_port)
-    to_port     = tonumber(var.app_port)
+    description = "Allow ALB to access backend app port"
+    from_port   = tonumber(var.backend_port)
+    to_port     = tonumber(var.backend_port)
     protocol    = "tcp"
     self        = true
   }
