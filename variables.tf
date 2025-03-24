@@ -1,3 +1,6 @@
+##############################
+# General AWS & Infrastructure
+##############################
 variable "region" {
   type    = string
   default = "us-west-2"
@@ -30,11 +33,6 @@ variable "dns_name" {
   default     = ""
 }
 
-variable "docker_image" {
-  description = "The Docker image (including tag) to deploy on the instance"
-  type        = string
-}
-
 variable "certbot_email" {
   description = "Email to use for Certbot to obtain SSL certificates"
   type        = string
@@ -58,35 +56,26 @@ variable "availability_zones" {
   default     = ["us-west-2a", "us-west-2b"]
 }
 
-variable "app_port" {
-  description = "The port on which the application runs"
-  type        = string
-  default     = "8080"
-}
-
-variable "app_container_name" {
-  description = "Name for the Docker container running the application"
-  type        = string
-  default     = "mht-api-app"
-}
-
 variable "enable_load_balancer" {
   description = "Enable or disable the load balancer"
   type        = bool
   default     = false
 }
 
-variable "go_gin_app_image" {
-  description = "Docker image for the Go Gin application"
+variable "skip_route53" {
+  description = "Skip creating Route53 DNS records if true (e.g., in CI)"
+  type        = bool
+  default     = false
+}
+
+variable "environment" {
+  description = "The environment in which resources are deployed (e.g., dev, staging, prod)"
   type        = string
 }
 
-variable "ssh_private_key_path" {
-  description = "Path to the SSH private key used for connecting to EC2 instances"
-  type        = string
-  default     = "~/.ssh/id_rsa_github"
-}
-
+##############################
+# Route53 & Hosted Zone
+##############################
 variable "route53_zone_id" {
   description = "The ID of the Route53 hosted zone"
   type        = string
@@ -99,7 +88,7 @@ variable "staging_api_dns_name" {
 }
 
 variable "prod_api_dns_name" {
-  description = "DNS name for the staging API endpoint"
+  description = "DNS name for the production API endpoint"
   type        = string
   default     = ""
 }
@@ -116,55 +105,32 @@ variable "hosted_zone_name" {
   default     = ""
 }
 
-# Remote Backend
-#variable "backend_bucket" {
-#  description = "The S3 bucket for storing Terraform state"
-#  type        = string
-#}
-#
-#variable "backend_key" {
-#  description = "The path inside the S3 bucket for the state file"
-#  type        = string
-#  default     = "terraform/state/terraform.tfstate"
-#}
-#
-#variable "backend_region" {
-#  description = "The AWS region where the S3 bucket is located"
-#  type        = string
-#  default     = "us-west-2"
-#}
-#
-#variable "backend_encrypt" {
-#  description = "Whether to encrypt the state file"
-#  type        = bool
-#  default     = true
-#}
-#
-#variable "backend_dynamodb_table" {
-#  description = "The DynamoDB table for state locking"
-#  type        = string
-#}
-
-variable "skip_route53" {
-  description = "Skip creating Route53 DNS records if true (e.g., in CI)"
-  type        = bool
-  default     = false
-}
-
-variable "environment" {
-  description = "The environment in which resources are deployed (e.g., dev, staging, prod)"
+##############################
+# SSH & Remote Backend Settings
+##############################
+variable "ssh_private_key_path" {
+  description = "Path to the SSH private key used for connecting to EC2 instances"
   type        = string
+  default     = "~/.ssh/id_rsa_github"
 }
 
+# Remote backend variables (if used) can be defined here.
+# For example:
+# variable "backend_bucket" { ... }
+# variable "backend_key" { ... }
+# variable "backend_region" { ... }
+# variable "backend_encrypt" { ... }
+# variable "backend_dynamodb_table" { ... }
+
+##############################
+# Docker & Application Variables
+##############################
+
+# New backend app configuration
 variable "backend_image" {
-  description = "Docker image for the backend app (e.g. Go Gin app)"
+  description = "Docker image for the backend app (e.g., Go Gin app)"
   type        = string
   default     = "rollg/go-gin-app"
-}
-
-variable "front_end_image" {
-  description = "Docker image for the front-end app"
-  type        = string
 }
 
 variable "backend_container_name" {
@@ -173,16 +139,21 @@ variable "backend_container_name" {
   default     = "backend_app"
 }
 
+variable "backend_port" {
+  description = "Port on which the backend app listens"
+  type        = string
+  default     = "8080"
+}
+
+variable "front_end_image" {
+  description = "Docker image for the front-end app"
+  type        = string
+}
+
 variable "front_end_container_name" {
   description = "Container name for the front-end app"
   type        = string
   default     = "front_end_app"
-}
-
-variable "backend_port" {
-  description = "Port on which the backend app listens"
-  type        = string
-  default     = "5000"
 }
 
 variable "front_end_port" {
