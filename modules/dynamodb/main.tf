@@ -10,14 +10,14 @@ resource "aws_dynamodb_table" "this" {
 
   # Add an attribute for email
   attribute {
-    name = "email"
+    name = "Email"
     type = "S"
   }
 
   # Create a Global Secondary Index on the email attribute
   global_secondary_index {
     name            = "email-index"
-    hash_key        = "email"
+    hash_key        = "Email"
     projection_type = "ALL"
   }
 
