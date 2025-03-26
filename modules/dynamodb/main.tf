@@ -8,16 +8,29 @@ resource "aws_dynamodb_table" "this" {
     type = var.hash_key_type
   }
 
-  # Add an attribute for email
+  # Attribute for Email
   attribute {
     name = "Email"
     type = "S"
   }
 
-  # Create a Global Secondary Index on the email attribute
+  # Attribute for AppleId
+  attribute {
+    name = "AppleId"
+    type = "S"
+  }
+
+  # Global Secondary Index on Email
   global_secondary_index {
     name            = "email-index"
     hash_key        = "Email"
+    projection_type = "ALL"
+  }
+
+  # Global Secondary Index on AppleId
+  global_secondary_index {
+    name            = "apple_id-index"
+    hash_key        = "AppleId"
     projection_type = "ALL"
   }
 
