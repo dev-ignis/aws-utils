@@ -25,3 +25,5 @@ Thumbs.db
 
 # Other potentially sensitive files
 .env
+
+*.p8
