@@ -161,3 +161,9 @@ variable "front_end_port" {
   type        = string
   default     = "3000"
 }
+
+variable "next_resend_api_key" {
+  description = "The API key for Next Resend"
+  type        = string
+}
+
