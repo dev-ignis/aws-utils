@@ -66,6 +66,14 @@ server {
         proxy_pass http://localhost:8080/concern;
     }
 
+    location /ask-believe-question {
+        proxy_pass http://localhost:8080/ask-believe-question;
+    }
+
+    location /ask-behave-question {
+        proxy_pass http://localhost:8080/ask-behave-question;
+    }
+
     location /swagger/ {
         proxy_pass http://127.0.0.1:${backend_port}/swagger/;
         proxy_set_header Host \$host;
