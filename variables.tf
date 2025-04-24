@@ -105,6 +105,60 @@ variable "hosted_zone_name" {
   default     = ""
 }
 
+variable "create_apex_record" {
+  description = "Whether to create an A record for the apex/root domain"
+  type        = bool
+  default     = true
+}
+
+variable "create_mail_records" {
+  description = "Whether to create email-related DNS records (MX, SPF, DKIM, DMARC)"
+  type        = bool
+  default     = false
+}
+
+variable "mx_records" {
+  description = "List of MX records for the domain (e.g., ['10 mail.example.com', '20 mail2.example.com'])"
+  type        = list(string)
+  default     = []
+}
+
+variable "spf_record" {
+  description = "SPF record value (e.g., 'include:_spf.google.com include:amazonses.com ~all')"
+  type        = string
+  default     = "include:_spf.google.com"
+}
+
+variable "dkim_records" {
+  description = "List of DKIM TXT record values"
+  type        = list(string)
+  default     = []
+}
+
+variable "dkim_selector" {
+  description = "DKIM selector name (e.g., 'google' for Google Workspace)"
+  type        = string
+  default     = "default"
+}
+
+variable "dmarc_policy" {
+  description = "DMARC policy (none, quarantine, or reject)"
+  type        = string
+  default     = "none"
+}
+
+variable "dmarc_email" {
+  description = "Email address to receive DMARC reports"
+  type        = string
+  default     = "admin@example.com"
+}
+
+variable "create_wildcard_record" {
+  description = "Whether to create a wildcard record for the domain"
+  type        = bool
+  default     = false
+}
+
 ##############################
 # SSH & Remote Backend Settings
 ##############################
