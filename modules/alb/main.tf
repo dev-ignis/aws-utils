@@ -6,7 +6,8 @@ resource "aws_lb" "app_lb" {
   subnets            = var.lb_subnet_ids
 
   tags = {
-    Name = "${var.instance_name}-lb"
+    Name        = "${var.instance_name}-lb"
+    Environment = var.environment
   }
 }
 
@@ -26,7 +27,8 @@ resource "aws_lb_target_group" "app_tg" {
   }
 
   tags = {
-    Name = "${var.instance_name}-tg"
+    Name        = "${var.instance_name}-tg"
+    Environment = var.environment
   }
 }
 

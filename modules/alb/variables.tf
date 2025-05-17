@@ -29,6 +29,21 @@ variable "instance_ids" {
 }
 
 variable "staging_api_dns_name" {
-  description = "DNS name for the staging API endpoint used in the ALB listener rule"
+  description = "DNS name for staging API"
+  type        = string
+}
+
+variable "domain_name" {
+  description = "Domain name for the ALB"
+  type        = string
+}
+
+variable "environment" {
+  description = "Environment name for resource tagging"
+  type        = string
+}
+
+variable "route53_zone_id" {
+  description = "Route53 zone ID for DNS validation"
   type        = string
 }

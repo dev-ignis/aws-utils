@@ -57,21 +57,14 @@ resource "aws_route_table_association" "subnet2_assoc" {
   route_table_id = aws_route_table.this.id
 }
 
-resource "aws_security_group" "instance_sg" {
-  name        = "${var.instance_name}-sg"
-  description = "Allow inbound SSH, HTTP, HTTPS, and backend port traffic"
+# ALB Security Group
+resource "aws_security_group" "alb_sg" {
+  name        = "${var.instance_name}-alb-sg"
+  description = "Security group for ALB"
   vpc_id      = aws_vpc.this.id
 
   ingress {
-    description = "SSH"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "HTTP"
+    description = "HTTP from anywhere"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -79,20 +72,55 @@ resource "aws_security_group" "instance_sg" {
   }
 
   ingress {
-    description = "HTTPS"
+    description = "HTTPS from anywhere"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Allow traffic on the app port from resources within the same security group
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.instance_name}-alb-sg"
+  }
+}
+
+# EC2 Instance Security Group
+resource "aws_security_group" "instance_sg" {
+  name        = "${var.instance_name}-instance-sg"
+  description = "Security group for EC2 instances"
+  vpc_id      = aws_vpc.this.id
+
   ingress {
-    description = "Allow ALB to access backend app port"
-    from_port   = tonumber(var.backend_port)
-    to_port     = tonumber(var.backend_port)
+    description     = "HTTP from ALB"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_sg.id]
+  }
+
+  ingress {
+    description = "SSH from anywhere"
+    from_port   = 22
+    to_port     = 22
     protocol    = "tcp"
-    self        = true
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Allow traffic on the app port from ALB
+  ingress {
+    description     = "Backend port from ALB"
+    from_port       = tonumber(var.backend_port)
+    to_port         = tonumber(var.backend_port)
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_sg.id]
   }
 
   egress {

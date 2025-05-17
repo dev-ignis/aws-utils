@@ -13,7 +13,12 @@ output "lb_subnet_ids" {
   value       = [aws_subnet.subnet1.id, aws_subnet.subnet2.id]
 }
 
-output "security_group_id" {
-  description = "The ID of the security group"
+output "instance_security_group_id" {
+  description = "ID of the EC2 instance security group"
   value       = aws_security_group.instance_sg.id
+}
+
+output "alb_security_group_id" {
+  description = "ID of the ALB security group"
+  value       = aws_security_group.alb_sg.id
 }

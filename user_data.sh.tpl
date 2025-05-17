@@ -1,7 +1,7 @@
 #!/bin/bash
 # Update packages and install prerequisites
 apt-get update -y
-apt-get install -y docker.io nginx certbot python3-certbot-nginx git curl nodejs npm
+apt-get install -y docker.io nginx git curl nodejs npm
 
 # Install Yarn globally
 npm install -g yarn
@@ -34,22 +34,14 @@ else
   server_name=${dns_name}
 fi
 
-# Write Nginx configuration
-# If front_end_image is provided, use front_end_port for the default location; otherwise, use backend_port.
+# Write Nginx configuration for HTTP only
 cat > /etc/nginx/sites-available/default << EOL
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
-    server_name $${server_name};
+    server_name _;
 
-    location / {
-        proxy_pass http://127.0.0.1:$([ -n "${front_end_image}" ] && echo ${front_end_port} || echo ${backend_port});
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-    }
-
+    # Health check endpoint
     location /health {
         proxy_pass http://127.0.0.1:${backend_port}/health;
         proxy_set_header Host \$host;
@@ -58,32 +50,18 @@ server {
         proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
-    location /ask-specialist {
-        proxy_pass http://localhost:8080/chatgpt;
-    }
-
-    location /specifics-list {
-        proxy_pass http://localhost:8080/concern;
-    }
-
-    location /ask-believe-question {
-        proxy_pass http://localhost:8080/ask-believe-question;
-    }
-
-    location /ask-behave-question {
-        proxy_pass http://localhost:8080/ask-behave-question;
-    }
-
-    location /swagger/ {
-        proxy_pass http://127.0.0.1:${backend_port}/swagger/;
+    # API endpoints
+    location /api/ {
+        proxy_pass http://127.0.0.1:${backend_port}/;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
-    location /users {
-        proxy_pass http://127.0.0.1:${backend_port}/users;
+    # Frontend
+    location / {
+        proxy_pass http://127.0.0.1:${front_end_port};
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;

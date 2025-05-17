@@ -30,7 +30,7 @@ resource "aws_instance" "my_ec2" {
   instance_type          = var.instance_type
   key_name               = var.key_name
   subnet_id              = module.network.lb_subnet_ids[count.index]
-  vpc_security_group_ids = [module.network.security_group_id]
+  vpc_security_group_ids = [module.network.instance_security_group_id]
 
   user_data = templatefile("${path.module}/user_data.sh.tpl", {
     backend_image            = var.backend_image
@@ -54,13 +54,16 @@ resource "aws_instance" "my_ec2" {
 
 # Pass required values to the ALB module, including the staging DNS name.
 module "alb" {
-  count               = var.enable_load_balancer ? 1 : 0
-  source              = "./modules/alb"
-  instance_name       = var.instance_name
-  app_port            = var.backend_port
-  vpc_id              = module.network.vpc_id
-  lb_subnet_ids       = module.network.lb_subnet_ids
-  security_group_id   = module.network.security_group_id
-  instance_ids        = aws_instance.my_ec2[*].id
+  source               = "./modules/alb"
+  count                = var.enable_load_balancer ? 1 : 0
+  instance_name        = var.instance_name
+  app_port             = var.backend_port
+  vpc_id               = module.network.vpc_id
+  lb_subnet_ids        = module.network.lb_subnet_ids
+  security_group_id    = module.network.alb_security_group_id
+  instance_ids         = aws_instance.my_ec2[*].id
   staging_api_dns_name = var.staging_api_dns_name
+  domain_name          = var.hosted_zone_name
+  environment          = var.environment
+  route53_zone_id      = var.route53_zone_id
 }
