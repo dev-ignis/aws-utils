@@ -45,6 +45,7 @@ resource "aws_route53_record" "api_staging" {
 
 # WWW subdomain record - points to ALB
 resource "aws_route53_record" "www" {
+  count   = var.skip_route53 ? 0 : 1
   zone_id = local.zone_id
   name    = "www.${var.hosted_zone_name}"
   type    = "A"
@@ -58,6 +59,7 @@ resource "aws_route53_record" "www" {
 
 # Root domain record - points to ALB
 resource "aws_route53_record" "apex" {
+  count   = var.skip_route53 ? 0 : 1
   zone_id = local.zone_id
   name    = var.hosted_zone_name
   type    = "A"

@@ -34,6 +34,8 @@ output "route53_records" {
     ec2_dns_record = try(aws_route53_record.ec2_dns[0].name, null)
     api_production = aws_route53_record.api_production.name
     api_staging    = aws_route53_record.api_staging.name
+    www            = try(aws_route53_record.www[0].name, null)
+    apex           = try(aws_route53_record.apex[0].name, null)
   }
 }
 
