@@ -57,23 +57,4 @@ resource "aws_lb_listener" "https" {
   depends_on = [aws_acm_certificate_validation.main]
 }
 
-# HTTP to HTTPS Redirect
-resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.app_lb.arn
-  port              = 80
-  protocol          = "HTTP"
 
-  lifecycle {
-    create_before_destroy = true
-    replace_triggered_by  = [aws_acm_certificate.main]
-  }
-
-  default_action {
-    type = "redirect"
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
-  }
-}
