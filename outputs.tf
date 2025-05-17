@@ -29,13 +29,16 @@ output "production_api_url" {
 }
 
 output "route53_records" {
-  description = "Route53 records for EC2 (if any), production API, and staging API."
+  description = "Route53 records for EC2 (if any), production API, staging API, and certificate validation."
   value = {
     ec2_dns_record = try(aws_route53_record.ec2_dns[0].name, null)
     api_production = aws_route53_record.api_production.name
     api_staging    = aws_route53_record.api_staging.name
     www            = try(aws_route53_record.www[0].name, null)
     apex           = try(aws_route53_record.apex[0].name, null)
+    cert_validation = try({
+      for k, v in module.alb[0].aws_route53_record.cert_validation : k => v.name
+    }, {})
   }
 }
 

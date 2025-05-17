@@ -64,4 +64,21 @@ resource "aws_lb_listener" "https" {
   depends_on = [aws_acm_certificate_validation.main]
 }
 
+# Apex domain listener rule
+resource "aws_lb_listener_rule" "apex_rule" {
+  listener_arn = aws_lb_listener.https.arn
+  priority     = 90  # Higher priority than staging rule
+
+  condition {
+    host_header {
+      values = [var.domain_name]
+    }
+  }
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app_tg.arn
+  }
+}
+
 
