@@ -44,6 +44,9 @@ resource "aws_lb_listener" "app_listener" {
       port        = "443"
       protocol    = "HTTPS"
       status_code = "HTTP_301"
+      host        = "#{host}"
+      path        = "/#{path}"
+      query       = "#{query}"
     }
   }
 

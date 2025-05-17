@@ -9,12 +9,16 @@ locals {
 
 # EC2 instance DNS record (only create if dns_name is set and skip_route53 is false)
 resource "aws_route53_record" "ec2_dns" {
-  count   = (var.skip_route53 || var.dns_name == "") ? 0 : 1
+  count   = (var.skip_route53 || var.dns_name == "" || var.dns_name == var.hosted_zone_name) ? 0 : 1
   zone_id = local.zone_id
   name    = var.dns_name
   type    = "A"
   ttl     = 300
   records = [aws_instance.my_ec2[0].public_ip]
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # Production API endpoint
@@ -49,6 +53,10 @@ resource "aws_route53_record" "www" {
   zone_id = local.zone_id
   name    = "www.${var.hosted_zone_name}"
   type    = "A"
+
+  lifecycle {
+    create_before_destroy = true
+  }
   
   alias {
     name                   = module.alb[0].lb_dns_name
@@ -63,6 +71,10 @@ resource "aws_route53_record" "apex" {
   zone_id = local.zone_id
   name    = var.hosted_zone_name
   type    = "A"
+
+  lifecycle {
+    create_before_destroy = true
+  }
   
   alias {
     name                   = module.alb[0].lb_dns_name
