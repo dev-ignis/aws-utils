@@ -44,6 +44,12 @@ variable "environment" {
 }
 
 variable "route53_zone_id" {
-  description = "Route53 zone ID for DNS validation"
+  description = "Route53 zone ID"
   type        = string
+}
+
+variable "skip_route53" {
+  description = "Whether to skip Route53 record creation"
+  type        = bool
+  default     = false
 }

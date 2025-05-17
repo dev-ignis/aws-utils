@@ -16,12 +16,16 @@ resource "aws_acm_certificate" "main" {
 
 # DNS Validation Records
 resource "aws_route53_record" "cert_validation" {
-  for_each = {
+  for_each = var.skip_route53 ? {} : {
     for dvo in aws_acm_certificate.main.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
       record = dvo.resource_record_value
       type   = dvo.resource_record_type
     }
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   zone_id = var.route53_zone_id
@@ -58,6 +62,11 @@ resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.app_lb.arn
   port              = 80
   protocol          = "HTTP"
+
+  lifecycle {
+    create_before_destroy = true
+    replace_triggered_by  = [aws_acm_certificate.main]
+  }
 
   default_action {
     type = "redirect"

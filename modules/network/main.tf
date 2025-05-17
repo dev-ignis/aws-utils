@@ -59,7 +59,7 @@ resource "aws_route_table_association" "subnet2_assoc" {
 
 # ALB Security Group
 resource "aws_security_group" "alb_sg" {
-  name        = "${var.instance_name}-alb-sg"
+  name_prefix = "${var.instance_name}-alb-sg-"
   description = "Security group for ALB"
   vpc_id      = aws_vpc.this.id
 
@@ -84,11 +84,12 @@ resource "aws_security_group" "alb_sg" {
   }
 
   egress {
-    description = "Allow all outbound traffic"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    description      = "Allow all outbound traffic"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   tags = {
@@ -98,12 +99,13 @@ resource "aws_security_group" "alb_sg" {
 
 # EC2 Instance Security Group
 resource "aws_security_group" "instance_sg" {
-  name        = "${var.instance_name}-sg"
+  name_prefix = "${var.instance_name}-instance-sg-"
   description = "Security group for EC2 instances"
   vpc_id      = aws_vpc.this.id
 
   lifecycle {
     create_before_destroy = true
+    replace_triggered_by  = [aws_security_group.alb_sg]
   }
 
   ingress {

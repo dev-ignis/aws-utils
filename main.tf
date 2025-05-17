@@ -66,4 +66,5 @@ module "alb" {
   domain_name          = var.hosted_zone_name
   environment          = var.environment
   route53_zone_id      = var.route53_zone_id
+  skip_route53          = var.skip_route53
 }
