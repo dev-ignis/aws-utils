@@ -63,6 +63,10 @@ resource "aws_security_group" "alb_sg" {
   description = "Security group for ALB"
   vpc_id      = aws_vpc.this.id
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   ingress {
     description = "HTTP from anywhere"
     from_port   = 80
@@ -97,6 +101,10 @@ resource "aws_security_group" "instance_sg" {
   name        = "${var.instance_name}-sg"
   description = "Security group for EC2 instances"
   vpc_id      = aws_vpc.this.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   ingress {
     description     = "HTTP from ALB"
