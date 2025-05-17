@@ -54,6 +54,11 @@ resource "aws_lb_listener" "https" {
     target_group_arn = aws_lb_target_group.app_tg.arn
   }
 
+  lifecycle {
+    create_before_destroy = true
+    replace_triggered_by  = [aws_acm_certificate.main]
+  }
+
   depends_on = [aws_acm_certificate_validation.main]
 }
 

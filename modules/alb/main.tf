@@ -32,6 +32,7 @@ resource "aws_lb_target_group" "app_tg" {
   }
 }
 
+# HTTP Listener for port 80 that redirects to HTTPS
 resource "aws_lb_listener" "app_listener" {
   load_balancer_arn = aws_lb.app_lb.arn
   port              = "80"
@@ -48,7 +49,10 @@ resource "aws_lb_listener" "app_listener" {
 
   lifecycle {
     create_before_destroy = true
+    replace_triggered_by  = [aws_acm_certificate.main]
   }
+
+  depends_on = [aws_acm_certificate_validation.main]
 }
 
 # Host-based routing rule for the staging domain
