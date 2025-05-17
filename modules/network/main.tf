@@ -94,7 +94,7 @@ resource "aws_security_group" "alb_sg" {
 
 # EC2 Instance Security Group
 resource "aws_security_group" "instance_sg" {
-  name        = "${var.instance_name}-instance-sg"
+  name        = "${var.instance_name}-sg"
   description = "Security group for EC2 instances"
   vpc_id      = aws_vpc.this.id
 
@@ -129,5 +129,9 @@ resource "aws_security_group" "instance_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.instance_name}-sg"
   }
 }

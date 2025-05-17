@@ -1,19 +1,10 @@
-# Conditionally create a hosted zone if required and if not skipped.
-resource "aws_route53_zone" "this" {
-  count = var.create_hosted_zone && !var.skip_route53 ? 1 : 0
-  name  = var.hosted_zone_name
-  
-  # Add tags for better management
-  tags = {
-    Name        = "${var.hosted_zone_name}"
-    Environment = var.environment
-    Terraform   = "true"
-  }
+# Use existing Route53 zone
+data "aws_route53_zone" "this" {
+  zone_id = var.route53_zone_id
 }
 
-# Use the created zone's ID if we created one; otherwise, use the provided zone id.
 locals {
-  zone_id = var.create_hosted_zone && !var.skip_route53 ? aws_route53_zone.this[0].id : var.route53_zone_id
+  zone_id = data.aws_route53_zone.this.zone_id
 }
 
 # EC2 instance DNS record (only create if dns_name is set and skip_route53 is false)
@@ -26,11 +17,10 @@ resource "aws_route53_record" "ec2_dns" {
   records = [aws_instance.my_ec2[0].public_ip]
 }
 
-# Production API endpoint (skipped in CI if skip_route53 is true)
+# Production API endpoint
 resource "aws_route53_record" "api_production" {
-  count = var.skip_route53 ? 0 : 1
   zone_id = local.zone_id
-  name    = var.prod_api_dns_name
+  name    = "api.${var.hosted_zone_name}"
   type    = "A"
 
   alias {
@@ -40,11 +30,10 @@ resource "aws_route53_record" "api_production" {
   }
 }
 
-# Staging API endpoint (skipped in CI if skip_route53 is true)
+# Staging API endpoint
 resource "aws_route53_record" "api_staging" {
-  count = var.skip_route53 ? 0 : 1
   zone_id = local.zone_id
-  name    = var.staging_api_dns_name
+  name    = "staging.api.${var.hosted_zone_name}"
   type    = "A"
 
   alias {
@@ -54,9 +43,8 @@ resource "aws_route53_record" "api_staging" {
   }
 }
 
-# WWW subdomain record - points to the same ALB
+# WWW subdomain record - points to ALB
 resource "aws_route53_record" "www" {
-  count   = var.skip_route53 ? 0 : 1
   zone_id = local.zone_id
   name    = "www.${var.hosted_zone_name}"
   type    = "A"
@@ -68,9 +56,8 @@ resource "aws_route53_record" "www" {
   }
 }
 
-# Root domain record - if not already covered by other records
+# Root domain record - points to ALB
 resource "aws_route53_record" "apex" {
-  count   = var.skip_route53 ? 0 : (var.create_apex_record ? 1 : 0)
   zone_id = local.zone_id
   name    = var.hosted_zone_name
   type    = "A"
