@@ -2,6 +2,7 @@
 # Update packages and install prerequisites
 apt-get update -y
 apt-get install -y docker.io nginx git curl nodejs npm
+# No need for Certbot as SSL is handled by AWS Certificate Manager at the ALB level
 
 # Install Yarn globally
 npm install -g yarn
@@ -98,18 +99,5 @@ EOL
 
 systemctl restart nginx
 
-# Run Certbot only if dns_name is provided
-if [ ! -z "${dns_name}" ]; then
-  # Extract the base domain (e.g., amygdalas.com from api.amygdalas.com)
-  base_domain=$(echo ${dns_name} | grep -oE '[^.]+\.[^.]+$')
-  
-  # Check if this is an API domain
-  if [[ "${dns_name}" == api.* || "${dns_name}" == staging.api.* ]]; then
-    # For API domains, request certificates for the specific API domain
-    certbot --nginx --non-interactive --agree-tos --email ${certbot_email} -d ${dns_name}
-  else
-    # For main domain, request certificates for all domains
-    certbot --nginx --non-interactive --agree-tos --email ${certbot_email} \
-      -d ${base_domain} -d www.${base_domain} -d api.${base_domain} -d staging.api.${base_domain}
-  fi
-fi
+# No Certbot configuration needed as SSL is handled by AWS Certificate Manager at the ALB level
+# All HTTPS traffic is terminated at the ALB, and traffic between ALB and EC2 is HTTP
