@@ -20,7 +20,7 @@ This project provides a production-ready infrastructure setup for deploying Dock
 
 ### Components
 
-1. **Networking Layer**
+1. **Networking Layer** - [📖 Detailed Documentation](docs/modules/network.md)
    - Custom VPC with DNS support enabled
    - Public subnets across multiple availability zones
    - Internet Gateway for public internet access
@@ -32,13 +32,13 @@ This project provides a production-ready infrastructure setup for deploying Dock
    - NGINX reverse proxy for request routing
    - Support for both backend and frontend containers
 
-3. **Load Balancing**
+3. **Load Balancing** - [📖 Detailed Documentation](docs/modules/alb.md)
    - Application Load Balancer (ALB) for traffic distribution
    - SSL/TLS termination at ALB level
    - Health checks for automatic instance monitoring
    - Target group with configurable routing rules
 
-4. **Data Layer**
+4. **Data Layer** - [📖 Detailed Documentation](docs/modules/dynamodb.md)
    - DynamoDB table with pay-per-request billing
    - Configurable hash key for flexible data modeling
 
@@ -98,6 +98,26 @@ aws-docker-deployment/
         ├── variables.tf
         └── outputs.tf
 ```
+
+## Terraform Modules
+
+This project uses a modular approach with three main Terraform modules:
+
+### Network Module
+The [Network module](docs/modules/network.md) creates the foundational AWS networking infrastructure including VPC, subnets, internet gateway, route tables, and security groups. It provides a secure, scalable network foundation for the application.
+
+### ALB Module  
+The [ALB module](docs/modules/alb.md) manages the Application Load Balancer, SSL/TLS certificates via AWS Certificate Manager, HTTPS listeners, and routing rules. It handles all aspects of load balancing and SSL termination.
+
+### DynamoDB Module
+The [DynamoDB module](docs/modules/dynamodb.md) provisions a NoSQL database table with global secondary indexes for user authentication and profile management. It's configured for on-demand billing and includes indexes for email and Apple ID lookups.
+
+Each module is fully documented with:
+- Architecture overview and components
+- Input/output specifications  
+- Usage examples
+- Best practices
+- Troubleshooting guides
 
 ## Configuration
 
