@@ -154,10 +154,21 @@ Each module is fully documented with:
 
 ### 1. Clone the Repository
 
+#### Option A: Direct Clone
 ```bash
 git clone https://github.com/dev-ignis/aws-docker-deployment.git
 cd aws-docker-deployment
 ```
+
+#### Option B: As a Git Submodule
+```bash
+# In your parent project (common naming conventions)
+git submodule add https://github.com/dev-ignis/aws-docker-deployment.git infra
+# OR
+git submodule add https://github.com/dev-ignis/aws-docker-deployment.git infrastructure
+```
+
+📖 **[Detailed Submodule Usage Guide](docs/submodule-usage.md)** - For managing this repo as a submodule
 
 ### 2. Configure Variables
 
