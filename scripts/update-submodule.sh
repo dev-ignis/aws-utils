@@ -5,14 +5,14 @@
 
 set -euo pipefail
 
+# Check for required commands
+command -v git >/dev/null 2>&1 || { echo "Error: git is not installed. Please install git first: sudo apt update && sudo apt install git" >&2; exit 1; }
+
 # Get the directory where this script is located (scripts folder)
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Get the submodule directory (parent of scripts)
 SUBMODULE_DIR="$( cd "$SCRIPT_DIR/.." && pwd )"
 SUBMODULE_NAME=$(basename "$SUBMODULE_DIR")
-
-# Check for required commands
-command -v git >/dev/null 2>&1 || { echo "Error: git is not installed. Please install git first: sudo apt update && sudo apt install git" >&2; exit 1; }
 
 # Ensure we're working from the parent directory
 echo "🔧 AWS Infrastructure Submodule Updater"
