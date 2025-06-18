@@ -241,11 +241,11 @@ terraform {
 The repository includes a convenient update script that can be run from anywhere:
 
 ```bash
-# From anywhere in your system
-./path/to/infra/scripts/update-submodule.sh
-
-# Or if you're in the parent project
+# From parent project root (recommended)
 ./infra/scripts/update-submodule.sh
+
+# Works from anywhere if you provide the full path
+/path/to/parent-project/infra/scripts/update-submodule.sh
 ```
 
 This script:
