@@ -3,8 +3,8 @@
 # Usage: ./update_nginx.sh [backend_port] [frontend_port]
 
 # Get backend and frontend ports from arguments or use defaults
-BACKEND_PORT=${1:-3000}
-FRONTEND_PORT=${2:-8080}
+BACKEND_PORT=${1:-8080}  # Default to 8080 as confirmed working for backend
+FRONTEND_PORT=${2:-3000}  # Adjust frontend port as needed
 
 echo "Updating Nginx configuration..."
 echo "Backend port: $BACKEND_PORT"

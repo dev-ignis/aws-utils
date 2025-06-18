@@ -36,6 +36,8 @@ else
 fi
 
 # Write Nginx configuration with subdomain-based routing
+# Note: Ensure backend_port (${backend_port}) matches the actual port where the backend service is running
+# Default backend port should be 8080 as confirmed working
 cat > /etc/nginx/sites-available/default << EOL
 # API subdomain server block - all traffic goes directly to backend
 server {
