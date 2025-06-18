@@ -159,6 +159,28 @@ variable "create_wildcard_record" {
   default     = false
 }
 
+variable "custom_dns_records" {
+  description = "Map of custom DNS records to create (CNAME, TXT, A, etc.)"
+  type = map(object({
+    type    = string
+    ttl     = number
+    records = list(string)
+  }))
+  default = {}
+}
+
+variable "cname_records" {
+  description = "Map of CNAME records to create. Key is the subdomain, value is the target."
+  type        = map(string)
+  default     = {}
+}
+
+variable "txt_records" {
+  description = "Map of TXT records to create. Key is the subdomain (use @ for root), value is list of TXT values."
+  type        = map(list(string))
+  default     = {}
+}
+
 ##############################
 # SSH & Remote Backend Settings
 ##############################

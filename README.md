@@ -42,10 +42,11 @@ This project provides a production-ready infrastructure setup for deploying Dock
    - DynamoDB table with pay-per-request billing
    - Configurable hash key for flexible data modeling
 
-5. **DNS & SSL**
+5. **DNS & SSL** - [📖 DNS Management Guide](docs/dns-management.md)
    - Route53 hosted zone integration
    - AWS Certificate Manager for SSL certificates
    - Support for apex domain and subdomains
+   - Flexible DNS record management (CNAME, TXT, A, etc.)
 
 ### Traffic Flow
 
@@ -145,6 +146,9 @@ Each module is fully documented with:
 | `dns_name` | Custom domain name | string | `""` |
 | `certbot_email` | Email for SSL certificates | string | `""` |
 | `environment` | Environment tag | string | `production` |
+| `cname_records` | Map of CNAME records to create | map(string) | `{}` |
+| `txt_records` | Map of TXT records to create | map(list(string)) | `{}` |
+| `custom_dns_records` | Map of custom DNS records | map(object) | `{}` |
 
 ## Usage
 
