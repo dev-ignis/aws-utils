@@ -28,7 +28,7 @@ resource "null_resource" "blue_green_deploy" {
       for instance_id in ${join(" ", aws_instance.my_ec2[*].id)}; do
         aws elbv2 register-targets \
           --target-group-arn ${local.inactive_tg_arn} \
-          --targets Id=$instance_id,Port=80 \
+          --targets Id=$instance_id,Port=${var.backend_port} \
           --region ${var.region}
       done
       
