@@ -9,12 +9,14 @@ This project provides a production-ready infrastructure setup for deploying Dock
 ### Key Features
 
 - **High Availability**: Multi-AZ deployment with Application Load Balancer
+- **Zero-Downtime Deployments**: Rolling updates and blue-green deployment strategies
 - **Container-Ready**: Automated Docker deployment for backend and frontend services
 - **SSL/TLS Security**: Managed SSL certificates via AWS Certificate Manager
 - **Database Integration**: DynamoDB table provisioning for application data
 - **DNS Management**: Route53 integration for custom domain support
 - **Modular Design**: Reusable Terraform modules for network, ALB, and database components
 - **Auto-Configuration**: User data scripts for automated instance setup
+- **Health Monitoring**: Comprehensive health checks with automatic rollback
 
 ## Architecture
 
@@ -35,7 +37,8 @@ This project provides a production-ready infrastructure setup for deploying Dock
 3. **Load Balancing** - [📖 Detailed Documentation](docs/modules/alb.md)
    - Application Load Balancer (ALB) for traffic distribution
    - SSL/TLS termination at ALB level
-   - Health checks for automatic instance monitoring
+   - Enhanced health checks for automatic instance monitoring
+   - Blue-green target groups for zero-downtime deployments
    - Target group with configurable routing rules
 
 4. **Data Layer** - [📖 Detailed Documentation](docs/modules/dynamodb.md)
@@ -80,8 +83,10 @@ aws-docker-deployment/
 ├── route53.tf                 # DNS configuration
 ├── copy_cert.tf              # Certificate management
 ├── copy_env.tf               # Environment variables handling
-├── redeploy_app.tf           # Application redeployment scripts
-├── redeploy_front_end.tf     # Frontend-specific redeployment
+├── redeploy_app.tf           # Application redeployment scripts (rolling)
+├── redeploy_front_end.tf     # Frontend-specific redeployment (rolling)
+├── blue_green_deploy.tf      # Blue-green deployment strategy
+├── rollback_deploy.tf        # Deployment validation and rollback
 ├── user_data.sh.tpl          # EC2 initialization script template
 ├── update_nginx.sh           # NGINX configuration updates
 └── modules/
@@ -149,6 +154,15 @@ Each module is fully documented with:
 | `cname_records` | Map of CNAME records to create | map(string) | `{}` |
 | `txt_records` | Map of TXT records to create | map(list(string)) | `{}` |
 | `custom_dns_records` | Map of custom DNS records | map(object) | `{}` |
+
+### Zero-Downtime Deployment Variables
+
+| Variable | Description | Type | Default |
+|----------|-------------|------|---------|
+| `blue_green_enabled` | Enable blue-green deployment instead of rolling | bool | `false` |
+| `active_target_group` | Currently active target group (blue or green) | string | `"blue"` |
+| `enable_rollback` | Enable automatic rollback on deployment failure | bool | `true` |
+| `rollback_timeout_minutes` | Timeout in minutes before triggering rollback | number | `5` |
 
 ## Usage
 
@@ -247,13 +261,41 @@ The NGINX configuration is automatically generated based on your deployment sett
 2. Edit `/etc/nginx/sites-available/default`
 3. Reload NGINX: `sudo systemctl reload nginx`
 
-### Updating Applications
+### Zero-Downtime Deployments
 
-To update your Docker containers:
+This infrastructure supports two deployment strategies:
+
+#### Rolling Deployment (Default)
+Sequential instance updates with health checks:
+
+```bash
+# Update backend application
+terraform apply -var="backend_image=myapp/backend:v2.0"
+
+# Update frontend application  
+terraform apply -var="front_end_image=myapp/frontend:v2.0"
+```
+
+#### Blue-Green Deployment
+Complete environment switching for instant rollback:
+
+```bash
+# Enable blue-green deployment
+terraform apply -var="blue_green_enabled=true" -var="backend_image=myapp/backend:v2.0"
+
+# After successful deployment, update active target group
+terraform apply -var="blue_green_enabled=true" -var="active_target_group=green"
+```
+
+**📖 [Detailed Zero-Downtime Deployment Guide](docs/zero-downtime-deployments.md)**
+
+### Manual Container Updates
+
+For manual updates via SSH:
 
 1. Push new images to your registry
-2. Use the redeploy scripts or manually update via SSH
-3. The infrastructure supports zero-downtime deployments via ALB
+2. SSH into instances and update containers
+3. The ALB health checks ensure traffic routing to healthy instances
 
 ## Security Considerations
 

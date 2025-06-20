@@ -2,7 +2,7 @@
 
 ## Overview
 
-The ALB module manages the Application Load Balancer infrastructure, including SSL/TLS certificate provisioning via AWS Certificate Manager (ACM), HTTPS listeners, and intelligent routing rules. This module provides secure, scalable load balancing for containerized applications with automatic SSL certificate management.
+The ALB module manages the Application Load Balancer infrastructure, including SSL/TLS certificate provisioning via AWS Certificate Manager (ACM), HTTPS listeners, and intelligent routing rules. This module provides secure, scalable load balancing for containerized applications with automatic SSL certificate management and zero-downtime deployment capabilities through blue-green target groups.
 
 ## Architecture
 
@@ -13,10 +13,12 @@ The ALB module manages the Application Load Balancer infrastructure, including S
    - Deployed across multiple availability zones
    - Handles SSL/TLS termination
 
-2. **Target Group**
-   - HTTP protocol on port 80
-   - Health checks on `/health` endpoint
-   - Configurable health check parameters
+2. **Target Groups**
+   - **Main Target Group**: HTTP protocol on port 80 for standard deployments
+   - **Blue Target Group**: For blue-green deployments (zero-downtime)
+   - **Green Target Group**: For blue-green deployments (zero-downtime)
+   - Enhanced health checks on `/health` endpoint with optimized parameters
+   - 30-second deregistration delay for graceful shutdowns
 
 3. **SSL/TLS Certificate**
    - AWS Certificate Manager (ACM) certificate
@@ -57,6 +59,10 @@ The ALB module manages the Application Load Balancer infrastructure, including S
 | `dns_name` | DNS name of the load balancer | `string` |
 | `lb_dns_name` | Full DNS name of the load balancer | `string` |
 | `lb_zone_id` | Hosted zone ID of the load balancer | `string` |
+| `blue_target_group_arn` | ARN of the blue target group for blue-green deployments | `string` |
+| `green_target_group_arn` | ARN of the green target group for blue-green deployments | `string` |
+| `main_target_group_arn` | ARN of the main target group | `string` |
+| `https_listener_arn` | ARN of the HTTPS listener for blue-green switching | `string` |
 
 ## SSL/TLS Configuration
 
@@ -95,11 +101,16 @@ The ALB module manages the Application Load Balancer infrastructure, including S
 
 ## Health Check Configuration
 
+Enhanced health check settings optimized for zero-downtime deployments:
+
 - **Path**: `/health`
 - **Protocol**: HTTP
-- **Interval**: 30 seconds
-- **Healthy Threshold**: 3 consecutive successes
+- **Interval**: 15 seconds (reduced for faster detection)
+- **Timeout**: 5 seconds
+- **Healthy Threshold**: 2 consecutive successes (faster recovery)
 - **Unhealthy Threshold**: 3 consecutive failures
+- **Matcher**: HTTP 200 status code
+- **Deregistration Delay**: 30 seconds (graceful shutdown)
 
 ## Usage Example
 
@@ -127,12 +138,31 @@ module "alb" {
 4. Certificate is issued and attached to ALB
 5. Auto-renewal handled by AWS
 
+## Zero-Downtime Deployment Features
+
+### Blue-Green Target Groups
+- **Blue Target Group**: Production environment
+- **Green Target Group**: Staging/new deployment environment  
+- **Instant Switching**: Traffic can be switched between target groups instantly
+- **Rollback Capability**: Quick rollback by switching listener back to previous target group
+
+### Enhanced Health Checks
+- **Faster Detection**: 15-second intervals detect issues quickly
+- **Optimized Thresholds**: 2 healthy checks for faster service restoration
+- **Graceful Shutdown**: 30-second deregistration delay allows existing connections to complete
+
+### Deployment Strategies Supported
+1. **Rolling Deployment**: Default behavior with enhanced health monitoring
+2. **Blue-Green Deployment**: Complete environment switching via target group management
+3. **Canary Deployment**: Partial traffic shifting (can be implemented using weighted routing)
+
 ## Important Considerations
 
 ### High Availability
 - ALB automatically distributes traffic across healthy instances
 - Multi-AZ deployment ensures availability
-- Health checks remove unhealthy targets automatically
+- Enhanced health checks remove unhealthy targets quickly
+- Blue-green target groups provide instant failover capability
 
 ### Security
 - All HTTP traffic forced to HTTPS
@@ -140,13 +170,15 @@ module "alb" {
 - Certificate validation prevents unauthorized use
 
 ### Performance
-- Connection draining enabled
+- Connection draining enabled with optimized 30-second delay
 - Keep-alive connections supported
 - HTTP/2 enabled by default
+- Faster health check detection (15s vs 30s)
 
 ### Cost Factors
 - ALB hourly charges
 - Data processing charges
+- Additional target groups for blue-green (minimal cost impact)
 - ACM certificates are free
 - Route53 hosted zone queries
 

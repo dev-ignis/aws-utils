@@ -28,6 +28,12 @@ dns_name            = "app.example.com"
 certbot_email       = "admin@example.com"
 enable_load_balancer = true
 
+# Zero-Downtime Deployment Configuration
+blue_green_enabled = false          # Set to true to enable blue-green deployment
+active_target_group = "blue"        # Current active target group (blue or green)
+enable_rollback = true              # Enable automatic rollback on deployment failure
+rollback_timeout_minutes = 5        # Timeout before triggering rollback
+
 # Email Configuration
 create_mail_records = true
 mx_records = [

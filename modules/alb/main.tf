@@ -21,14 +21,71 @@ resource "aws_lb_target_group" "app_tg" {
   health_check {
     path                = "/health"
     protocol            = "HTTP"
-    interval            = 30
-    healthy_threshold   = 3
+    interval            = 15
+    timeout             = 5
+    healthy_threshold   = 2
     unhealthy_threshold = 3
+    matcher             = "200"
   }
+
+  deregistration_delay = 30
 
   tags = {
     Name        = "${var.instance_name}-tg"
     Environment = var.environment
+  }
+}
+
+# Blue-Green Target Groups for zero-downtime deployments
+resource "aws_lb_target_group" "blue_tg" {
+  name        = "${var.instance_name}-blue-tg"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "instance"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path                = "/health"
+    protocol            = "HTTP"
+    interval            = 15
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 3
+    matcher             = "200"
+  }
+
+  deregistration_delay = 30
+
+  tags = {
+    Name        = "${var.instance_name}-blue-tg"
+    Environment = var.environment
+    BlueGreen   = "blue"
+  }
+}
+
+resource "aws_lb_target_group" "green_tg" {
+  name        = "${var.instance_name}-green-tg"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "instance"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path                = "/health"
+    protocol            = "HTTP"
+    interval            = 15
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 3
+    matcher             = "200"
+  }
+
+  deregistration_delay = 30
+
+  tags = {
+    Name        = "${var.instance_name}-green-tg"
+    Environment = var.environment
+    BlueGreen   = "green"
   }
 }
 
@@ -82,13 +139,3 @@ resource "aws_lb_target_group_attachment" "app_attachment" {
   port             = 80
 }
 
-# Outputs for referencing the ALB in the root module
-output "lb_dns_name" {
-  description = "The DNS name of the load balancer"
-  value       = aws_lb.app_lb.dns_name
-}
-
-output "lb_zone_id" {
-  description = "The hosted zone ID associated with the load balancer"
-  value       = aws_lb.app_lb.zone_id
-}

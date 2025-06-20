@@ -33,6 +33,34 @@ variable "dns_name" {
   default     = ""
 }
 
+variable "blue_green_enabled" {
+  description = "Enable blue-green deployment instead of rolling deployment"
+  type        = bool
+  default     = false
+}
+
+variable "active_target_group" {
+  description = "Currently active target group (blue or green)"
+  type        = string
+  default     = "blue"
+  validation {
+    condition     = contains(["blue", "green"], var.active_target_group)
+    error_message = "Active target group must be either 'blue' or 'green'."
+  }
+}
+
+variable "enable_rollback" {
+  description = "Enable automatic rollback on deployment failure"
+  type        = bool
+  default     = true
+}
+
+variable "rollback_timeout_minutes" {
+  description = "Timeout in minutes before triggering rollback"
+  type        = number
+  default     = 5
+}
+
 variable "certbot_email" {
   description = "Email to use for Certbot to obtain SSL certificates"
   type        = string
