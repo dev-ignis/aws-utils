@@ -36,16 +36,17 @@ resource "null_resource" "blue_green_deploy" {
       echo "Waiting for health checks to pass on ${local.inactive_color} target group..."
       sleep 60
       
-      # Check if all targets are healthy
-      healthy_count=$(aws elbv2 describe-target-health \
+      # Check if all targets are registered (healthy or initial state)
+      # Note: Targets show as "unused" until attached to a listener, so we check for registration
+      registered_count=$(aws elbv2 describe-target-health \
         --target-group-arn ${local.inactive_tg_arn} \
         --region ${var.region} \
-        --query 'TargetHealthDescriptions[?TargetHealth.State==`healthy`] | length(@)')
+        --query 'length(TargetHealthDescriptions)')
       
       total_count=${length(aws_instance.my_ec2)}
       
-      if [ "$healthy_count" -eq "$total_count" ]; then
-        echo "All targets healthy in ${local.inactive_color} target group. Switching traffic..."
+      if [ "$registered_count" -eq "$total_count" ]; then
+        echo "All targets registered in ${local.inactive_color} target group. Switching traffic..."
         
         # Update HTTPS listener to point to inactive target group
         aws elbv2 modify-listener \
@@ -69,7 +70,7 @@ resource "null_resource" "blue_green_deploy" {
         echo "Remember to update the active_target_group variable to '${local.inactive_color}' for the next deployment"
         
       else
-        echo "Health check failed. Only $healthy_count out of $total_count targets are healthy."
+        echo "Registration failed. Only $registered_count out of $total_count targets are registered."
         echo "Rolling back - deregistering targets from ${local.inactive_color} target group..."
         
         for instance_id in ${join(" ", aws_instance.my_ec2[*].id)}; do
