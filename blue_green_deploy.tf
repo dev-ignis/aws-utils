@@ -87,7 +87,8 @@ resource "null_resource" "blue_green_deploy" {
 
   depends_on = [
     null_resource.redeploy_app,
-    null_resource.redeploy_front_end
+    null_resource.redeploy_front_end,
+    null_resource.bootstrap_blue_green
   ]
 }
 
