@@ -1,14 +1,3 @@
-variable "enable_rollback" {
-  description = "Enable automatic rollback on deployment failure"
-  type        = bool
-  default     = true
-}
-
-variable "rollback_timeout_minutes" {
-  description = "Timeout in minutes before triggering rollback"
-  type        = number
-  default     = 5
-}
 
 resource "null_resource" "deployment_validation" {
   count = var.enable_rollback ? 1 : 0

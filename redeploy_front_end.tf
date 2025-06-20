@@ -1,9 +1,12 @@
 resource "null_resource" "redeploy_front_end" {
   count = length(aws_instance.my_ec2)
 
+  # Sequential deployment using triggers to ensure ordering
   triggers = {
     redeploy = var.front_end_image
     instance_id = aws_instance.my_ec2[count.index].id
+    sequence = count.index
+    previous_instance = count.index > 0 ? aws_instance.my_ec2[count.index - 1].id : "first"
   }
 
   provisioner "remote-exec" {
@@ -64,8 +67,4 @@ resource "null_resource" "redeploy_front_end" {
       "echo 'Zero-downtime frontend deployment completed successfully on instance ${count.index}'"
     ]
   }
-
-  depends_on = [
-    null_resource.redeploy_front_end[count.index > 0 ? count.index - 1 : count.index]
-  ]
 }
