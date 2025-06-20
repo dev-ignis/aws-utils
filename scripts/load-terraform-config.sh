@@ -55,8 +55,13 @@ extract_tfvar() {
     
     for tfvars_file in "${TFVARS_FILES[@]}"; do
         if [ -f "$tfvars_file" ]; then
-            # Extract variable value (handles both quoted and unquoted values)
-            value=$(grep "^${var_name}[[:space:]]*=" "$tfvars_file" 2>/dev/null | head -1 | sed 's/^[^=]*=[[:space:]]*//' | sed 's/^"\(.*\)"$/\1/' | sed "s/^'\(.*\)'$/\1/")
+            # Extract variable value (handles quoted/unquoted values and inline comments)
+            value=$(grep "^${var_name}[[:space:]]*=" "$tfvars_file" 2>/dev/null | head -1 | \
+                sed 's/^[^=]*=[[:space:]]*//' | \
+                sed 's/[[:space:]]*#.*$//' | \
+                sed 's/^"\(.*\)"$/\1/' | \
+                sed "s/^'\(.*\)'$/\1/" | \
+                sed 's/[[:space:]]*$//')
             if [ -n "$value" ]; then
                 break
             fi
