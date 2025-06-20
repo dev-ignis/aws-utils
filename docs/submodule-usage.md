@@ -362,7 +362,7 @@ git checkout main
 git pull origin main
 cd ..
 git add infra
-git commit -m "Update infra to latest"
+git commit -m "ci: - update infra to latest"
 
 # Or use the update script
 ./infra/scripts/update-submodule.sh
