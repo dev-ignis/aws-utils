@@ -4,6 +4,7 @@
 region              = "us-west-2"
 ami                 = "ami-0c55b159cbfafe1f0"  # Ubuntu 20.04 LTS
 instance_type       = "t2.micro"
+instance_count      = 2                        # Number of instances (2-10)
 instance_name       = "my-app"
 key_name            = "my-aws-keypair"
 environment         = "production"
@@ -33,6 +34,11 @@ blue_green_enabled = false          # Set to true to enable blue-green deploymen
 active_target_group = "blue"        # Current active target group (blue or green)
 enable_rollback = true              # Enable automatic rollback on deployment failure
 rollback_timeout_minutes = 5        # Timeout before triggering rollback
+
+# External Validation and Discord Notifications
+skip_deployment_validation = false         # Skip 15-minute validation for faster Terraform runs
+enable_discord_notifications = false      # Enable Discord notifications for deployments
+discord_webhook_url = ""                  # Discord webhook URL (keep empty if not using Discord)
 
 # Email Configuration
 create_mail_records = true

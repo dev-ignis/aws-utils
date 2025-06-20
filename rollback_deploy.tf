@@ -1,6 +1,6 @@
 
 resource "null_resource" "deployment_validation" {
-  count = var.enable_rollback ? 1 : 0
+  count = var.enable_rollback && !var.skip_deployment_validation ? 1 : 0
 
   triggers = {
     backend_image = var.backend_image
@@ -116,7 +116,7 @@ resource "null_resource" "deployment_validation" {
 }
 
 resource "null_resource" "deployment_monitor" {
-  count = var.enable_rollback ? 1 : 0
+  count = var.enable_rollback && !var.skip_deployment_validation ? 1 : 0
 
   triggers = {
     backend_image = var.backend_image

@@ -294,6 +294,74 @@ health_check {
 }
 ```
 
+### External Validation and Discord Notifications
+
+To optimize deployment time while maintaining thorough validation, the infrastructure supports external validation with Discord notifications.
+
+#### Fast Deployment Mode
+
+Enable fast deployment mode to reduce Terraform apply time from 15+ minutes to ~1 minute:
+
+```bash
+# terraform.tfvars
+skip_deployment_validation = true
+enable_discord_notifications = true
+discord_webhook_url = "https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
+```
+
+#### External Validation Script
+
+After a fast Terraform deployment, run comprehensive validation externally:
+
+```bash
+# Run external validation with Discord notifications
+./scripts/post-deploy-validate.sh
+```
+
+**The script provides:**
+- **5-minute validation phase** with health checks and endpoint testing
+- **10-minute extended monitoring** running in background
+- **Automatic rollback** on validation failure
+- **Discord notifications** with rich embeds and deployment status
+- **Comprehensive logging** for troubleshooting
+
+#### Discord Integration Features
+
+**Rich Notifications:**
+- Deployment start/completion status
+- Validation progress and results
+- Health check status and target group information
+- Automatic rollback notifications
+- Extended monitoring alerts
+
+**Configuration:**
+```bash
+# Enable Discord notifications
+enable_discord_notifications = true
+discord_webhook_url = "https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
+
+# Fast deployment mode
+skip_deployment_validation = true
+```
+
+#### Usage Workflow
+
+1. **Fast Deploy**: Run Terraform with validation skipped (~1 minute)
+2. **External Validation**: Script validates deployment (~5 minutes)
+3. **Background Monitoring**: Extended monitoring continues (~10 minutes)
+4. **Discord Updates**: Real-time notifications throughout process
+
+```bash
+# Fast deployment
+terraform apply -var="backend_image=myapp:v2.0"
+
+# External validation (automatically triggered or manual)
+./scripts/post-deploy-validate.sh
+
+# Monitor via Discord notifications or logs
+tail -f logs/validation-$(date +%Y-%m-%d)*.log
+```
+
 ### Weighted Routing (Canary Deployments)
 
 For advanced canary deployments, consider implementing weighted target groups:

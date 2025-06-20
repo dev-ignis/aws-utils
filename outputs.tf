@@ -52,3 +52,49 @@ output "table_arn" {
   description = "The ARN of the DynamoDB table"
   value       = module.dynamodb.table_arn
 }
+
+# ALB and Blue-Green Deployment Outputs
+output "alb_https_listener_arn" {
+  description = "ARN of the ALB HTTPS listener for blue-green deployments"
+  value       = var.enable_load_balancer ? module.alb[0].https_listener_arn : ""
+}
+
+output "blue_target_group_arn" {
+  description = "ARN of the blue target group"
+  value       = var.enable_load_balancer ? module.alb[0].blue_target_group_arn : ""
+}
+
+output "green_target_group_arn" {
+  description = "ARN of the green target group"
+  value       = var.enable_load_balancer ? module.alb[0].green_target_group_arn : ""
+}
+
+output "main_target_group_arn" {
+  description = "ARN of the main target group (for rolling deployments)"
+  value       = var.enable_load_balancer ? module.alb[0].main_target_group_arn : ""
+}
+
+# Configuration and Environment Outputs
+output "environment" {
+  description = "The deployment environment"
+  value       = var.environment
+}
+
+output "region" {
+  description = "The AWS region"
+  value       = var.region
+}
+
+output "domain_name" {
+  description = "The primary domain name"
+  value       = var.hosted_zone_name
+}
+
+output "discord_configuration" {
+  description = "Discord notification configuration"
+  value = {
+    enabled     = var.enable_discord_notifications
+    webhook_url = var.discord_webhook_url != "" ? "configured" : "not_configured"
+  }
+  sensitive = true
+}

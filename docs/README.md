@@ -4,6 +4,14 @@ This directory contains detailed documentation for the AWS Docker Deployment inf
 
 ## Documentation Structure
 
+### Deployment and Infrastructure Guides
+
+Essential guides for deployment strategies and infrastructure management:
+
+- **[Zero-Downtime Deployments](zero-downtime-deployments.md)** - Rolling and blue-green deployment strategies with Discord notifications
+- **[Scaling Architecture](scaling-architecture.md)** - Auto-scaling, load balancing, and performance optimization
+- **[DNS Management](dns-management.md)** - Route53 configuration, custom records, and domain management
+
 ### Module Documentation
 
 Detailed documentation for each Terraform module:
@@ -16,6 +24,55 @@ Detailed documentation for each Terraform module:
 
 - [Main Project README](../README.md)
 - [Module Documentation](modules/)
+
+## Key Features
+
+### Zero-Downtime Deployment Strategies
+
+The infrastructure supports multiple deployment approaches:
+
+**Rolling Deployments (Default)**
+- Sequential instance updates with health validation
+- Resource-efficient, no additional instances required
+- Built-in health checks and automatic recovery
+
+**Blue-Green Deployments**
+- Complete environment switching for instant rollback
+- Zero-downtime traffic switching via ALB target groups
+- Comprehensive validation before traffic migration
+
+### External Validation with Discord Integration
+
+**Fast Deployment Mode**
+- Reduce Terraform apply time from 15+ minutes to ~1 minute
+- Skip embedded validation for faster deployments
+- Run comprehensive validation externally
+
+**Discord Notifications**
+- Real-time deployment status updates
+- Rich embeds with deployment details and health metrics
+- Automatic rollback notifications and monitoring alerts
+
+**Usage:**
+```bash
+# Enable fast deployments
+skip_deployment_validation = true
+enable_discord_notifications = true
+discord_webhook_url = "https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
+
+# Deploy quickly
+terraform apply
+
+# Run external validation
+./scripts/post-deploy-validate.sh
+```
+
+### Infrastructure Scaling
+
+- **Dynamic Instance Count**: 2-10 instances with validation
+- **Multi-AZ Distribution**: High availability across availability zones  
+- **Auto-scaling Ready**: Foundation for implementing ASG and CloudWatch scaling
+- **Performance Monitoring**: Built-in health checks and monitoring hooks
 
 ## Documentation Standards
 

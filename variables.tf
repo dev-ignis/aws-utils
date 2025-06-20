@@ -17,6 +17,17 @@ variable "instance_type" {
   default     = "t2.micro"
 }
 
+variable "instance_count" {
+  description = "Number of EC2 instances to deploy"
+  type        = number
+  default     = 2
+  
+  validation {
+    condition     = var.instance_count >= 2 && var.instance_count <= 10
+    error_message = "Instance count must be between 2 and 10 for high availability."
+  }
+}
+
 variable "instance_name" {
   description = "Name tag for the EC2 instance"
   type        = string
@@ -59,6 +70,25 @@ variable "rollback_timeout_minutes" {
   description = "Timeout in minutes before triggering rollback"
   type        = number
   default     = 5
+}
+
+variable "skip_deployment_validation" {
+  description = "Skip the 15-minute validation process for faster Terraform runs"
+  type        = bool
+  default     = false
+}
+
+variable "discord_webhook_url" {
+  description = "Discord webhook URL for deployment notifications"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "enable_discord_notifications" {
+  description = "Enable Discord notifications for deployments"
+  type        = bool
+  default     = false
 }
 
 variable "certbot_email" {

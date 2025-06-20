@@ -28,62 +28,77 @@ This document analyzes the scalability characteristics of the current AWS Docker
 - **Health Monitoring**: Ensures only healthy instances serve traffic
 - **Blue-Green Ready**: Zero-downtime deployments at scale
 
-### ❌ Current Scaling Limitations
+### ✅ Recent Scaling Improvements
 
-#### 1. Fixed Instance Count
+#### 1. Dynamic Instance Count (Resolved)
 ```hcl
-# Hard-coded to 2 instances in main.tf
+# Now supports dynamic instance count in main.tf
 resource "aws_instance" "my_ec2" {
-  count = 2  # ❌ Not dynamic
+  count                  = var.instance_count  # ✅ Dynamic (2-10 instances)
+  ami                    = var.ami
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  # Automatically distributes across AZs
+  subnet_id              = module.network.lb_subnet_ids[count.index % length(module.network.lb_subnet_ids)]
+  # ... rest of configuration
 }
 ```
 
-#### 2. Manual Instance Management
+**Features:**
+- ✅ Configurable instance count (2-10 instances with validation)
+- ✅ Automatic multi-AZ distribution
+- ✅ Dynamic scaling via terraform.tfvars
+- ✅ All deployment scripts support variable instance count
+
+### ❌ Remaining Scaling Limitations
+
+#### 1. Manual Instance Management
 - ❌ No Auto Scaling Groups (ASG)
 - ❌ No automatic failover for failed instances
 - ❌ Manual capacity planning required
 - ❌ No automatic scale-down during low traffic
 
-#### 3. Single Region Deployment
+#### 2. Single Region Deployment
 - ❌ Limited to single AWS region (`us-west-2`)
 - ❌ No multi-region redundancy
 - ❌ Potential latency issues for global users
 - ❌ Single point of failure for region-wide outages
 
-#### 4. Instance Type Constraints
-- ❌ Fixed to `t2.micro` instances
-- ❌ Limited CPU and memory resources
+#### 3. Instance Type Constraints
+- ❌ Manual instance type selection via terraform.tfvars
 - ❌ No automatic rightsizing based on demand
+- ⚠️ Can be upgraded but requires manual intervention
 
 ## Scaling Solutions by Traffic Level
 
 ### Current Capacity: Small Scale (100-1,000 users)
 
 **Current Setup:**
-- 2x t2.micro instances
-- Application Load Balancer
+- 2-10x configurable instances (default: 2x t2.micro)
+- Application Load Balancer with multi-AZ distribution
 - DynamoDB with pay-per-request
+- Zero-downtime deployments (rolling & blue-green)
+- External validation with Discord notifications
 
 **Performance Characteristics:**
 - ✅ Handles light traffic efficiently
 - ✅ Cost-effective for MVP/startup phase
 - ✅ ALB and DynamoDB can handle much more than EC2 instances
-- ⚠️ Limited by EC2 instance capacity
+- ✅ Dynamic instance scaling without infrastructure changes
+- ⚠️ Limited by manual scaling (no auto-scaling)
 
 ### Medium Scale: Growing Business (1K-10K users)
 
 #### Quick Scaling Wins
 
 **1. Increase Instance Count**
-```hcl
-# In main.tf
-resource "aws_instance" "my_ec2" {
-  count = 4  # Scale from 2 to 4 instances
-}
+```bash
+# In terraform.tfvars - No code changes needed!
+instance_count = 4  # Scale from 2 to 4 instances
 
-# Update subnet configuration for additional AZs
-availability_zones = ["us-west-2a", "us-west-2b", "us-west-2c"]
-subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+# Instances automatically distribute across available AZs
+# Current setup supports 2-10 instances with validation
+terraform apply
 ```
 
 **2. Upgrade Instance Types**
@@ -447,13 +462,18 @@ resource "aws_dynamodb_table" "global" {
 
 ### Phase 1: Quick Wins (1-2 weeks)
 
-**1. Scale Instance Count**
+**1. Scale Instance Count and Type**
 ```bash
-# Update terraform.tfvars
-instance_type = "t3.medium"
+# Update terraform.tfvars - No code changes needed!
+instance_count = 6           # Scale from 2 to 6 instances
+instance_type = "t3.medium"  # Upgrade instance type
 
-# Update main.tf
-# Change count from 2 to 4-6 instances
+# Deploy with fast validation
+skip_deployment_validation = true
+enable_discord_notifications = true
+
+terraform apply
+./scripts/post-deploy-validate.sh  # External validation
 ```
 
 **2. Add Monitoring**
@@ -514,8 +534,8 @@ resource "aws_cloudwatch_dashboard" "app_dashboard" {
 
 | Scale Level | Instance Setup | Monthly Cost (Est.) | Supported Users | Key Features |
 |-------------|----------------|--------------------|--------------------|--------------|
-| **Current** | 2x t2.micro | $20 | 100-1K | Basic HA, Blue-Green |
-| **Small Growth** | 4x t3.medium | $120 | 1K-5K | Better performance |
+| **Current** | 2x t2.micro | $20 | 100-1K | Dynamic scaling (2-10), Blue-Green, Discord |
+| **Small Growth** | 4x t3.medium | $120 | 1K-5K | Fast deployment, External validation |
 | **Medium Scale** | ASG 4-8x t3.large | $400 | 5K-25K | Auto-scaling, monitoring |
 | **High Scale** | ECS Fargate | $800+ | 25K-100K | Container orchestration |
 | **Enterprise** | Multi-region + CDN | $2000+ | 100K+ | Global distribution |

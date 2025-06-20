@@ -23,13 +23,13 @@ module "dynamodb" {
   }
 }
 
-# Create two EC2 instances, one in each subnet provided by the network module
+# Create EC2 instances distributed across subnets
 resource "aws_instance" "my_ec2" {
-  count                  = 2
+  count                  = var.instance_count
   ami                    = var.ami
   instance_type          = var.instance_type
   key_name               = var.key_name
-  subnet_id              = module.network.lb_subnet_ids[count.index]
+  subnet_id              = module.network.lb_subnet_ids[count.index % length(module.network.lb_subnet_ids)]
   vpc_security_group_ids = [module.network.instance_security_group_id]
 
   user_data = templatefile("${path.module}/user_data.sh.tpl", {
