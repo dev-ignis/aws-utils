@@ -383,9 +383,9 @@ resource "aws_cloudwatch_log_group" "s3_access_logs" {
 # Athena partitioning setup - Create example partition structure
 resource "aws_s3_object" "partition_structure_examples" {
   for_each = var.create_partition_examples ? toset([
-    "${var.primary_data_prefix}year=${formatdate("YYYY", timestamp())}/month=${formatdate("MM", timestamp())}/day=${formatdate("DD", timestamp())}/hour=00/.keep",
-    "${var.primary_data_prefix}year=${formatdate("YYYY", timestamp())}/month=${formatdate("MM", timestamp())}/day=${formatdate("DD", timestamp())}/hour=01/.keep",
-    "processed/year=${formatdate("YYYY", timestamp())}/month=${formatdate("MM", timestamp())}/day=${formatdate("DD", timestamp())}/hour=00/.keep",
+    "${var.primary_data_prefix}year=2025/month=01/day=01/hour=00/.keep",
+    "${var.primary_data_prefix}year=2025/month=01/day=01/hour=01/.keep",
+    "processed/year=2025/month=01/day=01/hour=00/.keep",
     "${keys(var.temp_prefixes)[0]}/.keep"
   ]) : []
 
