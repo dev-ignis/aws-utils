@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 # S3 Storage Module Test Script - White Label Ready
 # This script tests the S3 storage infrastructure with proper partitioning
@@ -18,6 +18,7 @@ set -e
 
 # Configuration
 BUCKET_NAME="${S3_BUCKET_NAME:-}"
+BUCKET_NAME="${BUCKET_NAME//\"/}"           # Remove any quotes from bucket name
 REGION="${AWS_REGION:-us-west-2}"
 DATA_PREFIX="${S3_DATA_PREFIX:-data/}"      # Configurable for white label
 USE_CASE="${S3_USE_CASE:-storage-test}"     # Configurable use case
