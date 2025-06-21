@@ -135,14 +135,14 @@ output "s3_admin_role_arn" {
   value       = module.s3_storage.admin_role_arn
 }
 
-output "s3_athena_partition_example" {
-  description = "Example of how to structure data for Athena partitioning"
-  value       = module.s3_storage.athena_partition_example
+output "s3_athena_partition_info" {
+  description = "Information on how to structure data for Athena partitioning"
+  value       = module.s3_storage.athena_partition_info
 }
 
-output "s3_integration_examples" {
-  description = "Integration examples for the S3 storage bucket"
-  value       = module.s3_storage.integration_examples
+output "s3_integration_guide" {
+  description = "Integration patterns for the S3 storage bucket"
+  value       = module.s3_storage.integration_guide
 }
 
 output "s3_cost_optimization_features" {

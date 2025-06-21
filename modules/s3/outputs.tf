@@ -93,8 +93,8 @@ output "use_case" {
 }
 
 # Usage Examples and Documentation
-output "athena_partition_example" {
-  description = "Example of how to structure data for Athena partitioning"
+output "athena_partition_info" {
+  description = "Information on how to structure data for Athena partitioning"
   value = {
     primary_data_path     = "s3://${aws_s3_bucket.storage.id}/${var.primary_data_prefix}year=2025/month=01/day=15/hour=14/data.json"
     processed_path        = "s3://${aws_s3_bucket.storage.id}/processed/year=2025/month=01/day=15/hour=14/processed.parquet"
@@ -104,8 +104,8 @@ output "athena_partition_example" {
   }
 }
 
-output "integration_examples" {
-  description = "Examples for integrating with the storage bucket"
+output "integration_guide" {
+  description = "Integration patterns for the storage bucket"
   value = {
     aws_cli_upload = "aws s3 cp file.json s3://${aws_s3_bucket.storage.id}/${var.primary_data_prefix}year=$$YEAR/month=$$MONTH/day=$$DAY/hour=$$HOUR/"
     boto3_upload   = "s3.put_object(Bucket='${aws_s3_bucket.storage.id}', Key='${var.primary_data_prefix}year=2025/month=01/day=15/hour=14/data.json', Body=data)"

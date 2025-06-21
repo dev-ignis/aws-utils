@@ -407,8 +407,8 @@ variable "s3_temp_prefixes" {
   }
 }
 
-variable "create_s3_partition_examples" {
-  description = "Create example partition structure for Athena"
+variable "setup_s3_athena_partitions" {
+  description = "Create partition structure for Athena queries"
   type        = bool
   default     = true
 }

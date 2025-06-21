@@ -91,7 +91,7 @@ module "s3_storage" {
   temp_prefixes = var.s3_temp_prefixes
   
   # Partition Configuration
-  create_partition_examples = var.create_s3_partition_examples
+  setup_athena_partitions = var.setup_s3_athena_partitions
   
   # Logging Configuration
   enable_access_logging = var.enable_s3_access_logging

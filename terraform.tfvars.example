@@ -180,6 +180,6 @@ s3_temp_prefixes = {
 }
 
 # Monitoring and Examples
-create_s3_partition_examples = true          # Create sample Athena partition structure
+setup_s3_athena_partitions = true            # Create Athena partition structure
 enable_s3_access_logging     = true          # Enable CloudWatch logging
 s3_log_retention_days       = 30             # Log retention period

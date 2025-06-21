@@ -213,8 +213,8 @@ variable "log_retention_days" {
 }
 
 # Athena Partitioning Configuration
-variable "create_partition_examples" {
-  description = "Create example partition structure for Athena"
+variable "setup_athena_partitions" {
+  description = "Create partition structure for Athena queries"
   type        = bool
   default     = true
 }
