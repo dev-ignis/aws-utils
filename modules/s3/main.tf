@@ -314,9 +314,9 @@ resource "aws_iam_role_policy" "s3_admin_policy" {
 }
 
 # S3 Bucket notification configuration
-resource "aws_s3_bucket_notification" "raw_data_notification" {
+resource "aws_s3_bucket_notification" "storage_notification" {
   count  = length(var.notification_configurations) > 0 ? 1 : 0
-  bucket = aws_s3_bucket.raw_data_collection.id
+  bucket = aws_s3_bucket.storage.id
 
   dynamic "lambda_function" {
     for_each = var.notification_configurations
