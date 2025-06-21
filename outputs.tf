@@ -98,3 +98,59 @@ output "discord_configuration" {
   }
   sensitive = true
 }
+
+# S3 Storage Outputs - White Label Ready
+output "s3_bucket_id" {
+  description = "ID of the S3 storage bucket"
+  value       = module.s3_storage.bucket_id
+}
+
+output "s3_bucket_arn" {
+  description = "ARN of the S3 storage bucket"
+  value       = module.s3_storage.bucket_arn
+}
+
+output "s3_bucket_name" {
+  description = "Name of the S3 storage bucket"
+  value       = module.s3_storage.bucket_name
+}
+
+output "s3_storage_access_role_arn" {
+  description = "ARN of the IAM role for S3 storage access"
+  value       = module.s3_storage.storage_access_role_arn
+}
+
+output "s3_instance_profile_name" {
+  description = "Name of the IAM instance profile for S3 access"
+  value       = module.s3_storage.instance_profile_name
+}
+
+output "s3_readonly_role_arn" {
+  description = "ARN of the read-only IAM role (if created)"
+  value       = module.s3_storage.readonly_role_arn
+}
+
+output "s3_admin_role_arn" {
+  description = "ARN of the admin IAM role (if created)"
+  value       = module.s3_storage.admin_role_arn
+}
+
+output "s3_athena_partition_example" {
+  description = "Example of how to structure data for Athena partitioning"
+  value       = module.s3_storage.athena_partition_example
+}
+
+output "s3_integration_examples" {
+  description = "Integration examples for the S3 storage bucket"
+  value       = module.s3_storage.integration_examples
+}
+
+output "s3_cost_optimization_features" {
+  description = "Summary of S3 cost optimization features enabled"
+  value       = module.s3_storage.cost_optimization_features
+}
+
+output "s3_white_label_configuration" {
+  description = "White label configuration summary"
+  value       = module.s3_storage.white_label_configuration
+}

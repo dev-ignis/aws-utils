@@ -19,11 +19,20 @@ Detailed documentation for each Terraform module:
 - **[Network Module](modules/network.md)** - VPC, subnets, security groups, and networking infrastructure
 - **[ALB Module](modules/alb.md)** - Application Load Balancer, SSL/TLS, and routing configuration  
 - **[DynamoDB Module](modules/dynamodb.md)** - NoSQL database with authentication indexes
+- **[S3 Storage Module](modules/s3.md)** - White label S3 storage with intelligent tiering and multi-tenant support
+
+### White Label Configuration Examples
+
+Complete real-world configuration examples for different business scenarios:
+
+- **[White Label Examples](white-label/)** - Comprehensive tfvars examples for all modules
+- **[S3 Storage Examples](white-label/s3-examples.md)** - Analytics, media, SaaS, backup, and data sharing configurations
 
 ### Quick Links
 
 - [Main Project README](../README.md)
 - [Module Documentation](modules/)
+- [White Label Configurations](white-label/)
 
 ## Key Features
 
@@ -111,16 +120,17 @@ When updating documentation:
 └────────┬────────┘
          │ Provides: Load Balancer, SSL, Routing
          ▼
-┌─────────────────┐
-│   DynamoDB      │
-│   Module        │
-└─────────────────┘
-         │ Provides: Database Table
-         ▼
-┌─────────────────┐
-│  Main           │
-│  Configuration  │
-└─────────────────┘
+┌─────────────────┐    ┌─────────────────┐
+│   DynamoDB      │    │   S3 Storage    │
+│   Module        │    │   Module        │
+└─────────────────┘    └─────────────────┘
+         │                       │
+         │ Provides: Database    │ Provides: Storage, Analytics
+         ▼                       ▼
+┌─────────────────────────────────┐
+│       Main Configuration       │
+│     (White Label Ready)        │
+└─────────────────────────────────┘
 ```
 
 ## Version Compatibility

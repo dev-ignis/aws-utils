@@ -53,6 +53,51 @@ resource "aws_instance" "my_ec2" {
 }
 
 # Pass required values to the ALB module, including the staging DNS name.
+module "s3_storage" {
+  source = "./modules/s3"
+  
+  instance_name      = var.instance_name
+  bucket_name_suffix = var.s3_bucket_name_suffix
+  use_case          = var.s3_use_case
+  
+  tags = {
+    Environment = var.environment
+    Project     = "Amygdalas"
+    Purpose     = var.s3_use_case
+    Owner       = var.instance_name
+  }
+  
+  # Data Organization
+  primary_data_prefix      = var.s3_primary_data_prefix
+  secondary_data_prefixes  = var.s3_secondary_data_prefixes
+  
+  # Intelligent Tiering Configuration
+  enable_intelligent_tiering = var.enable_s3_intelligent_tiering
+  
+  # Lifecycle Policy Configuration
+  enable_lifecycle_policy = var.enable_s3_lifecycle_policy
+  lifecycle_transitions   = var.s3_lifecycle_transitions
+  
+  # Security Configuration
+  versioning_enabled = var.s3_versioning_enabled
+  kms_key_id        = var.s3_kms_key_id
+  trusted_accounts  = var.s3_trusted_accounts
+  
+  # IAM Configuration
+  create_read_only_role = var.create_s3_read_only_role
+  create_admin_role     = var.create_s3_admin_role
+  
+  # Temporary Data Configuration
+  temp_prefixes = var.s3_temp_prefixes
+  
+  # Partition Configuration
+  create_partition_examples = var.create_s3_partition_examples
+  
+  # Logging Configuration
+  enable_access_logging = var.enable_s3_access_logging
+  log_retention_days   = var.s3_log_retention_days
+}
+
 module "alb" {
   source               = "./modules/alb"
   count                = var.enable_load_balancer ? 1 : 0

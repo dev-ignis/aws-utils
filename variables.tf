@@ -301,3 +301,127 @@ variable "next_resend_api_key" {
   type        = string
 }
 
+##############################
+# S3 Storage Variables - White Label Ready
+##############################
+
+variable "s3_bucket_name_suffix" {
+  description = "Suffix for the S3 bucket name (e.g., 'data-lake', 'analytics', 'storage')"
+  type        = string
+  default     = "data-collection"
+}
+
+variable "s3_use_case" {
+  description = "Use case description for S3 storage (e.g., 'analytics', 'data-lake', 'backup')"
+  type        = string
+  default     = "data-analytics"
+}
+
+variable "s3_primary_data_prefix" {
+  description = "Primary prefix for data objects in S3 bucket"
+  type        = string
+  default     = "data/"
+}
+
+variable "s3_secondary_data_prefixes" {
+  description = "Additional prefixes for multi-tenant or multi-purpose buckets"
+  type        = list(string)
+  default     = []
+}
+
+variable "enable_s3_intelligent_tiering" {
+  description = "Enable S3 Intelligent Tiering for cost optimization"
+  type        = bool
+  default     = true
+}
+
+variable "enable_s3_lifecycle_policy" {
+  description = "Enable S3 lifecycle policy for cost optimization"
+  type        = bool
+  default     = true
+}
+
+variable "s3_lifecycle_transitions" {
+  description = "List of S3 lifecycle transition rules"
+  type = list(object({
+    days          = number
+    storage_class = string
+  }))
+  default = [
+    {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    },
+    {
+      days          = 90
+      storage_class = "GLACIER"
+    },
+    {
+      days          = 365
+      storage_class = "DEEP_ARCHIVE"
+    }
+  ]
+}
+
+variable "s3_versioning_enabled" {
+  description = "Enable S3 bucket versioning"
+  type        = bool
+  default     = true
+}
+
+variable "s3_kms_key_id" {
+  description = "KMS key ID for S3 encryption (optional)"
+  type        = string
+  default     = null
+}
+
+variable "s3_trusted_accounts" {
+  description = "List of AWS account IDs for cross-account S3 access"
+  type        = list(string)
+  default     = []
+}
+
+variable "create_s3_read_only_role" {
+  description = "Create an additional read-only IAM role for analytics/reporting"
+  type        = bool
+  default     = false
+}
+
+variable "create_s3_admin_role" {
+  description = "Create an administrative IAM role with full bucket access"
+  type        = bool
+  default     = false
+}
+
+variable "s3_temp_prefixes" {
+  description = "Map of temporary data prefixes and their expiration days"
+  type = map(object({
+    prefix           = string
+    expiration_days  = number
+  }))
+  default = {
+    "temp" = {
+      prefix          = "temp"
+      expiration_days = 7
+    }
+  }
+}
+
+variable "create_s3_partition_examples" {
+  description = "Create example partition structure for Athena"
+  type        = bool
+  default     = true
+}
+
+variable "enable_s3_access_logging" {
+  description = "Enable CloudWatch access logging for S3"
+  type        = bool
+  default     = true
+}
+
+variable "s3_log_retention_days" {
+  description = "S3 CloudWatch log retention period in days"
+  type        = number
+  default     = 30
+}
+

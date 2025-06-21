@@ -123,3 +123,63 @@ custom_dns_records = {
     records = ["mail.example.com."]
   }
 }
+
+##############################
+# S3 Storage Configuration - White Label Ready
+##############################
+
+# Basic S3 Configuration
+s3_bucket_name_suffix = "data-collection"    # Options: "analytics", "storage", "data-lake", "backup", "media"
+s3_use_case          = "data-analytics"      # Options: "data-analytics", "backup", "media-storage", "data-lake"
+
+# Data Organization
+s3_primary_data_prefix      = "data/"        # Primary data location
+s3_secondary_data_prefixes  = [              # Additional data streams for multi-tenant
+  "events/",
+  "metrics/", 
+  "logs/"
+]
+
+# Cost Optimization
+enable_s3_intelligent_tiering = true
+enable_s3_lifecycle_policy   = true
+s3_lifecycle_transitions = [
+  {
+    days          = 30
+    storage_class = "STANDARD_IA"
+  },
+  {
+    days          = 90  
+    storage_class = "GLACIER"
+  },
+  {
+    days          = 365
+    storage_class = "DEEP_ARCHIVE"
+  }
+]
+
+# Security Configuration
+s3_versioning_enabled = true
+s3_kms_key_id        = null                  # Optional: "arn:aws:kms:region:account:key/key-id"
+s3_trusted_accounts  = []                    # Optional: ["123456789012", "987654321098"] for cross-account
+
+# IAM Role Configuration
+create_s3_read_only_role = false             # Create read-only role for analytics
+create_s3_admin_role     = false             # Create admin role for management
+
+# Temporary Data Configuration
+s3_temp_prefixes = {
+  "temp" = {
+    prefix          = "temp"
+    expiration_days = 7
+  }
+  "staging" = {
+    prefix          = "staging" 
+    expiration_days = 3
+  }
+}
+
+# Monitoring and Examples
+create_s3_partition_examples = true          # Create sample Athena partition structure
+enable_s3_access_logging     = true          # Enable CloudWatch logging
+s3_log_retention_days       = 30             # Log retention period
