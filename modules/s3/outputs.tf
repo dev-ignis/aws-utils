@@ -107,7 +107,7 @@ output "athena_partition_example" {
 output "integration_examples" {
   description = "Examples for integrating with the storage bucket"
   value = {
-    aws_cli_upload = "aws s3 cp file.json s3://${aws_s3_bucket.storage.id}/${var.primary_data_prefix}year=\$YEAR/month=\$MONTH/day=\$DAY/hour=\$HOUR/"
+    aws_cli_upload = "aws s3 cp file.json s3://${aws_s3_bucket.storage.id}/${var.primary_data_prefix}year=$$YEAR/month=$$MONTH/day=$$DAY/hour=$$HOUR/"
     boto3_upload   = "s3.put_object(Bucket='${aws_s3_bucket.storage.id}', Key='${var.primary_data_prefix}year=2024/month=01/day=15/hour=14/data.json', Body=data)"
     role_arn       = aws_iam_role.s3_storage_access_role.arn
   }
