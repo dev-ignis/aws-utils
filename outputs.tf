@@ -154,3 +154,69 @@ output "s3_white_label_configuration" {
   description = "White label configuration summary"
   value       = module.s3_storage.white_label_configuration
 }
+
+# SQS Processing Outputs - White Label Ready
+output "sqs_queue_urls" {
+  description = "URLs of all SQS queues"
+  value       = module.sqs_processing.queue_urls
+}
+
+output "sqs_queue_arns" {
+  description = "ARNs of all SQS queues"
+  value       = module.sqs_processing.queue_arns
+}
+
+output "sqs_queue_names" {
+  description = "Names of all SQS queues"
+  value       = module.sqs_processing.queue_names
+}
+
+output "sqs_dlq_urls" {
+  description = "URLs of all SQS dead letter queues"
+  value       = module.sqs_processing.dlq_urls
+}
+
+output "sqs_api_service_role_arn" {
+  description = "ARN of the SQS API service IAM role"
+  value       = module.sqs_processing.api_service_role_arn
+}
+
+output "sqs_worker_service_role_arn" {
+  description = "ARN of the SQS worker service IAM role"
+  value       = module.sqs_processing.worker_service_role_arn
+}
+
+output "sqs_api_service_instance_profile_name" {
+  description = "Name of the SQS API service instance profile"
+  value       = module.sqs_processing.api_service_instance_profile_name
+}
+
+output "sqs_worker_service_instance_profile_name" {
+  description = "Name of the SQS worker service instance profile"
+  value       = module.sqs_processing.worker_service_instance_profile_name
+}
+
+output "sqs_integration_guide" {
+  description = "SQS integration patterns and usage examples"
+  value       = module.sqs_processing.integration_guide
+}
+
+output "sqs_configuration_summary" {
+  description = "Summary of SQS queue configurations and settings"
+  value       = module.sqs_processing.queue_configuration_summary
+}
+
+output "sqs_white_label_configuration" {
+  description = "SQS white label configuration summary"
+  value       = module.sqs_processing.white_label_configuration
+}
+
+output "sqs_cost_optimization_features" {
+  description = "Summary of SQS cost optimization features enabled"
+  value       = module.sqs_processing.cost_optimization_features
+}
+
+output "sqs_cloudwatch_dashboard_config" {
+  description = "CloudWatch dashboard configuration for SQS monitoring"
+  value       = module.sqs_processing.cloudwatch_dashboard_config
+}

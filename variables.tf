@@ -425,3 +425,195 @@ variable "s3_log_retention_days" {
   default     = 30
 }
 
+##############################
+# SQS Processing Variables - White Label Ready
+##############################
+
+variable "sqs_use_case" {
+  description = "Use case description for SQS queues (e.g., 'api-processing', 'data-pipeline', 'notifications')"
+  type        = string
+  default     = "api-processing"
+}
+
+variable "sqs_queue_configurations" {
+  description = "Map of SQS queue configurations"
+  type = map(object({
+    fifo_queue                    = bool
+    content_based_deduplication   = bool
+    description                   = string
+    message_retention_seconds     = number
+    visibility_timeout_seconds    = number
+    max_message_size             = number
+    delay_seconds                = number
+    receive_wait_time_seconds    = number
+    enable_dlq                   = bool
+    max_receive_count           = number
+    alarm_max_depth             = number
+  }))
+  default = {
+    feedback = {
+      fifo_queue                  = true
+      content_based_deduplication = false
+      description                 = "User feedback processing queue"
+      message_retention_seconds   = 1209600
+      visibility_timeout_seconds  = 300
+      max_message_size           = 262144
+      delay_seconds              = 0
+      receive_wait_time_seconds  = 20
+      enable_dlq                 = true
+      max_receive_count          = 3
+      alarm_max_depth            = 100
+    }
+    emails = {
+      fifo_queue                  = true
+      content_based_deduplication = false
+      description                 = "Email campaign processing queue"
+      message_retention_seconds   = 1209600
+      visibility_timeout_seconds  = 600
+      max_message_size           = 262144
+      delay_seconds              = 0
+      receive_wait_time_seconds  = 20
+      enable_dlq                 = true
+      max_receive_count          = 3
+      alarm_max_depth            = 500
+    }
+    analytics = {
+      fifo_queue                  = true
+      content_based_deduplication = true
+      description                 = "Analytics events processing queue"
+      message_retention_seconds   = 604800
+      visibility_timeout_seconds  = 120
+      max_message_size           = 262144
+      delay_seconds              = 0
+      receive_wait_time_seconds  = 20
+      enable_dlq                 = true
+      max_receive_count          = 3
+      alarm_max_depth            = 1000
+    }
+    testflight = {
+      fifo_queue                  = true
+      content_based_deduplication = false
+      description                 = "TestFlight invitation processing queue"
+      message_retention_seconds   = 1209600
+      visibility_timeout_seconds  = 300
+      max_message_size           = 262144
+      delay_seconds              = 0
+      receive_wait_time_seconds  = 20
+      enable_dlq                 = true
+      max_receive_count          = 3
+      alarm_max_depth            = 50
+    }
+  }
+}
+
+variable "sqs_environment_overrides" {
+  description = "Environment-specific SQS queue configuration overrides"
+  type = map(object({
+    message_retention_seconds  = optional(number)
+    visibility_timeout_seconds = optional(number)
+    max_receive_count         = optional(number)
+    alarm_max_depth          = optional(number)
+  }))
+  default = {
+    staging = {
+      message_retention_seconds  = 604800
+      visibility_timeout_seconds = 60
+      max_receive_count         = 2
+      alarm_max_depth          = 50
+    }
+  }
+}
+
+variable "enable_sqs_encryption" {
+  description = "Enable SQS encryption using KMS"
+  type        = bool
+  default     = true
+}
+
+variable "sqs_kms_key_id" {
+  description = "KMS key ID for SQS encryption (null for AWS managed key)"
+  type        = string
+  default     = null
+}
+
+variable "create_sqs_api_role" {
+  description = "Create IAM role for API services to send SQS messages"
+  type        = bool
+  default     = true
+}
+
+variable "create_sqs_worker_role" {
+  description = "Create IAM role for worker services to process SQS messages"
+  type        = bool
+  default     = true
+}
+
+variable "create_sqs_instance_profiles" {
+  description = "Create EC2 instance profiles for SQS IAM roles"
+  type        = bool
+  default     = true
+}
+
+variable "enable_sqs_cloudwatch_alarms" {
+  description = "Enable CloudWatch alarms for SQS queue monitoring"
+  type        = bool
+  default     = true
+}
+
+variable "sqs_cloudwatch_alarm_actions" {
+  description = "List of ARNs to notify when SQS CloudWatch alarms trigger"
+  type        = list(string)
+  default     = []
+}
+
+variable "enable_sqs_operations_logging" {
+  description = "Enable CloudWatch logging for SQS operations"
+  type        = bool
+  default     = true
+}
+
+variable "sqs_log_retention_days" {
+  description = "SQS CloudWatch log retention period in days"
+  type        = number
+  default     = 30
+}
+
+variable "enable_sqs_s3_integration" {
+  description = "Enable IAM permissions for SQS-S3 integration"
+  type        = bool
+  default     = true
+}
+
+variable "enable_sqs_multi_tenant" {
+  description = "Enable multi-tenant SQS queue configurations"
+  type        = bool
+  default     = false
+}
+
+variable "sqs_tenant_configurations" {
+  description = "Tenant-specific SQS queue configurations for multi-tenant setups"
+  type = map(object({
+    queue_name_prefix = string
+    custom_tags       = map(string)
+  }))
+  default = {}
+}
+
+variable "enable_sqs_cost_allocation_tags" {
+  description = "Enable detailed cost allocation tags for SQS"
+  type        = bool
+  default     = true
+}
+
+variable "sqs_cost_center" {
+  description = "Cost center for SQS billing allocation"
+  type        = string
+  default     = ""
+}
+
+variable "sqs_project_code" {
+  description = "Project code for SQS cost tracking"
+  type        = string
+  default     = ""
+}
+

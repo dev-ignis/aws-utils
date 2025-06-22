@@ -183,3 +183,64 @@ s3_temp_prefixes = {
 setup_s3_athena_partitions = true            # Create Athena partition structure
 enable_s3_access_logging     = true          # Enable CloudWatch logging
 s3_log_retention_days       = 30             # Log retention period
+
+##############################
+# SQS Processing Configuration - White Label Ready
+##############################
+
+# Basic SQS Configuration
+sqs_use_case = "api-processing"               # Options: "api-processing", "data-pipeline", "notifications", "event-streaming"
+
+# Environment-specific Settings
+# Production settings (default)
+# Staging overrides automatically applied when environment = "staging"
+
+# Queue Configurations (FIFO queues for ordered processing)
+# Default configuration includes: feedback, emails, analytics, testflight
+# Each queue includes automatic dead letter queue setup
+
+# Advanced Configuration Options
+enable_sqs_encryption = true                 # Enable KMS encryption for sensitive data
+sqs_kms_key_id       = null                 # null = AWS managed key (recommended)
+
+# IAM Role Configuration
+create_sqs_api_role           = true         # Role for API services to send messages
+create_sqs_worker_role        = true         # Role for worker services to process messages
+create_sqs_instance_profiles  = true         # EC2 instance profiles for roles
+
+# CloudWatch Monitoring
+enable_sqs_cloudwatch_alarms   = true        # Queue depth and DLQ monitoring
+enable_sqs_operations_logging  = true        # Detailed operational logging
+sqs_log_retention_days        = 30          # Log retention period
+sqs_cloudwatch_alarm_actions  = []          # SNS topics for alerts (optional)
+
+# S3 Integration (automatically connects to S3 storage bucket)
+enable_sqs_s3_integration = true             # Allow workers to store results in S3
+
+# Multi-tenant Configuration (Advanced)
+enable_sqs_multi_tenant = false             # Enable for multiple client deployments
+sqs_tenant_configurations = {}              # Tenant-specific settings
+
+# Cost Optimization
+enable_sqs_cost_allocation_tags = true      # Detailed billing tags
+sqs_cost_center                = ""         # Optional: cost center for billing
+sqs_project_code              = ""         # Optional: project code for tracking
+
+# Custom Queue Configuration (Override defaults if needed)
+# sqs_queue_configurations = {
+#   feedback = {
+#     fifo_queue                  = true
+#     content_based_deduplication = false
+#     description                 = "User feedback processing queue"
+#     message_retention_seconds   = 1209600    # 14 days
+#     visibility_timeout_seconds  = 300        # 5 minutes
+#     max_message_size           = 262144      # 256 KB
+#     delay_seconds              = 0
+#     receive_wait_time_seconds  = 20          # Long polling
+#     enable_dlq                 = true
+#     max_receive_count          = 3
+#     alarm_max_depth            = 100
+#   }
+#   # Additional queues: emails, analytics, testflight
+#   # Custom queues can be added as needed
+# }

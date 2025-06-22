@@ -98,6 +98,55 @@ module "s3_storage" {
   log_retention_days   = var.s3_log_retention_days
 }
 
+module "sqs_processing" {
+  source = "./modules/sqs"
+  
+  instance_name = var.instance_name
+  use_case     = var.sqs_use_case
+  environment  = var.environment
+  
+  tags = {
+    Environment = var.environment
+    Project     = "Amygdalas"
+    Purpose     = var.sqs_use_case
+    Owner       = var.instance_name
+  }
+  
+  # Queue Configuration
+  queue_configurations = var.sqs_queue_configurations
+  
+  # Environment-specific overrides
+  environment_specific_overrides = var.sqs_environment_overrides
+  
+  # Encryption Configuration
+  enable_encryption = var.enable_sqs_encryption
+  kms_key_id       = var.sqs_kms_key_id
+  
+  # IAM Configuration
+  create_api_service_role    = var.create_sqs_api_role
+  create_worker_service_role = var.create_sqs_worker_role
+  create_instance_profiles   = var.create_sqs_instance_profiles
+  
+  # CloudWatch Configuration
+  enable_cloudwatch_alarms = var.enable_sqs_cloudwatch_alarms
+  cloudwatch_alarm_actions = var.sqs_cloudwatch_alarm_actions
+  enable_operations_logging = var.enable_sqs_operations_logging
+  log_retention_days       = var.sqs_log_retention_days
+  
+  # S3 Integration
+  s3_bucket_arn        = module.s3_storage.bucket_arn
+  enable_s3_integration = var.enable_sqs_s3_integration
+  
+  # Multi-tenant Configuration
+  enable_multi_tenant_queues = var.enable_sqs_multi_tenant
+  tenant_configurations      = var.sqs_tenant_configurations
+  
+  # Cost Optimization
+  enable_cost_allocation_tags = var.enable_sqs_cost_allocation_tags
+  cost_center                = var.sqs_cost_center
+  project_code              = var.sqs_project_code
+}
+
 module "alb" {
   source               = "./modules/alb"
   count                = var.enable_load_balancer ? 1 : 0
