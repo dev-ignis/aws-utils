@@ -64,33 +64,8 @@ resource "aws_lb_listener" "https" {
   depends_on = [aws_acm_certificate_validation.main]
 }
 
-# Route53 A Record for Apex Domain (amygdalas.com)
-resource "aws_route53_record" "apex" {
-  count   = var.skip_route53 ? 0 : 1
-  zone_id = var.route53_zone_id
-  name    = var.domain_name
-  type    = "A"
-
-  alias {
-    name                   = aws_lb.app_lb.dns_name
-    zone_id                = aws_lb.app_lb.zone_id
-    evaluate_target_health = true
-  }
-}
-
-# Route53 A Record for WWW Subdomain (www.amygdalas.com)
-resource "aws_route53_record" "www" {
-  count   = var.skip_route53 ? 0 : 1
-  zone_id = var.route53_zone_id
-  name    = "www.${var.domain_name}"
-  type    = "A"
-
-  alias {
-    name                   = aws_lb.app_lb.dns_name
-    zone_id                = aws_lb.app_lb.zone_id
-    evaluate_target_health = true
-  }
-}
+# Note: A records for apex and www domains already exist in Route53
+# and are managed outside of Terraform
 
 # Apex domain listener rule
 resource "aws_lb_listener_rule" "apex_rule" {
