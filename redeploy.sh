@@ -85,7 +85,7 @@ if [ ! -f "$TFVARS_FILE" ]; then
     exit 1
 fi
 
-INSTANCE_IPS=($(terraform output -var-file="$TFVARS_FILE" -json instance_public_ips 2>/dev/null | jq -r '.[]' 2>/dev/null || echo ""))
+INSTANCE_IPS=($(terraform output -json public_ips 2>/dev/null | jq -r '.[]' 2>/dev/null || echo ""))
 
 if [ ${#INSTANCE_IPS[@]} -eq 0 ]; then
     echo "❌ Could not get instance IPs from Terraform output"
