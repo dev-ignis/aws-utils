@@ -28,6 +28,7 @@ Complete real-world configuration examples for different business scenarios:
 
 - **[White Label Examples](white-label/)** - Comprehensive tfvars examples for all modules
 - **[S3 Storage Examples](white-label/s3-examples.md)** - Analytics, media, SaaS, backup, and data sharing configurations
+- **[SQS Processing Examples](white-label/sqs-examples.md)** - API processing, data pipelines, event streaming, and multi-tenant configurations
 
 ### Quick Links
 
@@ -121,17 +122,18 @@ When updating documentation:
 └────────┬────────┘
          │ Provides: Load Balancer, SSL, Routing
          ▼
-┌─────────────────┐    ┌─────────────────┐
-│   DynamoDB      │    │   S3 Storage    │
-│   Module        │    │   Module        │
-└─────────────────┘    └─────────────────┘
-         │                       │
-         │ Provides: Database    │ Provides: Storage, Analytics
-         ▼                       ▼
-┌─────────────────────────────────┐
-│       Main Configuration       │
-│     (White Label Ready)        │
-└─────────────────────────────────┘
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   DynamoDB      │    │   S3 Storage    │    │   SQS Processing│
+│   Module        │    │   Module        │    │   Module        │
+└─────────────────┘    └─────────┬───────┘    └─────────────────┘
+         │                       │                       │
+         │ Provides: Database    │ Provides: Storage     │ Provides: Async Processing
+         ▼                       ▼                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│                Main Configuration                         │
+│               (White Label Ready)                        │
+│         API + Storage + Async Processing                 │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ## Version Compatibility

@@ -21,6 +21,15 @@ The white label approach allows the same infrastructure modules to be deployed a
   - Cross-Account Data Sharing
   - Development/Staging Environment
 
+### SQS Processing Module
+- **[SQS Examples](sqs-examples.md)** - Complete SQS processing configurations for 6 different use cases:
+  - API Processing (MHT/Amygdalas)
+  - Data Pipeline Processing
+  - Event Streaming Platform
+  - Multi-Tenant Enterprise
+  - Staging Environment
+  - Development Environment
+
 ## Coming Soon
 
 As we add more white label modules, examples will be added for:
@@ -84,8 +93,10 @@ White label variables follow consistent patterns:
 - `{module}_use_case`: Business context for resource naming and tagging
 - `{module}_primary_*_prefix`: Main data organization structure
 - `{module}_secondary_*_prefixes`: Additional data streams for multi-tenant
+- `{module}_queue_configurations`: Queue setup for processing patterns
 - `create_{module}_*_role`: Optional role creation for different access patterns
 - `{module}_trusted_accounts`: Cross-account access configuration
+- `enable_{module}_*`: Feature toggles for cost and security optimization
 
 ## Contributing Examples
 
