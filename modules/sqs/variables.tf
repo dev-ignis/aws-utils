@@ -41,60 +41,8 @@ variable "queue_configurations" {
     alarm_max_depth             = number
   }))
   
-  default = {
-    feedback = {
-      fifo_queue                  = true
-      content_based_deduplication = false
-      description                 = "User feedback processing queue"
-      message_retention_seconds   = 1209600  # 14 days
-      visibility_timeout_seconds  = 300      # 5 minutes
-      max_message_size           = 262144    # 256 KB
-      delay_seconds              = 0
-      receive_wait_time_seconds  = 20        # Long polling
-      enable_dlq                 = true
-      max_receive_count          = 3
-      alarm_max_depth            = 100
-    }
-    emails = {
-      fifo_queue                  = true
-      content_based_deduplication = false
-      description                 = "Email campaign processing queue"
-      message_retention_seconds   = 1209600  # 14 days
-      visibility_timeout_seconds  = 600      # 10 minutes
-      max_message_size           = 262144    # 256 KB
-      delay_seconds              = 0
-      receive_wait_time_seconds  = 20        # Long polling
-      enable_dlq                 = true
-      max_receive_count          = 3
-      alarm_max_depth            = 500
-    }
-    analytics = {
-      fifo_queue                  = true
-      content_based_deduplication = true
-      description                 = "Analytics events processing queue"
-      message_retention_seconds   = 604800   # 7 days
-      visibility_timeout_seconds  = 120      # 2 minutes
-      max_message_size           = 262144    # 256 KB
-      delay_seconds              = 0
-      receive_wait_time_seconds  = 20        # Long polling
-      enable_dlq                 = true
-      max_receive_count          = 3
-      alarm_max_depth            = 1000
-    }
-    testflight = {
-      fifo_queue                  = true
-      content_based_deduplication = false
-      description                 = "TestFlight invitation processing queue"
-      message_retention_seconds   = 1209600  # 14 days
-      visibility_timeout_seconds  = 300      # 5 minutes
-      max_message_size           = 262144    # 256 KB
-      delay_seconds              = 0
-      receive_wait_time_seconds  = 20        # Long polling
-      enable_dlq                 = true
-      max_receive_count          = 3
-      alarm_max_depth            = 50
-    }
-  }
+  # No defaults - requires explicit configuration from tfvars
+  # This ensures white label approach where each deployment defines its own queues
 }
 
 # Environment-specific overrides
