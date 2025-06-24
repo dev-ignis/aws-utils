@@ -56,6 +56,8 @@ resource "aws_instance" "my_ec2" {
     certbot_email            = var.certbot_email
     region                   = var.region
     environment              = var.environment
+    instance_name            = var.instance_name
+    next_resend_api_key      = var.next_resend_api_key
   })
 
   tags = {

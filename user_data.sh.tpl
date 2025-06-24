@@ -18,13 +18,38 @@ systemctl enable docker
 docker pull ${backend_image}
 docker stop ${backend_container_name} || true
 docker rm ${backend_container_name} || true
+# Create .env file for the backend
+cat > /home/ubuntu/.env << EOL
+# AWS Configuration
+AWS_REGION=${region}
+
+# CloudWatch Configuration
+CLOUDWATCH_LOG_GROUP=mht-logs-${environment}
+CLOUDWATCH_LOG_STREAM=mht-app-stream-${environment}
+CLOUDWATCH_APP_LOG_STREAM=mht-app-stream-all-${environment}
+CLOUDWATCH_HEALTH_LOG_STREAM=mht-app-stream-health-${environment}
+
+# Application Configuration
+SWAGGER_HOST=${dns_name}
+GIN_MODE=release
+
+# Database Configuration
+DYNAMODB_TABLE_NAME=${instance_name}-${environment}-table
+
+# External Services
+NEXT_RESEND_API_KEY=${next_resend_api_key}
+
+# Add other environment variables as needed
+# OPENAI_API_KEY=your_key_here
+EOL
+
+# Set proper permissions
+chown ubuntu:ubuntu /home/ubuntu/.env
+chmod 600 /home/ubuntu/.env
+
+# Run container with env file
 docker run -d --name ${backend_container_name} -p ${backend_port}:${backend_port} \
-  -e AWS_REGION=${region} \
-  -e CLOUDWATCH_LOG_GROUP=mht-logs-${environment} \
-  -e CLOUDWATCH_LOG_STREAM=mht-app-stream-${environment} \
-  -e CLOUDWATCH_APP_LOG_STREAM=mht-app-stream-all-${environment} \
-  -e CLOUDWATCH_HEALTH_LOG_STREAM=mht-app-stream-health-${environment} \
-  -e SWAGGER_HOST=${dns_name} \
+  --env-file /home/ubuntu/.env \
   ${backend_image}
 
 # Conditionally deploy Front-End Container if front_end_image is provided
