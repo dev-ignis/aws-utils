@@ -159,7 +159,7 @@ redeploy_service() {
         
         echo "🆕 Starting new container on port $TEMP_PORT..."
         sudo docker run -d --name ${CONTAINER}_new \\
-            -p $TEMP_PORT:$PORT \\
+            -p $TEMP_PORT:$(if [ "$SERVICE" = "fe" ]; then echo "3030"; else echo "$PORT"; fi) \\
             $(if [ "$SERVICE" = "be" ]; then echo "--env-file /home/ubuntu/.env"; fi) \\
             $IMAGE
         
@@ -197,6 +197,16 @@ redeploy_service() {
         
         echo "🔄 Renaming new container..."
         sudo docker rename ${CONTAINER}_new $CONTAINER
+        
+        echo "🔄 Starting final container on correct port..."
+        FINAL_INTERNAL_PORT=$(if [ "$SERVICE" = "fe" ]; then echo "3030"; else echo "$PORT"; fi)
+        sudo docker stop $CONTAINER
+        sudo docker run -d --name ${CONTAINER}_final \\
+            -p $PORT:\$FINAL_INTERNAL_PORT \\
+            $(if [ "$SERVICE" = "be" ]; then echo "--env-file /home/ubuntu/.env"; fi) \\
+            $IMAGE
+        sudo docker rm $CONTAINER
+        sudo docker rename ${CONTAINER}_final $CONTAINER
         
         echo "🔄 Switching nginx back to standard port..."
         sudo sed -i "s/:$TEMP_PORT/:$PORT/g" /etc/nginx/sites-available/default
