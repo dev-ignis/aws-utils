@@ -3,14 +3,20 @@ resource "aws_vpc" "this" {
   enable_dns_support   = true
   enable_dns_hostnames = true
   tags = {
-    Name = "${var.instance_name}-vpc"
+    Name        = "${var.instance_name}-vpc"
+    Environment = var.environment
+    Module      = "network"
+    Owner       = var.instance_name
   }
 }
 
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
   tags = {
-    Name = "${var.instance_name}-igw"
+    Name        = "${var.instance_name}-igw"
+    Environment = var.environment
+    Module      = "network"
+    Owner       = var.instance_name
   }
 }
 
@@ -20,7 +26,10 @@ resource "aws_subnet" "subnet1" {
   availability_zone = var.availability_zones[0]
   map_public_ip_on_launch = true
   tags = {
-    Name = "${var.instance_name}-subnet-1"
+    Name        = "${var.instance_name}-subnet-1"
+    Environment = var.environment
+    Module      = "network"
+    Owner       = var.instance_name
   }
 }
 
@@ -30,7 +39,10 @@ resource "aws_subnet" "subnet2" {
   availability_zone = var.availability_zones[1]
   map_public_ip_on_launch = true
   tags = {
-    Name = "${var.instance_name}-subnet-2"
+    Name        = "${var.instance_name}-subnet-2"
+    Environment = var.environment
+    Module      = "network"
+    Owner       = var.instance_name
   }
 }
 
@@ -43,7 +55,10 @@ resource "aws_route_table" "this" {
   }
 
   tags = {
-    Name = "${var.instance_name}-rt"
+    Name        = "${var.instance_name}-rt"
+    Environment = var.environment
+    Module      = "network"
+    Owner       = var.instance_name
   }
 }
 
@@ -93,7 +108,10 @@ resource "aws_security_group" "alb_sg" {
   }
 
   tags = {
-    Name = "${var.instance_name}-alb-sg"
+    Name        = "${var.instance_name}-alb-sg"
+    Environment = var.environment
+    Module      = "network"
+    Owner       = var.instance_name
   }
 }
 
@@ -142,6 +160,9 @@ resource "aws_security_group" "instance_sg" {
   }
 
   tags = {
-    Name = "${var.instance_name}-sg"
+    Name        = "${var.instance_name}-sg"
+    Environment = var.environment
+    Module      = "network"
+    Owner       = var.instance_name
   }
 }

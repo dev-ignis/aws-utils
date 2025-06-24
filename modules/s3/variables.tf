@@ -17,6 +17,11 @@ variable "use_case" {
   default     = "data-storage"
 }
 
+variable "environment" {
+  description = "Environment name (staging, production, development)"
+  type        = string
+}
+
 variable "tags" {
   description = "Tags to apply to all resources"
   type        = map(string)

@@ -12,10 +12,11 @@ locals {
   
   # Common queue configuration
   common_tags = merge(var.tags, {
-    Module    = "sqs"
-    UseCase   = var.use_case
-    Owner     = var.instance_name
-    CreatedBy = "terraform"
+    Module      = "sqs"
+    Environment = var.environment
+    UseCase     = var.use_case
+    Owner       = var.instance_name
+    CreatedBy   = "terraform"
   })
 }
 

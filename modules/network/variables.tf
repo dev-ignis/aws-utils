@@ -3,6 +3,11 @@ variable "instance_name" {
   type        = string
 }
 
+variable "environment" {
+  description = "Environment name (staging, production, development)"
+  type        = string
+}
+
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   type        = string

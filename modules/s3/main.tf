@@ -12,9 +12,12 @@ resource "aws_s3_bucket" "storage" {
   bucket = "${var.instance_name}-${var.bucket_name_suffix}-${random_id.bucket_suffix.hex}"
 
   tags = merge(var.tags, {
-    Name    = "${var.instance_name}-${var.bucket_name_suffix}"
-    Purpose = "${var.use_case} with intelligent tiering"
-    Module  = "s3-storage"
+    Name        = "${var.instance_name}-${var.bucket_name_suffix}"
+    Environment = var.environment
+    Purpose     = "${var.use_case} with intelligent tiering"
+    Module      = "s3-storage"
+    UseCase     = var.use_case
+    Owner       = var.instance_name
   })
 }
 
@@ -178,9 +181,12 @@ resource "aws_iam_role" "s3_storage_access_role" {
   })
 
   tags = merge(var.tags, {
-    Name    = "${var.instance_name}-s3-${var.use_case}-access-role"
-    Purpose = "S3 ${var.use_case} access permissions"
-    Module  = "s3-storage"
+    Name        = "${var.instance_name}-s3-${var.use_case}-access-role"
+    Environment = var.environment
+    Purpose     = "S3 ${var.use_case} access permissions"
+    Module      = "s3-storage"
+    UseCase     = var.use_case
+    Owner       = var.instance_name
   })
 }
 
@@ -237,9 +243,12 @@ resource "aws_iam_role" "s3_readonly_role" {
   })
 
   tags = merge(var.tags, {
-    Name    = "${var.instance_name}-s3-${var.use_case}-readonly-role"
-    Purpose = "S3 ${var.use_case} read-only access"
-    Module  = "s3-storage"
+    Name        = "${var.instance_name}-s3-${var.use_case}-readonly-role"
+    Environment = var.environment
+    Purpose     = "S3 ${var.use_case} read-only access"
+    Module      = "s3-storage"
+    UseCase     = var.use_case
+    Owner       = var.instance_name
   })
 }
 
@@ -287,9 +296,12 @@ resource "aws_iam_role" "s3_admin_role" {
   })
 
   tags = merge(var.tags, {
-    Name    = "${var.instance_name}-s3-${var.use_case}-admin-role"
-    Purpose = "S3 ${var.use_case} administrative access"
-    Module  = "s3-storage"
+    Name        = "${var.instance_name}-s3-${var.use_case}-admin-role"
+    Environment = var.environment
+    Purpose     = "S3 ${var.use_case} administrative access"
+    Module      = "s3-storage"
+    UseCase     = var.use_case
+    Owner       = var.instance_name
   })
 }
 
@@ -374,9 +386,12 @@ resource "aws_cloudwatch_log_group" "s3_access_logs" {
   retention_in_days = var.log_retention_days
 
   tags = merge(var.tags, {
-    Name    = "${var.instance_name}-s3-${var.use_case}-access-logs"
-    Purpose = "S3 ${var.use_case} access logging"
-    Module  = "s3-storage"
+    Name        = "${var.instance_name}-s3-${var.use_case}-access-logs"
+    Environment = var.environment
+    Purpose     = "S3 ${var.use_case} access logging"
+    Module      = "s3-storage"
+    UseCase     = var.use_case
+    Owner       = var.instance_name
   })
 }
 
@@ -394,6 +409,11 @@ resource "aws_s3_object" "partition_structure" {
   content = "# ${var.use_case} partition structure example"
 
   tags = merge(var.tags, {
-    Module = "s3-storage"
+    Name        = "${var.instance_name}-s3-${var.use_case}-partition-${substr(each.value, 0, 10)}"
+    Environment = var.environment
+    Module      = "s3-storage"
+    UseCase     = var.use_case
+    Owner       = var.instance_name
+    Purpose     = "Athena partition structure"
   })
 }

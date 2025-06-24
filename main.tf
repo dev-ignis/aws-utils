@@ -1,10 +1,22 @@
 provider "aws" {
   region = var.region
+  
+  # Default tags applied to ALL resources
+  default_tags {
+    tags = {
+      Environment   = var.environment
+      Project       = "MHT-API"
+      ManagedBy     = "terraform"
+      Repository    = "aws-docker-deployment"
+      CostCenter    = var.environment == "production" ? "production" : "development"
+    }
+  }
 }
 
 module "network" {
   source             = "./modules/network"
   instance_name      = var.instance_name
+  environment        = var.environment
   vpc_cidr           = var.vpc_cidr
   subnet_cidrs       = var.subnet_cidrs
   availability_zones = var.availability_zones
@@ -44,7 +56,11 @@ resource "aws_instance" "my_ec2" {
   })
 
   tags = {
-    Name = "${var.instance_name}-${count.index}"
+    Name        = "${var.instance_name}-${count.index}"
+    Environment = var.environment
+    Instance    = "${count.index + 1}"
+    Module      = "compute"
+    Owner       = var.instance_name
   }
 
   lifecycle {
@@ -59,6 +75,7 @@ module "s3_storage" {
   instance_name      = var.instance_name
   bucket_name_suffix = var.s3_bucket_name_suffix
   use_case          = var.s3_use_case
+  environment       = var.environment
   
   tags = {
     Environment = var.environment
