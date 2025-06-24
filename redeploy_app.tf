@@ -8,7 +8,7 @@ resource "null_resource" "redeploy_app" {
   }
 
   provisioner "local-exec" {
-    command = "./redeploy.sh ${var.environment} be"
+    command = "./scripts/redeploy.sh ${var.environment} be"
     working_dir = path.module
   }
 
