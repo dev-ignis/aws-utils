@@ -49,8 +49,8 @@ case $ENVIRONMENT in
             "fe")
                 IMAGE="rollg/mht-front-end:latest"
                 CONTAINER="mht-ui-app"
-                PORT="3030"
-                TEMP_PORT="4030"
+                PORT="3000"
+                TEMP_PORT="4000"
                 SERVICE_NAME="Frontend"
                 ;;
         esac
@@ -68,8 +68,8 @@ case $ENVIRONMENT in
             "fe")
                 IMAGE="rollg/mht-front-end:latest"
                 CONTAINER="mht-ui-app"
-                PORT="3030"
-                TEMP_PORT="4030"
+                PORT="3000"
+                TEMP_PORT="4000"
                 SERVICE_NAME="Frontend"
                 ;;
         esac
