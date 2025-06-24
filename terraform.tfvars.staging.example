@@ -39,7 +39,7 @@ rollback_timeout_minutes = 5
 # External Validation and Discord Notifications
 skip_deployment_validation = false
 enable_discord_notifications = false
-discord_webhook_url = ""
+discord_webhook_url = "REPLACE_WITH_YOUR_DISCORD_WEBHOOK_URL"
 
 ##############################
 # S3 Storage Configuration - STAGING
@@ -62,11 +62,11 @@ enable_s3_intelligent_tiering = false         # Disabled for staging
 enable_s3_lifecycle_policy   = true
 s3_lifecycle_transitions = [
   {
-    days          = 30                         # AWS minimum for STANDARD_IA
+    days          = 7                          # Faster transitions in staging
     storage_class = "STANDARD_IA"
   },
   {
-    days          = 60  
+    days          = 30  
     storage_class = "GLACIER"
   }
 ]

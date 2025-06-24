@@ -1,0 +1,189 @@
+# MHT API Infrastructure Configuration - PRODUCTION
+# Environment-specific variables for production deployment
+
+# Basic Infrastructure Configuration
+region              = "us-west-2"
+ami                 = "ami-0c55b159cbfafe1f0"  # Ubuntu 20.04 LTS
+instance_type       = "t3.medium"             # Larger instance for prod
+instance_count      = 3                       # More instances for prod
+instance_name       = "mht-api"
+key_name            = "my-aws-keypair"
+environment         = "production"
+
+# Container Configuration
+backend_image       = "mycompany/backend:latest"
+front_end_image     = "mycompany/frontend:latest"
+backend_port        = 8080
+front_end_port      = 3000
+backend_container_name   = "backend"
+front_end_container_name = "frontend"
+
+# Network Configuration
+vpc_cidr            = "10.0.0.0/16"
+subnet_cidrs        = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+availability_zones  = ["us-west-2a", "us-west-2b", "us-west-2c"]
+
+# Domain and Route53 Configuration
+hosted_zone_name    = "amygdalas.com"
+route53_zone_id     = "Z0286437KXYMILBB4R1F"
+dns_name            = "api.amygdalas.com"
+certbot_email       = "admin@amygdalas.com"
+enable_load_balancer = true
+
+# Zero-Downtime Deployment Configuration
+blue_green_enabled = true               # Enabled for production
+active_target_group = "blue"
+enable_rollback = true
+rollback_timeout_minutes = 10          # Longer timeout for prod
+
+# External Validation and Discord Notifications
+skip_deployment_validation = false
+enable_discord_notifications = true    # Enabled for production
+discord_webhook_url = "REPLACE_WITH_YOUR_DISCORD_WEBHOOK_URL"
+
+##############################
+# S3 Storage Configuration - PRODUCTION
+##############################
+
+# Basic S3 Configuration
+s3_bucket_name_suffix = "production-data"
+s3_use_case          = "production-analytics"
+
+# Data Organization
+s3_primary_data_prefix      = "data/"
+s3_secondary_data_prefixes  = [
+  "events/",
+  "metrics/", 
+  "logs/",
+  "backups/"
+]
+
+# Cost Optimization
+enable_s3_intelligent_tiering = true
+enable_s3_lifecycle_policy   = true
+s3_lifecycle_transitions = [
+  {
+    days          = 30
+    storage_class = "STANDARD_IA"
+  },
+  {
+    days          = 90  
+    storage_class = "GLACIER"
+  },
+  {
+    days          = 365
+    storage_class = "DEEP_ARCHIVE"
+  }
+]
+
+# Security Configuration
+s3_versioning_enabled = true
+s3_kms_key_id        = null
+s3_trusted_accounts  = []
+
+# IAM Role Configuration
+create_s3_read_only_role = true         # Enabled for production
+create_s3_admin_role     = true         # Enabled for production
+
+# Temporary Data Configuration
+s3_temp_prefixes = {
+  "temp" = {
+    prefix          = "temp"
+    expiration_days = 7
+  }
+  "staging" = {
+    prefix          = "staging" 
+    expiration_days = 3
+  }
+}
+
+# Monitoring and Examples
+setup_s3_athena_partitions = true
+enable_s3_access_logging     = true
+s3_log_retention_days       = 90        # Longer retention for prod
+
+##############################
+# SQS Processing Configuration - PRODUCTION
+##############################
+
+# Basic SQS Configuration
+sqs_use_case = "production-processing"
+
+# Queue Configurations (full production settings)
+sqs_queue_configurations = {
+  feedback = {
+    fifo_queue                  = true
+    content_based_deduplication = false
+    description                 = "Production feedback processing queue"
+    message_retention_seconds   = 1209600    # 14 days
+    visibility_timeout_seconds  = 300
+    max_message_size           = 262144
+    delay_seconds              = 0
+    receive_wait_time_seconds  = 20
+    enable_dlq                 = true
+    max_receive_count          = 3
+    alarm_max_depth            = 100
+  }
+  emails = {
+    fifo_queue                  = true
+    content_based_deduplication = false
+    description                 = "Production email processing queue"
+    message_retention_seconds   = 1209600
+    visibility_timeout_seconds  = 600        # Longer for email processing
+    max_message_size           = 262144
+    delay_seconds              = 0
+    receive_wait_time_seconds  = 20
+    enable_dlq                 = true
+    max_receive_count          = 3
+    alarm_max_depth            = 500
+  }
+  analytics = {
+    fifo_queue                  = true
+    content_based_deduplication = true
+    description                 = "Production analytics processing queue"
+    message_retention_seconds   = 604800     # 7 days
+    visibility_timeout_seconds  = 120
+    max_message_size           = 262144
+    delay_seconds              = 0
+    receive_wait_time_seconds  = 20
+    enable_dlq                 = true
+    max_receive_count          = 3
+    alarm_max_depth            = 1000
+  }
+  testflight = {
+    fifo_queue                  = true
+    content_based_deduplication = false
+    description                 = "Production TestFlight processing queue"
+    message_retention_seconds   = 1209600
+    visibility_timeout_seconds  = 300
+    max_message_size           = 262144
+    delay_seconds              = 0
+    receive_wait_time_seconds  = 20
+    enable_dlq                 = true
+    max_receive_count          = 3
+    alarm_max_depth            = 50
+  }
+}
+
+# Advanced Configuration Options
+enable_sqs_encryption = true
+sqs_kms_key_id       = null
+
+# IAM Role Configuration
+create_sqs_api_role           = true
+create_sqs_worker_role        = true
+create_sqs_instance_profiles  = true
+
+# CloudWatch Monitoring
+enable_sqs_cloudwatch_alarms   = true
+enable_sqs_operations_logging  = true
+sqs_log_retention_days        = 90      # Longer retention for prod
+sqs_cloudwatch_alarm_actions  = []      # Add SNS topics for production alerts
+
+# S3 Integration
+enable_sqs_s3_integration = true
+
+# Cost Optimization
+enable_sqs_cost_allocation_tags = true
+sqs_cost_center                = "mht-api-production"
+sqs_project_code              = "mht-2025-production"

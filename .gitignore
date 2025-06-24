@@ -5,6 +5,8 @@
 .terraform/
 .terraform.lock.hcl
 terraform.tfvars
+terraform.tfvars.staging
+terraform.tfvars.production
 
 # Docker artifacts (if any build artifacts are generated locally)
 docker-compose.override.yml
