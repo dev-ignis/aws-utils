@@ -197,22 +197,23 @@ redeploy_service() {
         sudo docker stop $CONTAINER || true
         sudo docker rm $CONTAINER || true
         
-        echo "🔄 Renaming new container..."
-        sudo docker rename ${CONTAINER}_new $CONTAINER
-        
         echo "🔄 Starting final container on correct port..."
         FINAL_INTERNAL_PORT=$(if [ "$SERVICE" = "fe" ]; then echo "3030"; else echo "$PORT"; fi)
-        sudo docker stop $CONTAINER
         sudo docker run -d --name ${CONTAINER}_final \\
             -p $PORT:\$FINAL_INTERNAL_PORT \\
             $(if [ "$SERVICE" = "be" ]; then echo "--env-file /home/ubuntu/.env"; fi) \\
             $IMAGE
-        sudo docker rm $CONTAINER
-        sudo docker rename ${CONTAINER}_final $CONTAINER
         
-        echo "🔄 Switching nginx back to standard port..."
+        echo "🔄 Switching nginx to final container..."
         sudo sed -i "s/:$TEMP_PORT/:$PORT/g" /etc/nginx/sites-available/default
         sudo nginx -t && sudo systemctl reload nginx
+        
+        echo "🗑️ Cleaning up temporary container..."
+        sudo docker stop ${CONTAINER}_new || true
+        sudo docker rm ${CONTAINER}_new || true
+        
+        echo "🔄 Renaming final container..."
+        sudo docker rename ${CONTAINER}_final $CONTAINER
         
         echo "🧹 Cleaning up unused Docker resources..."
         sudo docker system prune -f
