@@ -182,7 +182,11 @@ output "cloudwatch_dashboard_config" {
     alarms = {
       for k, v in aws_cloudwatch_metric_alarm.queue_depth_alarm : k => v.alarm_name
     }
-  } : {}
+  } : {
+    dashboard_name = ""
+    metrics = {}
+    alarms = {}
+  }
 }
 
 # API Integration Templates

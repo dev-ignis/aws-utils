@@ -425,6 +425,12 @@ variable "s3_log_retention_days" {
   default     = 30
 }
 
+variable "create_s3_partition_examples" {
+  description = "Create S3 partition structure examples for Athena queries"
+  type        = bool
+  default     = true
+}
+
 ##############################
 # SQS Processing Variables - White Label Ready
 ##############################
