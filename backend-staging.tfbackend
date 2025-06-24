@@ -1,0 +1,5 @@
+bucket         = "mht-api-terraform-state-staging"
+key            = "staging/terraform.tfstate"
+region         = "us-west-2"
+dynamodb_table = "mht-api-terraform-locks-staging"
+encrypt        = true

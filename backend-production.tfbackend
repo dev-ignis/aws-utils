@@ -1,0 +1,5 @@
+bucket         = "mht-api-terraform-state-production"
+key            = "production/terraform.tfstate"
+region         = "us-west-2"
+dynamodb_table = "mht-api-terraform-locks-production"
+encrypt        = true
