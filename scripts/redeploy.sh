@@ -145,9 +145,11 @@ redeploy_service() {
         echo "📥 Pulling latest $SERVICE_NAME image..."
         sudo docker pull $IMAGE
         
-        echo "🧹 Cleaning up any existing _new containers and port conflicts..."
+        echo "🧹 Cleaning up any existing _new and _final containers and port conflicts..."
         sudo docker stop ${CONTAINER}_new || true
         sudo docker rm ${CONTAINER}_new || true
+        sudo docker stop ${CONTAINER}_final || true
+        sudo docker rm ${CONTAINER}_final || true
         
         # Also clean up any containers using the temp port
         TEMP_PORT_CONTAINERS=\$(sudo docker ps -q --filter "publish=$TEMP_PORT")
