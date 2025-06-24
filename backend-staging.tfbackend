@@ -1,5 +1,5 @@
-bucket         = "mht-api-terraform-state-staging"
+bucket         = "remote-backend-mht"
 key            = "staging/terraform.tfstate"
 region         = "us-west-2"
-dynamodb_table = "mht-api-terraform-locks-staging"
+dynamodb_table = "remote-backend-mht"
 encrypt        = true
