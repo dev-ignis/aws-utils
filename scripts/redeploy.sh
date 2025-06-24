@@ -95,38 +95,8 @@ fi
 
 echo "📍 Found ${#INSTANCE_IPS[@]} instances: ${INSTANCE_IPS[@]}"
 
-# Function to create environment file for backend
-create_env_file() {
-    local env=$1
-    case $env in
-        "staging")
-            cat << 'EOL'
-AWS_REGION=us-west-2
-CLOUDWATCH_LOG_GROUP=mht-logs-staging
-CLOUDWATCH_LOG_STREAM=mht-app-stream-staging
-CLOUDWATCH_APP_LOG_STREAM=mht-app-stream-all-staging
-CLOUDWATCH_HEALTH_LOG_STREAM=mht-app-stream-health-staging
-SWAGGER_HOST=staging.api.amygdalas.com
-GIN_MODE=release
-DYNAMODB_TABLE_NAME=mht-api-staging-table
-NEXT_RESEND_API_KEY=re_gCBBY96S_2biWvN7BVcxUaVGYYp3QpFxw
-EOL
-            ;;
-        "production")
-            cat << 'EOL'
-AWS_REGION=us-west-2
-CLOUDWATCH_LOG_GROUP=mht-logs-production
-CLOUDWATCH_LOG_STREAM=mht-app-stream-production
-CLOUDWATCH_APP_LOG_STREAM=mht-app-stream-all-production
-CLOUDWATCH_HEALTH_LOG_STREAM=mht-app-stream-health-production
-SWAGGER_HOST=api.amygdalas.com
-GIN_MODE=release
-DYNAMODB_TABLE_NAME=mht-api-production-table
-NEXT_RESEND_API_KEY=re_gCBBY96S_2biWvN7BVcxUaVGYYp3QpFxw
-EOL
-            ;;
-    esac
-}
+# Note: Script now uses existing .env file on each instance
+# Make sure /home/ubuntu/.env exists with all required environment variables
 
 # Function to redeploy service on a single instance
 redeploy_service() {
@@ -139,11 +109,14 @@ redeploy_service() {
         set -e
         
         $(if [ "$SERVICE" = "be" ]; then
-            echo "echo '🔧 Creating/updating .env file...'"
-            echo "cat > /home/ubuntu/.env << 'ENVEOF'"
-            create_env_file $ENVIRONMENT
-            echo "ENVEOF"
-            echo "chmod 600 /home/ubuntu/.env"
+            echo "echo '🔧 Checking for .env file...'"
+            echo "if [ ! -f /home/ubuntu/.env ]; then"
+            echo "  echo '⚠️  No .env file found. Please create /home/ubuntu/.env with required environment variables.'"
+            echo "  echo 'Required variables: AWS_REGION, CLOUDWATCH_LOG_GROUP, DYNAMODB_TABLE_NAME, etc.'"
+            echo "  exit 1"
+            echo "else"
+            echo "  echo '✅ Found .env file with \$(wc -l < /home/ubuntu/.env) lines'"
+            echo "fi"
         fi)
         
         echo "📥 Pulling latest $SERVICE_NAME image..."
