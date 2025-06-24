@@ -152,7 +152,7 @@ redeploy_service() {
         sudo docker rm ${CONTAINER}_final || true
         
         # Also clean up any containers using the temp port
-        TEMP_PORT_CONTAINERS=\$(sudo docker ps -q --filter "publish=$TEMP_PORT")
+        TEMP_PORT_CONTAINERS=\$(sudo docker ps -q --filter publish=$TEMP_PORT)
         if [ -n "\$TEMP_PORT_CONTAINERS" ]; then
             echo "🧹 Stopping containers using port $TEMP_PORT..."
             sudo docker stop \$TEMP_PORT_CONTAINERS || true
@@ -198,11 +198,11 @@ redeploy_service() {
         sudo docker rm $CONTAINER || true
         
         # Clean up any containers using the final port
-        FINAL_PORT_CONTAINERS=\\$(sudo docker ps -q --filter \"publish=$PORT\")
-        if [ -n \"\\$FINAL_PORT_CONTAINERS\" ]; then
+        FINAL_PORT_CONTAINERS=\$(sudo docker ps -q --filter publish=$PORT)
+        if [ -n \"\$FINAL_PORT_CONTAINERS\" ]; then
             echo \"🧹 Stopping containers using port $PORT...\"
-            sudo docker stop \\$FINAL_PORT_CONTAINERS || true
-            sudo docker rm \\$FINAL_PORT_CONTAINERS || true
+            sudo docker stop \$FINAL_PORT_CONTAINERS || true
+            sudo docker rm \$FINAL_PORT_CONTAINERS || true
         fi
         
         echo "🔄 Starting final container on correct port..."
