@@ -15,12 +15,12 @@ output "lb_zone_id" {
 
 output "blue_target_group_arn" {
   description = "ARN of the blue target group for blue-green deployments"
-  value       = aws_lb_target_group.blue_tg.arn
+  value       = var.blue_green_enabled ? aws_lb_target_group.blue_tg[0].arn : null
 }
 
 output "green_target_group_arn" {
   description = "ARN of the green target group for blue-green deployments"
-  value       = aws_lb_target_group.green_tg.arn
+  value       = var.blue_green_enabled ? aws_lb_target_group.green_tg[0].arn : null
 }
 
 output "main_target_group_arn" {
