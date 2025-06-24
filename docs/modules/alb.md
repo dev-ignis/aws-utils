@@ -112,12 +112,36 @@ Enhanced health check settings optimized for zero-downtime deployments:
 - **Matcher**: HTTP 200 status code
 - **Deregistration Delay**: 30 seconds (graceful shutdown)
 
+## Resource Naming
+
+All ALB resources include the environment name for clear identification:
+
+**Resource Naming Pattern:**
+- Load Balancer: `${instance_name}-${environment}-lb`
+- Target Groups: `${instance_name}-${environment}-tg`, `${instance_name}-${environment}-blue-tg`, `${instance_name}-${environment}-green-tg`
+- Certificate: `${instance_name}-cert` (environment included in tags)
+
+**Examples:**
+```
+Staging Environment (environment = "staging"):
+- Load Balancer: mht-api-staging-lb
+- Main Target Group: mht-api-staging-tg
+- Blue Target Group: mht-api-staging-blue-tg
+- Green Target Group: mht-api-staging-green-tg
+
+Production Environment (environment = "production"):
+- Load Balancer: mht-api-production-lb
+- Main Target Group: mht-api-production-tg
+- Blue Target Group: mht-api-production-blue-tg
+- Green Target Group: mht-api-production-green-tg
+```
+
 ## Usage Example
 
 ```hcl
 module "alb" {
   source               = "./modules/alb"
-  instance_name        = "my-app"
+  instance_name        = "mht-api"
   app_port            = "8080"
   vpc_id              = module.network.vpc_id
   lb_subnet_ids       = module.network.lb_subnet_ids
@@ -125,7 +149,7 @@ module "alb" {
   instance_ids        = aws_instance.my_ec2[*].id
   staging_api_dns_name = "staging.api.example.com"
   domain_name         = "example.com"
-  environment         = "production"
+  environment         = var.environment  # "staging" or "production"
   route53_zone_id     = aws_route53_zone.main.zone_id
 }
 ```

@@ -9,6 +9,7 @@ This directory contains detailed documentation for the AWS Docker Deployment inf
 Essential guides for deployment strategies and infrastructure management:
 
 - **[Zero-Downtime Deployments](zero-downtime-deployments.md)** - Rolling and blue-green deployment strategies with Discord notifications
+- **[Multi-Environment Deployments](multi-environment-deployments.md)** - Workspace-based staging and production environments with isolated resources
 - **[Scaling Architecture](scaling-architecture.md)** - Auto-scaling, load balancing, and performance optimization
 - **[DNS Management](dns-management.md)** - Route53 configuration, custom records, and domain management
 
@@ -76,6 +77,33 @@ terraform apply
 
 # Run external validation
 ./scripts/post-deploy-validate.sh
+```
+
+### Multi-Environment Support
+
+**Workspace-Based Architecture**
+- Complete environment isolation with separate state backends
+- Environment-specific resource naming (staging vs production)
+- Independent configuration files for cost and performance optimization
+- One-command deployments with automated scripts
+
+**Environment Deployment:**
+```bash
+# Deploy to staging (cost-optimized)
+./deploy-staging.sh
+
+# Deploy to production (performance-optimized)  
+./deploy-production.sh
+
+# Switch environments without deploying
+./switch-env.sh staging
+./switch-env.sh production
+```
+
+**Resource Naming Examples:**
+```
+Staging:    mht-api-staging-lb, mht-api-staging-table
+Production: mht-api-production-lb, mht-api-production-table
 ```
 
 ### Infrastructure Scaling
