@@ -101,4 +101,38 @@ resource "aws_lb_listener_rule" "www_rule" {
   }
 }
 
+# Production API subdomain listener rule
+resource "aws_lb_listener_rule" "api_production_rule" {
+  listener_arn = aws_lb_listener.https.arn
+  priority     = 80
+
+  condition {
+    host_header {
+      values = ["api.${var.domain_name}"]
+    }
+  }
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app_tg.arn
+  }
+}
+
+# Staging API subdomain listener rule
+resource "aws_lb_listener_rule" "api_staging_rule" {
+  listener_arn = aws_lb_listener.https.arn
+  priority     = 75
+
+  condition {
+    host_header {
+      values = ["staging.api.${var.domain_name}"]
+    }
+  }
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app_tg.arn
+  }
+}
+
 
