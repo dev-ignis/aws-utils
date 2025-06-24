@@ -107,15 +107,25 @@ redeploy_service() {
     
     # Copy .env file for backend deployments
     if [ "$SERVICE" = "be" ]; then
-        # Look for .env file in parent directory (since this is a submodule)
-        ENV_FILE="../.env"
-        if [ -f "$ENV_FILE" ]; then
-            echo "📁 Copying .env file from parent directory..."
+        # Try different locations for .env file
+        ENV_FILE=""
+        for path in "../.env" "../../.env" ".env"; do
+            if [ -f "$path" ]; then
+                ENV_FILE="$path"
+                break
+            fi
+        done
+        
+        if [ -n "$ENV_FILE" ]; then
+            echo "📁 Copying .env file from $ENV_FILE..."
             scp -i ~/.ssh/id_rsa_github "$ENV_FILE" ubuntu@$IP:/home/ubuntu/.env
             ssh -i ~/.ssh/id_rsa_github ubuntu@$IP "chmod 600 /home/ubuntu/.env"
             echo "✅ .env file copied successfully"
         else
-            echo "⚠️  No .env file found at $ENV_FILE"
+            echo "⚠️  No .env file found in any of these locations:"
+            echo "    - ../.env (parent of submodule)"
+            echo "    - ../../.env (parent of scripts)"  
+            echo "    - .env (current directory)"
             echo "💡 Make sure .env exists in the parent directory of this submodule"
         fi
     fi
