@@ -1,18 +1,18 @@
 resource "aws_lb" "app_lb" {
-  name               = "${var.instance_name}-lb"
+  name               = "${var.instance_name}-${var.environment}-lb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [var.security_group_id]
   subnets            = var.lb_subnet_ids
 
   tags = {
-    Name        = "${var.instance_name}-lb"
+    Name        = "${var.instance_name}-${var.environment}-lb"
     Environment = var.environment
   }
 }
 
 resource "aws_lb_target_group" "app_tg" {
-  name        = "${var.instance_name}-tg"
+  name        = "${var.instance_name}-${var.environment}-tg"
   port        = 80
   protocol    = "HTTP"
   target_type = "instance"
@@ -31,14 +31,14 @@ resource "aws_lb_target_group" "app_tg" {
   deregistration_delay = 30
 
   tags = {
-    Name        = "${var.instance_name}-tg"
+    Name        = "${var.instance_name}-${var.environment}-tg"
     Environment = var.environment
   }
 }
 
 # Blue-Green Target Groups for zero-downtime deployments
 resource "aws_lb_target_group" "blue_tg" {
-  name        = "${var.instance_name}-blue-tg"
+  name        = "${var.instance_name}-${var.environment}-blue-tg"
   port        = 80
   protocol    = "HTTP"
   target_type = "instance"
@@ -57,14 +57,14 @@ resource "aws_lb_target_group" "blue_tg" {
   deregistration_delay = 30
 
   tags = {
-    Name        = "${var.instance_name}-blue-tg"
+    Name        = "${var.instance_name}-${var.environment}-blue-tg"
     Environment = var.environment
     BlueGreen   = "blue"
   }
 }
 
 resource "aws_lb_target_group" "green_tg" {
-  name        = "${var.instance_name}-green-tg"
+  name        = "${var.instance_name}-${var.environment}-green-tg"
   port        = 80
   protocol    = "HTTP"
   target_type = "instance"
@@ -83,7 +83,7 @@ resource "aws_lb_target_group" "green_tg" {
   deregistration_delay = 30
 
   tags = {
-    Name        = "${var.instance_name}-green-tg"
+    Name        = "${var.instance_name}-${var.environment}-green-tg"
     Environment = var.environment
     BlueGreen   = "green"
   }

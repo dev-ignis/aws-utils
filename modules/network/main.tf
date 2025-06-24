@@ -74,7 +74,7 @@ resource "aws_route_table_association" "subnet2_assoc" {
 
 # ALB Security Group
 resource "aws_security_group" "alb_sg" {
-  name_prefix = "${var.instance_name}-alb-sg-"
+  name_prefix = "${var.instance_name}-${var.environment}-alb-sg-"
   description = "Security group for ALB"
   vpc_id      = aws_vpc.this.id
 
@@ -117,7 +117,7 @@ resource "aws_security_group" "alb_sg" {
 
 # EC2 Instance Security Group
 resource "aws_security_group" "instance_sg" {
-  name_prefix = "${var.instance_name}-instance-sg-"
+  name_prefix = "${var.instance_name}-${var.environment}-instance-sg-"
   description = "Security group for EC2 instances"
   vpc_id      = aws_vpc.this.id
 

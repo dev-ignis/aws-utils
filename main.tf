@@ -25,13 +25,13 @@ module "network" {
 
 module "dynamodb" {
   source        = "./modules/dynamodb"
-  table_name    = "${var.instance_name}-table"
+  table_name    = "${var.instance_name}-${var.environment}-table"
   billing_mode  = "PAY_PER_REQUEST"
   hash_key      = "Id"
   hash_key_type = "S"
   tags = {
     Environment = var.environment
-    Name        = "${var.instance_name}-dynamodb"
+    Name        = "${var.instance_name}-${var.environment}-dynamodb"
   }
 }
 
@@ -56,7 +56,7 @@ resource "aws_instance" "my_ec2" {
   })
 
   tags = {
-    Name        = "${var.instance_name}-${count.index}"
+    Name        = "${var.instance_name}-${var.environment}-${count.index}"
     Environment = var.environment
     Instance    = "${count.index + 1}"
     Module      = "compute"

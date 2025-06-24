@@ -9,7 +9,7 @@ resource "random_id" "bucket_suffix" {
 
 # S3 Bucket for configurable data storage
 resource "aws_s3_bucket" "storage" {
-  bucket = "${var.instance_name}-${var.bucket_name_suffix}-${random_id.bucket_suffix.hex}"
+  bucket = "${var.instance_name}-${var.environment}-${var.bucket_name_suffix}-${random_id.bucket_suffix.hex}"
 
   tags = merge(var.tags, {
     Name        = "${var.instance_name}-${var.bucket_name_suffix}"
@@ -154,7 +154,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "storage_lifecycle" {
 
 # IAM Role for S3 storage access
 resource "aws_iam_role" "s3_storage_access_role" {
-  name = "${var.instance_name}-s3-${var.use_case}-access-role"
+  name = "${var.instance_name}-${var.environment}-s3-${var.use_case}-access-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -192,7 +192,7 @@ resource "aws_iam_role" "s3_storage_access_role" {
 
 # IAM Policy for S3 storage access
 resource "aws_iam_role_policy" "s3_storage_access_policy" {
-  name = "${var.instance_name}-s3-${var.use_case}-access-policy"
+  name = "${var.instance_name}-${var.environment}-s3-${var.use_case}-access-policy"
   role = aws_iam_role.s3_storage_access_role.id
 
   policy = jsonencode({
@@ -220,14 +220,14 @@ resource "aws_iam_role_policy" "s3_storage_access_policy" {
 
 # Instance profile for EC2 instances
 resource "aws_iam_instance_profile" "s3_storage_access_profile" {
-  name = "${var.instance_name}-s3-${var.use_case}-access-profile"
+  name = "${var.instance_name}-${var.environment}-s3-${var.use_case}-access-profile"
   role = aws_iam_role.s3_storage_access_role.name
 }
 
 # Optional Read-Only IAM Role
 resource "aws_iam_role" "s3_readonly_role" {
   count = var.create_read_only_role ? 1 : 0
-  name  = "${var.instance_name}-s3-${var.use_case}-readonly-role"
+  name  = "${var.instance_name}-${var.environment}-s3-${var.use_case}-readonly-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -254,7 +254,7 @@ resource "aws_iam_role" "s3_readonly_role" {
 
 resource "aws_iam_role_policy" "s3_readonly_policy" {
   count = var.create_read_only_role ? 1 : 0
-  name  = "${var.instance_name}-s3-${var.use_case}-readonly-policy"
+  name  = "${var.instance_name}-${var.environment}-s3-${var.use_case}-readonly-policy"
   role  = aws_iam_role.s3_readonly_role[0].id
 
   policy = jsonencode({
@@ -280,7 +280,7 @@ resource "aws_iam_role_policy" "s3_readonly_policy" {
 # Optional Admin IAM Role
 resource "aws_iam_role" "s3_admin_role" {
   count = var.create_admin_role ? 1 : 0
-  name  = "${var.instance_name}-s3-${var.use_case}-admin-role"
+  name  = "${var.instance_name}-${var.environment}-s3-${var.use_case}-admin-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -307,7 +307,7 @@ resource "aws_iam_role" "s3_admin_role" {
 
 resource "aws_iam_role_policy" "s3_admin_policy" {
   count = var.create_admin_role ? 1 : 0
-  name  = "${var.instance_name}-s3-${var.use_case}-admin-policy"
+  name  = "${var.instance_name}-${var.environment}-s3-${var.use_case}-admin-policy"
   role  = aws_iam_role.s3_admin_role[0].id
 
   policy = jsonencode({
