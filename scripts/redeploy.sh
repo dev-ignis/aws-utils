@@ -202,6 +202,9 @@ redeploy_service() {
         sudo sed -i "s/:$TEMP_PORT/:$PORT/g" /etc/nginx/sites-available/default
         sudo nginx -t && sudo systemctl reload nginx
         
+        echo "🧹 Cleaning up unused Docker resources..."
+        sudo docker system prune -f
+        
         echo "✅ $SERVICE_NAME deployment complete on instance $INSTANCE_NUM"
 EOF
     
