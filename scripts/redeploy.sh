@@ -105,17 +105,30 @@ redeploy_service() {
     
     echo "📦 Redeploying $SERVICE_NAME on instance $INSTANCE_NUM ($IP)..."
     
+    # Copy .env file for backend deployments
+    if [ "$SERVICE" = "be" ]; then
+        # Look for .env file in parent directory (since this is a submodule)
+        ENV_FILE="../.env"
+        if [ -f "$ENV_FILE" ]; then
+            echo "📁 Copying .env file from parent directory..."
+            scp -i ~/.ssh/id_rsa_github "$ENV_FILE" ubuntu@$IP:/home/ubuntu/.env
+            ssh -i ~/.ssh/id_rsa_github ubuntu@$IP "chmod 600 /home/ubuntu/.env"
+            echo "✅ .env file copied successfully"
+        else
+            echo "⚠️  No .env file found at $ENV_FILE"
+            echo "💡 Make sure .env exists in the parent directory of this submodule"
+        fi
+    fi
+    
     ssh -i ~/.ssh/id_rsa_github ubuntu@$IP << EOF
         set -e
         
         $(if [ "$SERVICE" = "be" ]; then
-            echo "echo '🔧 Checking for .env file...'"
-            echo "if [ ! -f /home/ubuntu/.env ]; then"
-            echo "  echo '⚠️  No .env file found. Please create /home/ubuntu/.env with required environment variables.'"
-            echo "  echo 'Required variables: AWS_REGION, CLOUDWATCH_LOG_GROUP, DYNAMODB_TABLE_NAME, etc.'"
-            echo "  exit 1"
+            echo "echo '🔧 Setting up .env file...'"
+            echo "if [ -f /home/ubuntu/.env ]; then"
+            echo "  echo '✅ Found existing .env file with \$(wc -l < /home/ubuntu/.env) lines'"
             echo "else"
-            echo "  echo '✅ Found .env file with \$(wc -l < /home/ubuntu/.env) lines'"
+            echo "  echo '⚠️  No .env file found on instance, will need to copy from local'"
             echo "fi"
         fi)
         
