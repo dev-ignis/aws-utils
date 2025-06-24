@@ -43,6 +43,7 @@ resource "aws_instance" "my_ec2" {
   key_name               = var.key_name
   subnet_id              = module.network.lb_subnet_ids[count.index % length(module.network.lb_subnet_ids)]
   vpc_security_group_ids = [module.network.instance_security_group_id]
+  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
 
   user_data = templatefile("${path.module}/user_data.sh.tpl", {
     backend_image            = var.backend_image
@@ -53,6 +54,8 @@ resource "aws_instance" "my_ec2" {
     front_end_port           = var.front_end_port
     dns_name                 = var.dns_name
     certbot_email            = var.certbot_email
+    region                   = var.region
+    environment              = var.environment
   })
 
   tags = {

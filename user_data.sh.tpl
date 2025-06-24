@@ -18,7 +18,14 @@ systemctl enable docker
 docker pull ${backend_image}
 docker stop ${backend_container_name} || true
 docker rm ${backend_container_name} || true
-docker run -d --name ${backend_container_name} -p ${backend_port}:${backend_port} ${backend_image}
+docker run -d --name ${backend_container_name} -p ${backend_port}:${backend_port} \
+  -e AWS_REGION=${region} \
+  -e CLOUDWATCH_LOG_GROUP=mht-logs-${environment} \
+  -e CLOUDWATCH_LOG_STREAM=mht-app-stream-${environment} \
+  -e CLOUDWATCH_APP_LOG_STREAM=mht-app-stream-all-${environment} \
+  -e CLOUDWATCH_HEALTH_LOG_STREAM=mht-app-stream-health-${environment} \
+  -e SWAGGER_HOST=${dns_name} \
+  ${backend_image}
 
 # Conditionally deploy Front-End Container if front_end_image is provided
 if [ -n "${front_end_image}" ]; then

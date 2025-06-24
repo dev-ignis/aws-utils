@@ -27,7 +27,7 @@ resource "null_resource" "force_setup" {
       "sudo docker pull ${var.backend_image}",
       "sudo docker stop ${var.backend_container_name} || true",
       "sudo docker rm ${var.backend_container_name} || true",
-      "sudo docker run -d --name ${var.backend_container_name} -p ${var.backend_port}:${var.backend_port} ${var.backend_image}",
+      "sudo docker run -d --name ${var.backend_container_name} -p ${var.backend_port}:${var.backend_port} -e AWS_REGION=${var.region} -e CLOUDWATCH_LOG_GROUP=mht-logs-staging -e CLOUDWATCH_LOG_STREAM=mht-app-stream-staging -e CLOUDWATCH_APP_LOG_STREAM=mht-app-stream-all-staging -e CLOUDWATCH_HEALTH_LOG_STREAM=mht-app-stream-health-staging -e SWAGGER_HOST=staging.api.amygdalas.com ${var.backend_image}",
       "sudo docker pull ${var.front_end_image}",
       "sudo docker stop ${var.front_end_container_name} || true", 
       "sudo docker rm ${var.front_end_container_name} || true",
