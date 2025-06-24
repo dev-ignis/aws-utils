@@ -20,6 +20,7 @@ Detailed documentation for each Terraform module:
 - **[ALB Module](modules/alb.md)** - Application Load Balancer, SSL/TLS, and routing configuration  
 - **[DynamoDB Module](modules/dynamodb.md)** - NoSQL database with authentication indexes
 - **[S3 Storage Module](modules/s3.md)** - White label S3 storage with intelligent tiering and multi-tenant support
+- **[SQS Processing Module](modules/sqs.md)** - FIFO queues, dead letter queues, IAM roles, and CloudWatch monitoring
 
 ### White Label Configuration Examples
 
