@@ -1,5 +1,5 @@
 resource "null_resource" "redeploy_app" {
-  count = var.blue_green_enabled ? 0 : length(aws_instance.my_ec2)
+  count = var.blue_green_enabled || var.skip_deployment_validation ? 0 : length(aws_instance.my_ec2)
 
   # Sequential deployment using triggers to ensure ordering
   triggers = {
