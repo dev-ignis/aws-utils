@@ -18,105 +18,96 @@ resource "null_resource" "force_setup" {
   provisioner "remote-exec" {
     inline = [
       "echo 'Starting forced setup on instance ${count.index}'",
-      
-      # Install prerequisites if not already installed
       "sudo apt-get update -y",
       "sudo apt-get install -y docker.io nginx git curl nodejs npm",
-      
-      # Install Yarn globally
       "sudo npm install -g yarn",
-      
-      # Add ubuntu user to docker group
       "sudo usermod -aG docker ubuntu",
-      
-      # Start Docker service
       "sudo systemctl start docker",
       "sudo systemctl enable docker",
-      
-      # Deploy Backend Container
       "sudo docker pull ${var.backend_image}",
       "sudo docker stop ${var.backend_container_name} || true",
       "sudo docker rm ${var.backend_container_name} || true",
       "sudo docker run -d --name ${var.backend_container_name} -p ${var.backend_port}:${var.backend_port} ${var.backend_image}",
-      
-      # Deploy Frontend Container
       "sudo docker pull ${var.front_end_image}",
       "sudo docker stop ${var.front_end_container_name} || true", 
       "sudo docker rm ${var.front_end_container_name} || true",
       "sudo docker run -d --name ${var.front_end_container_name} -p ${var.front_end_port}:${var.front_end_port} ${var.front_end_image}",
-      
-      # Wait for containers to start
-      "sleep 10",
-      
-      # Configure Nginx
-      "sudo tee /etc/nginx/sites-available/default > /dev/null << 'EOL'",
-      "# API subdomain server block - all traffic goes directly to backend",
-      "server {",
-      "    listen 80;",
-      "    listen [::]:80;", 
-      "    server_name api.amygdalas.com staging.api.amygdalas.com;",
-      "",
-      "    # Health check endpoint",
-      "    location /health {",
-      "        proxy_pass http://127.0.0.1:${var.backend_port}/health;",
-      "        proxy_set_header Host $host;",
-      "        proxy_set_header X-Real-IP $remote_addr;",
-      "        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;",
-      "        proxy_set_header X-Forwarded-Proto $scheme;",
-      "    }",
-      "",
-      "    # All other traffic goes to backend, without the /api/ prefix",
-      "    location / {",
-      "        proxy_pass http://127.0.0.1:${var.backend_port};",
-      "        proxy_set_header Host $host;",
-      "        proxy_set_header X-Real-IP $remote_addr;",
-      "        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;",
-      "        proxy_set_header X-Forwarded-Proto $scheme;",
-      "    }",
-      "}",
-      "",
-      "# Main website server block - uses path-based routing",
-      "server {",
-      "    listen 80 default_server;",
-      "    listen [::]:80 default_server;",
-      "    server_name amygdalas.com www.amygdalas.com _;",
-      "",
-      "    # Health check endpoint",
-      "    location /health {",
-      "        proxy_pass http://127.0.0.1:${var.backend_port}/health;",
-      "        proxy_set_header Host $host;",
-      "        proxy_set_header X-Real-IP $remote_addr;",
-      "        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;",
-      "        proxy_set_header X-Forwarded-Proto $scheme;",
-      "    }",
-      "",
-      "    # API endpoints still accessible through path-based routing",
-      "    location /api/ {",
-      "        proxy_pass http://127.0.0.1:${var.backend_port}/;",
-      "        proxy_set_header Host $host;",
-      "        proxy_set_header X-Real-IP $remote_addr;",
-      "        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;",
-      "        proxy_set_header X-Forwarded-Proto $scheme;",
-      "    }",
-      "",
-      "    # Frontend",
-      "    location / {",
-      "        proxy_pass http://127.0.0.1:${var.front_end_port};",
-      "        proxy_set_header Host $host;",
-      "        proxy_set_header X-Real-IP $remote_addr;",
-      "        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;",
-      "        proxy_set_header X-Forwarded-Proto $scheme;",
-      "    }",
-      "}",
-      "EOL",
-      
-      # Test nginx configuration and restart
+      "sleep 10"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      <<-EOT
+        sudo tee /etc/nginx/sites-available/default > /dev/null << 'EOF'
+# API subdomain server block - all traffic goes directly to backend
+server {
+    listen 80;
+    listen [::]:80;
+    server_name api.amygdalas.com staging.api.amygdalas.com;
+
+    # Health check endpoint
+    location /health {
+        proxy_pass http://127.0.0.1:${var.backend_port}/health;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+
+    # All other traffic goes to backend, without the /api/ prefix
+    location / {
+        proxy_pass http://127.0.0.1:${var.backend_port};
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+
+# Main website server block - uses path-based routing
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name amygdalas.com www.amygdalas.com _;
+
+    # Health check endpoint
+    location /health {
+        proxy_pass http://127.0.0.1:${var.backend_port}/health;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+
+    # API endpoints still accessible through path-based routing
+    location /api/ {
+        proxy_pass http://127.0.0.1:${var.backend_port}/;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+
+    # Frontend
+    location / {
+        proxy_pass http://127.0.0.1:${var.front_end_port};
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+EOF
+      EOT
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
       "sudo nginx -t",
       "sudo systemctl restart nginx",
-      
-      # Verify containers are running
       "sudo docker ps",
-      
       "echo 'Setup complete on instance ${count.index}'"
     ]
   }
