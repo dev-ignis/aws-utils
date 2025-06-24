@@ -108,9 +108,14 @@ variable "lifecycle_transitions" {
 }
 
 variable "noncurrent_version_transition_days" {
-  description = "Days after which non-current versions transition to IA"
+  description = "Days after which non-current versions transition to IA (must be >= 30 for STANDARD_IA)"
   type        = number
   default     = 30
+  
+  validation {
+    condition     = var.noncurrent_version_transition_days >= 30
+    error_message = "noncurrent_version_transition_days must be at least 30 days for STANDARD_IA storage class."
+  }
 }
 
 variable "noncurrent_version_expiration_days" {

@@ -53,3 +53,9 @@ variable "skip_route53" {
   type        = bool
   default     = false
 }
+
+variable "blue_green_enabled" {
+  description = "Enable blue-green deployment target groups"
+  type        = bool
+  default     = false
+}

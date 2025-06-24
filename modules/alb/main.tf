@@ -37,7 +37,9 @@ resource "aws_lb_target_group" "app_tg" {
 }
 
 # Blue-Green Target Groups for zero-downtime deployments
+# Note: These are only created when blue_green_enabled is true
 resource "aws_lb_target_group" "blue_tg" {
+  count       = var.blue_green_enabled ? 1 : 0
   name        = "${var.instance_name}-${var.environment}-blue-tg"
   port        = 80
   protocol    = "HTTP"
@@ -64,6 +66,7 @@ resource "aws_lb_target_group" "blue_tg" {
 }
 
 resource "aws_lb_target_group" "green_tg" {
+  count       = var.blue_green_enabled ? 1 : 0
   name        = "${var.instance_name}-${var.environment}-green-tg"
   port        = 80
   protocol    = "HTTP"

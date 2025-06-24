@@ -178,4 +178,5 @@ module "alb" {
   environment          = var.environment
   route53_zone_id      = var.route53_zone_id
   skip_route53          = var.skip_route53
+  blue_green_enabled   = var.blue_green_enabled
 }
