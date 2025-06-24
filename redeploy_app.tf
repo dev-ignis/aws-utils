@@ -19,12 +19,29 @@ resource "null_resource" "redeploy_app" {
     inline = [
       "echo 'Starting zero-downtime deployment for backend on instance ${count.index}'",
       
+      # Create .env file if it doesn't exist
+      "if [ ! -f /home/ubuntu/.env ]; then",
+      "  echo 'Creating .env file'",
+      "  cat > /home/ubuntu/.env << 'EOL'",
+      "AWS_REGION=${var.region}",
+      "CLOUDWATCH_LOG_GROUP=mht-logs-${var.environment}",
+      "CLOUDWATCH_LOG_STREAM=mht-app-stream-${var.environment}",
+      "CLOUDWATCH_APP_LOG_STREAM=mht-app-stream-all-${var.environment}",
+      "CLOUDWATCH_HEALTH_LOG_STREAM=mht-app-stream-health-${var.environment}",
+      "SWAGGER_HOST=${var.staging_api_dns_name}",
+      "GIN_MODE=release",
+      "DYNAMODB_TABLE_NAME=${var.instance_name}-${var.environment}-table",
+      "NEXT_RESEND_API_KEY=${var.next_resend_api_key}",
+      "EOL",
+      "  chmod 600 /home/ubuntu/.env",
+      "fi",
+      
       "docker pull ${var.backend_image}",
       
       "TEMP_PORT=$((${var.backend_port} + 1000))",
       "echo \"Starting new container on temporary port $TEMP_PORT\"",
       
-      "docker run -d --env-file /home/ubuntu/.env --name ${var.backend_container_name}_new -p $TEMP_PORT:${var.backend_port} -v /home/ubuntu/AuthKey_FTPK448DLL.p8:/app/AuthKey_FTPK448DLL.p8:ro ${var.backend_image}",
+      "docker run -d --env-file /home/ubuntu/.env --name ${var.backend_container_name}_new -p $TEMP_PORT:${var.backend_port} ${var.backend_image}",
       
       "echo 'Waiting for new container to be ready...'",
       "sleep 15",
