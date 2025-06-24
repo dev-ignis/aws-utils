@@ -193,6 +193,6 @@ output "api_integration_templates" {
     
     worker_processor = "// Background worker\nconst { receiveFromQueue, deleteMessage } = require('./sqs-helper');\nwhile (true) {\n  const messages = await receiveFromQueue('${aws_sqs_queue.main_queues["feedback"].url}');\n  for (const message of messages) {\n    await processMessage(message);\n    await deleteMessage(message.ReceiptHandle);\n  }\n}"
     
-    s3_integration = var.enable_s3_integration ? "// Store results in S3\nconst s3Key = `processed/${new Date().getFullYear()}/${new Date().getMonth() + 1}/${new Date().getDate()}/${Date.now()}.json`;\nawait s3.putObject({ Bucket: '${var.s3_bucket_arn}', Key: s3Key, Body: JSON.stringify(result) }).promise();" : ""
+    s3_integration = var.enable_s3_integration ? "// Store results in S3\nconst s3Key = `processed/$${new Date().getFullYear()}/$${new Date().getMonth() + 1}/$${new Date().getDate()}/$${Date.now()}.json`;\nawait s3.putObject({ Bucket: '${replace(var.s3_bucket_arn, "arn:aws:s3:::", "")}', Key: s3Key, Body: JSON.stringify(result) }).promise();" : ""
   }
 }
