@@ -105,29 +105,27 @@ redeploy_service() {
     
     echo "📦 Redeploying $SERVICE_NAME on instance $INSTANCE_NUM ($IP)..."
     
-    # Copy .env file for backend deployments
-    if [ "$SERVICE" = "be" ]; then
-        # Try different locations for .env file
-        ENV_FILE=""
-        for path in "../.env" "../../.env" ".env"; do
-            if [ -f "$path" ]; then
-                ENV_FILE="$path"
-                break
-            fi
-        done
-        
-        if [ -n "$ENV_FILE" ]; then
-            echo "📁 Copying .env file from $ENV_FILE..."
-            scp -i ~/.ssh/id_rsa_github "$ENV_FILE" ubuntu@$IP:/home/ubuntu/.env
-            ssh -i ~/.ssh/id_rsa_github ubuntu@$IP "chmod 600 /home/ubuntu/.env"
-            echo "✅ .env file copied successfully"
-        else
-            echo "⚠️  No .env file found in any of these locations:"
-            echo "    - ../.env (parent of submodule)"
-            echo "    - ../../.env (parent of scripts)"  
-            echo "    - .env (current directory)"
-            echo "💡 Make sure .env exists in the parent directory of this submodule"
+    # Copy .env file for both backend and frontend deployments
+    # Try different locations for .env file
+    ENV_FILE=""
+    for path in "../.env" "../../.env" ".env"; do
+        if [ -f "$path" ]; then
+            ENV_FILE="$path"
+            break
         fi
+    done
+    
+    if [ -n "$ENV_FILE" ]; then
+        echo "📁 Copying .env file from $ENV_FILE..."
+        scp -i ~/.ssh/id_rsa_github "$ENV_FILE" ubuntu@$IP:/home/ubuntu/.env
+        ssh -i ~/.ssh/id_rsa_github ubuntu@$IP "chmod 600 /home/ubuntu/.env"
+        echo "✅ .env file copied successfully"
+    else
+        echo "⚠️  No .env file found in any of these locations:"
+        echo "    - ../.env (parent of submodule)"
+        echo "    - ../../.env (parent of scripts)"  
+        echo "    - .env (current directory)"
+        echo "💡 Make sure .env exists in the parent directory of this submodule"
     fi
     
     ssh -i ~/.ssh/id_rsa_github ubuntu@$IP << EOF
@@ -162,7 +160,7 @@ redeploy_service() {
         echo "🆕 Starting new container on port $TEMP_PORT..."
         sudo docker run -d --name ${CONTAINER}_new \\
             -p $TEMP_PORT:$(if [ "$SERVICE" = "fe" ]; then echo "3030"; else echo "$PORT"; fi) \\
-            $(if [ "$SERVICE" = "be" ]; then echo "--env-file /home/ubuntu/.env"; fi) \\
+            --env-file /home/ubuntu/.env \\
             $IMAGE
         
         echo "⏳ Waiting for new container to be ready..."
@@ -209,7 +207,7 @@ redeploy_service() {
         FINAL_INTERNAL_PORT=$(if [ "$SERVICE" = "fe" ]; then echo "3030"; else echo "$PORT"; fi)
         sudo docker run -d --name ${CONTAINER}_final \\
             -p $PORT:\$FINAL_INTERNAL_PORT \\
-            $(if [ "$SERVICE" = "be" ]; then echo "--env-file /home/ubuntu/.env"; fi) \\
+            --env-file /home/ubuntu/.env \\
             $IMAGE
         
         echo "🔄 Switching nginx to final container..."
