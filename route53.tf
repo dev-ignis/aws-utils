@@ -21,8 +21,9 @@ resource "aws_route53_record" "ec2_dns" {
   }
 }
 
-# Production API endpoint
+# Production API endpoint - only created in production environment
 resource "aws_route53_record" "api_production" {
+  count   = var.environment == "production" ? 1 : 0
   zone_id = local.zone_id
   name    = "api.${var.hosted_zone_name}"
   type    = "A"
@@ -34,8 +35,9 @@ resource "aws_route53_record" "api_production" {
   }
 }
 
-# Staging API endpoint
+# Staging API endpoint - only created in staging environment
 resource "aws_route53_record" "api_staging" {
+  count   = var.environment == "staging" ? 1 : 0
   zone_id = local.zone_id
   name    = "staging.api.${var.hosted_zone_name}"
   type    = "A"
@@ -47,9 +49,9 @@ resource "aws_route53_record" "api_staging" {
   }
 }
 
-# WWW subdomain record - points to ALB
+# WWW subdomain record - only created in production environment
 resource "aws_route53_record" "www" {
-  count   = var.skip_route53 ? 0 : 1
+  count   = var.skip_route53 ? 0 : (var.environment == "production" ? 1 : 0)
   zone_id = local.zone_id
   name    = "www.${var.hosted_zone_name}"
   type    = "A"
@@ -65,9 +67,9 @@ resource "aws_route53_record" "www" {
   }
 }
 
-# Root domain record - points to ALB
+# Root domain record - only created in production environment
 resource "aws_route53_record" "apex" {
-  count   = var.skip_route53 ? 0 : 1
+  count   = var.skip_route53 ? 0 : (var.environment == "production" ? 1 : 0)
   zone_id = local.zone_id
   name    = var.hosted_zone_name
   type    = "A"
