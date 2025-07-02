@@ -10,6 +10,7 @@ resource "aws_route53_record" "cname" {
   type    = "CNAME"
   ttl     = 300
   records = [each.value]
+  allow_overwrite = true
 
   lifecycle {
     create_before_destroy = true
@@ -25,6 +26,7 @@ resource "aws_route53_record" "txt" {
   type    = "TXT"
   ttl     = 300
   records = each.value
+  allow_overwrite = true
 
   lifecycle {
     create_before_destroy = true

@@ -27,6 +27,7 @@ resource "aws_route53_record" "api_production" {
   zone_id = local.zone_id
   name    = "api.${var.hosted_zone_name}"
   type    = "A"
+  allow_overwrite = true
 
   alias {
     name                   = module.alb[0].lb_dns_name
@@ -55,6 +56,7 @@ resource "aws_route53_record" "www" {
   zone_id = local.zone_id
   name    = "www.${var.hosted_zone_name}"
   type    = "A"
+  allow_overwrite = true
 
   lifecycle {
     create_before_destroy = true
@@ -73,6 +75,7 @@ resource "aws_route53_record" "apex" {
   zone_id = local.zone_id
   name    = var.hosted_zone_name
   type    = "A"
+  allow_overwrite = true
 
   lifecycle {
     create_before_destroy = true
