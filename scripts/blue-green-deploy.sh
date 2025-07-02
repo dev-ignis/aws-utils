@@ -1,11 +1,12 @@
 #!/bin/bash
 # Blue-Green deployment script
-# Usage: ./blue-green-deploy.sh <environment> <service>
+# Usage: ./blue-green-deploy.sh <environment> <service> [--auto-switch]
 # Examples:
 #   ./blue-green-deploy.sh staging be
 #   ./blue-green-deploy.sh staging fe
 #   ./blue-green-deploy.sh production be
 #   ./blue-green-deploy.sh production fe
+#   ./blue-green-deploy.sh staging fe --auto-switch
 
 set -e
 
@@ -14,14 +15,16 @@ SERVICE=$2
 
 # Validate parameters
 if [ -z "$ENVIRONMENT" ] || [ -z "$SERVICE" ]; then
-    echo "❌ Usage: $0 <environment> <service>"
+    echo "❌ Usage: $0 <environment> <service> [--auto-switch]"
     echo "   Environment: staging | production"
     echo "   Service: be | fe"
+    echo "   --auto-switch: Automatically switch traffic after deployment (optional)"
     echo ""
     echo "Examples:"
-    echo "   $0 staging be    # Deploy backend to staging"
-    echo "   $0 staging fe    # Deploy frontend to staging"
-    echo "   $0 production be # Deploy backend to production"
+    echo "   $0 staging be          # Deploy backend to staging (manual switch)"
+    echo "   $0 staging fe          # Deploy frontend to staging (manual switch)"
+    echo "   $0 production be       # Deploy backend to production (manual switch)"
+    echo "   $0 staging fe --auto-switch  # Deploy and auto-switch traffic"
     exit 1
 fi
 
@@ -284,9 +287,32 @@ if [ $HEALTHY_COUNT -ne $TOTAL_COUNT ]; then
     echo "💡 You may need to wait longer or check the instances manually"
 fi
 
-echo ""
-echo "🎯 Next steps:"
-echo "1. Verify the deployment in $INACTIVE_TG target group"
-echo "2. Run: ./scripts/switch-blue-green.sh $ENVIRONMENT $INACTIVE_TG"
-echo "3. Monitor for any issues"
-echo "4. If issues occur, switch back: ./scripts/switch-blue-green.sh $ENVIRONMENT $ACTIVE_TG"
+# Check for auto-switch flag
+if [[ " $@ " =~ " --auto-switch " ]]; then
+    echo ""
+    echo "🔄 Auto-switch enabled. Switching traffic to $INACTIVE_TG target group..."
+    echo "⏳ Waiting 5 seconds before switching..."
+    sleep 5
+    
+    # Execute the switch
+    echo "🚦 Switching traffic now..."
+    ./scripts/switch-blue-green.sh $ENVIRONMENT $INACTIVE_TG
+    
+    if [ $? -eq 0 ]; then
+        echo ""
+        echo "✅ Traffic successfully switched to $INACTIVE_TG target group!"
+        echo "🔍 Monitor your application for any issues"
+        echo "🔄 If needed, rollback with: ./scripts/switch-blue-green.sh $ENVIRONMENT $ACTIVE_TG"
+    else
+        echo ""
+        echo "❌ Failed to switch traffic automatically"
+        echo "💡 You can try manually: ./scripts/switch-blue-green.sh $ENVIRONMENT $INACTIVE_TG"
+    fi
+else
+    echo ""
+    echo "🎯 Next steps:"
+    echo "1. Verify the deployment in $INACTIVE_TG target group"
+    echo "2. Run: ./scripts/switch-blue-green.sh $ENVIRONMENT $INACTIVE_TG"
+    echo "3. Monitor for any issues"
+    echo "4. If issues occur, switch back: ./scripts/switch-blue-green.sh $ENVIRONMENT $ACTIVE_TG"
+fi

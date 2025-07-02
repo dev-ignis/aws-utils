@@ -1,11 +1,12 @@
 #!/bin/bash
 # Unified redeployment script for frontend and backend
-# Usage: ./redeploy.sh <environment> <service>
+# Usage: ./redeploy.sh <environment> <service> [options]
 # Examples:
 #   ./redeploy.sh staging be
 #   ./redeploy.sh staging fe
 #   ./redeploy.sh production be
 #   ./redeploy.sh production fe
+#   ./redeploy.sh staging fe --auto-switch
 
 set -e
 
@@ -14,14 +15,16 @@ SERVICE=$2
 
 # Validate parameters
 if [ -z "$ENVIRONMENT" ] || [ -z "$SERVICE" ]; then
-    echo "❌ Usage: $0 <environment> <service>"
+    echo "❌ Usage: $0 <environment> <service> [options]"
     echo "   Environment: staging | production"
     echo "   Service: be | fe"
+    echo "   Options: --auto-switch (for blue-green deployments)"
     echo ""
     echo "Examples:"
-    echo "   $0 staging be    # Deploy backend to staging"
-    echo "   $0 staging fe    # Deploy frontend to staging"
-    echo "   $0 production be # Deploy backend to production"
+    echo "   $0 staging be             # Deploy backend to staging"
+    echo "   $0 staging fe             # Deploy frontend to staging"
+    echo "   $0 production be          # Deploy backend to production"
+    echo "   $0 staging fe --auto-switch  # Deploy with automatic traffic switch"
     exit 1
 fi
 
@@ -90,7 +93,9 @@ if [ -f "./scripts/blue-green-deploy.sh" ]; then
     if [ "$BLUE_GREEN_ENABLED" = "true" ]; then
         echo "🔵🟢 Blue-green deployment is enabled for $ENVIRONMENT"
         echo "💡 Redirecting to blue-green deployment script..."
-        exec ./scripts/blue-green-deploy.sh $ENVIRONMENT $SERVICE
+        # Pass all arguments after the first two to blue-green-deploy.sh
+        shift 2
+        exec ./scripts/blue-green-deploy.sh $ENVIRONMENT $SERVICE "$@"
     fi
 fi
 
