@@ -85,7 +85,7 @@ if [ -f "./scripts/blue-green-deploy.sh" ]; then
     terraform workspace select $ENVIRONMENT 2>/dev/null || true
     
     # Check if blue-green is enabled
-    BLUE_GREEN_ENABLED=$(terraform output -json deployment_status 2>/dev/null | jq -r '.value.blue_green_enabled' 2>/dev/null || echo "false")
+    BLUE_GREEN_ENABLED=$(terraform output -json deployment_status 2>/dev/null | jq -r '.blue_green_enabled' 2>/dev/null || echo "false")
     
     if [ "$BLUE_GREEN_ENABLED" = "true" ]; then
         echo "🔵🟢 Blue-green deployment is enabled for $ENVIRONMENT"
