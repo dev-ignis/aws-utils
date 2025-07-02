@@ -88,6 +88,25 @@ resource "aws_route53_record" "apex" {
   }
 }
 
+# Staging subdomain record - only created in staging environment
+resource "aws_route53_record" "staging_subdomain" {
+  count   = var.skip_route53 ? 0 : (var.environment == "staging" ? 1 : 0)
+  zone_id = local.zone_id
+  name    = "staging.${var.hosted_zone_name}"
+  type    = "A"
+  allow_overwrite = true
+
+  lifecycle {
+    create_before_destroy = true
+  }
+  
+  alias {
+    name                   = module.alb[0].lb_dns_name
+    zone_id                = module.alb[0].lb_zone_id
+    evaluate_target_health = true
+  }
+}
+
 # MX records for email
 resource "aws_route53_record" "mx" {
   count   = var.skip_route53 ? 0 : (var.create_mail_records ? 1 : 0)
