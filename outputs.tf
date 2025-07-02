@@ -32,8 +32,8 @@ output "route53_records" {
   description = "Route53 records for EC2 (if any), production API, staging API, and certificate validation."
   value = {
     ec2_dns_record = try(aws_route53_record.ec2_dns[0].name, null)
-    api_production = aws_route53_record.api_production.name
-    api_staging    = aws_route53_record.api_staging.name
+    api_production = try(aws_route53_record.api_production[0].name, null)
+    api_staging    = try(aws_route53_record.api_staging[0].name, null)
     www            = try(aws_route53_record.www[0].name, null)
     apex           = try(aws_route53_record.apex[0].name, null)
     cert_validation = try({
