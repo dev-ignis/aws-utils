@@ -53,7 +53,11 @@ resource "aws_lb_listener" "https" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.app_tg.arn
+    target_group_arn = var.blue_green_enabled ? (
+      var.active_target_group == "blue" ? 
+        aws_lb_target_group.blue_tg[0].arn : 
+        aws_lb_target_group.green_tg[0].arn
+    ) : aws_lb_target_group.app_tg.arn
   }
 
   lifecycle {

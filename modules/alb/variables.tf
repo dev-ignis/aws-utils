@@ -59,3 +59,13 @@ variable "blue_green_enabled" {
   type        = bool
   default     = false
 }
+
+variable "active_target_group" {
+  description = "Active target group for blue-green deployment (blue or green)"
+  type        = string
+  default     = "blue"
+  validation {
+    condition     = contains(["blue", "green"], var.active_target_group)
+    error_message = "active_target_group must be either 'blue' or 'green'"
+  }
+}

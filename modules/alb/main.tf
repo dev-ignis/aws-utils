@@ -142,3 +142,19 @@ resource "aws_lb_target_group_attachment" "app_attachment" {
   port             = 80
 }
 
+# Blue target group attachments for blue-green deployment
+resource "aws_lb_target_group_attachment" "blue_attachment" {
+  count            = var.blue_green_enabled ? length(var.instance_ids) : 0
+  target_group_arn = aws_lb_target_group.blue_tg[0].arn
+  target_id        = var.instance_ids[count.index]
+  port             = 80
+}
+
+# Green target group attachments for blue-green deployment
+resource "aws_lb_target_group_attachment" "green_attachment" {
+  count            = var.blue_green_enabled ? length(var.instance_ids) : 0
+  target_group_arn = aws_lb_target_group.green_tg[0].arn
+  target_id        = var.instance_ids[count.index]
+  port             = 80
+}
+
