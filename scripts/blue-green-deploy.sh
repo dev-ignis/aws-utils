@@ -84,7 +84,7 @@ echo "📁 Selecting $ENVIRONMENT workspace..."
 terraform workspace select $ENVIRONMENT
 
 # Check if blue-green is enabled
-BLUE_GREEN_ENABLED=$(terraform output -raw deployment_status | jq -r '.blue_green_enabled' 2>/dev/null || echo "false")
+BLUE_GREEN_ENABLED=$(terraform output -json deployment_status 2>/dev/null | jq -r '.value.blue_green_enabled' 2>/dev/null || echo "false")
 
 if [ "$BLUE_GREEN_ENABLED" != "true" ]; then
     echo "⚠️  Blue-green deployment is not enabled for $ENVIRONMENT"
@@ -93,7 +93,7 @@ if [ "$BLUE_GREEN_ENABLED" != "true" ]; then
 fi
 
 # Get current active target group
-ACTIVE_TG=$(terraform output -raw deployment_status | jq -r '.active_target_group' 2>/dev/null || echo "blue")
+ACTIVE_TG=$(terraform output -json deployment_status 2>/dev/null | jq -r '.value.active_target_group' 2>/dev/null || echo "blue")
 echo "📊 Current active target group: $ACTIVE_TG"
 
 # Determine inactive target group
