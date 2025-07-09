@@ -82,7 +82,7 @@ resource "aws_iam_role_policy" "ec2_app_policy" {
           "${module.dynamodb_feedback.table_arn}/index/*"
         ]
       },
-      # S3 permissions for feedback screenshots
+      # S3 permissions for all application data
       {
         Effect = "Allow"
         Action = [
@@ -93,8 +93,7 @@ resource "aws_iam_role_policy" "ec2_app_policy" {
           "s3:GetObjectVersion"
         ]
         Resource = [
-          "${module.s3_storage.bucket_arn}/feedback/screenshots/*",
-          "${module.s3_storage.bucket_arn}/feedback/temp/*"
+          "${module.s3_storage.bucket_arn}/*"
         ]
       },
       {
@@ -104,11 +103,6 @@ resource "aws_iam_role_policy" "ec2_app_policy" {
           "s3:GetBucketLocation"
         ]
         Resource = module.s3_storage.bucket_arn
-        Condition = {
-          StringLike = {
-            "s3:prefix" = ["feedback/screenshots/*", "feedback/temp/*"]
-          }
-        }
       },
       # SQS permissions for feedback and analytics queues
       {
