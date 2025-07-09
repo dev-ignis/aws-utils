@@ -113,7 +113,7 @@ resource "aws_iam_role_policy" "api_service_policy" {
   
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
+    Statement = concat([
       {
         Effect = "Allow"
         Action = [
@@ -124,20 +124,18 @@ resource "aws_iam_role_policy" "api_service_policy" {
         Resource = [
           for queue in aws_sqs_queue.main_queues : queue.arn
         ]
-      },
-      # KMS permissions for encrypted queues
-      var.enable_encryption ? {
-        Effect = "Allow"
-        Action = [
-          "kms:Encrypt",
-          "kms:Decrypt",
-          "kms:ReEncrypt*",
-          "kms:GenerateDataKey*",
-          "kms:DescribeKey"
-        ]
-        Resource = var.kms_key_id != null ? [var.kms_key_id] : ["arn:aws:kms:*:*:alias/aws/sqs"]
-      } : null
-    ]
+      }
+    ], var.enable_encryption ? [{
+      Effect = "Allow"
+      Action = [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey"
+      ]
+      Resource = var.kms_key_id != null ? [var.kms_key_id] : ["arn:aws:kms:*:*:alias/aws/sqs"]
+    }] : [])
   })
 }
 
