@@ -747,3 +747,9 @@ variable "dynamodb_feedback_range_key" {
   default     = "created_at"
 }
 
+variable "create_app_user_access_key" {
+  description = "Whether to create access key for app_user"
+  type        = bool
+  default     = false
+}
+
