@@ -35,9 +35,30 @@ GIN_MODE=release
 
 # Database Configuration
 DYNAMODB_TABLE_NAME=${instance_name}-${environment}-table
+FEEDBACK_TABLE_NAME=${feedback_table_name}
 
 # External Services
 NEXT_RESEND_API_KEY=${next_resend_api_key}
+
+# Storage Configuration
+S3_BUCKET_NAME=${s3_bucket_name}
+FEEDBACK_S3_PREFIX=feedback/screenshots/
+
+# Queue Configuration
+FEEDBACK_QUEUE_URL=${feedback_queue_url}
+ANALYTICS_QUEUE_URL=${analytics_queue_url}
+
+# Feedback API Configuration
+ENABLE_FEEDBACK_API=${enable_feedback_api}
+FEEDBACK_MAX_UPLOAD_SIZE_MB=${feedback_max_upload_size_mb}
+FEEDBACK_RATE_LIMIT_PER_MINUTE=${feedback_rate_limit_per_minute}
+ENABLE_ZENDESK_INTEGRATION=${enable_zendesk_integration}
+
+# API Configuration
+API_RATE_LIMIT_ENABLED=${api_rate_limit_enabled}
+API_RATE_LIMIT_REQUESTS_PER_MINUTE=${api_rate_limit_requests_per_minute}
+API_TIMEOUT_SECONDS=${api_timeout_seconds}
+API_MAX_REQUEST_SIZE_MB=${api_max_request_size_mb}
 
 # Add other environment variables as needed
 # OPENAI_API_KEY=your_key_here

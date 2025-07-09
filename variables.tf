@@ -623,3 +623,55 @@ variable "sqs_project_code" {
   default     = ""
 }
 
+##############################
+# Feedback API Variables
+##############################
+
+variable "enable_feedback_api" {
+  description = "Enable feedback API endpoints"
+  type        = bool
+  default     = false
+}
+
+variable "feedback_max_upload_size_mb" {
+  description = "Maximum upload size for feedback screenshots in MB"
+  type        = number
+  default     = 10
+}
+
+variable "feedback_rate_limit_per_minute" {
+  description = "Rate limit for feedback submissions per minute"
+  type        = number
+  default     = 10
+}
+
+variable "enable_zendesk_integration" {
+  description = "Enable Zendesk integration for feedback processing"
+  type        = bool
+  default     = false
+}
+
+variable "api_rate_limit_enabled" {
+  description = "Enable API rate limiting"
+  type        = bool
+  default     = false
+}
+
+variable "api_rate_limit_requests_per_minute" {
+  description = "API rate limit requests per minute"
+  type        = number
+  default     = 100
+}
+
+variable "api_timeout_seconds" {
+  description = "API request timeout in seconds"
+  type        = number
+  default     = 30
+}
+
+variable "api_max_request_size_mb" {
+  description = "Maximum API request size in MB"
+  type        = number
+  default     = 20
+}
+

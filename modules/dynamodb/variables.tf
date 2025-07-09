@@ -37,3 +37,24 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "additional_attributes" {
+  description = "Additional attributes for GSIs"
+  type = list(object({
+    name = string
+    type = string
+  }))
+  default = []
+}
+
+variable "global_secondary_indexes" {
+  description = "Global secondary indexes for the table"
+  type = list(object({
+    name               = string
+    hash_key          = string
+    range_key         = optional(string)
+    projection_type   = optional(string, "ALL")
+    non_key_attributes = optional(list(string))
+  }))
+  default = []
+}

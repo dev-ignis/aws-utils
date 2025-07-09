@@ -29,6 +29,27 @@ module "dynamodb" {
   billing_mode  = "PAY_PER_REQUEST"
   hash_key      = "Id"
   hash_key_type = "S"
+  
+  # Additional attributes for user table GSIs
+  additional_attributes = [
+    { name = "Email", type = "S" },
+    { name = "AppleId", type = "S" }
+  ]
+  
+  # GSIs for user authentication
+  global_secondary_indexes = [
+    {
+      name            = "email-index"
+      hash_key        = "Email"
+      projection_type = "ALL"
+    },
+    {
+      name            = "apple_id-index"
+      hash_key        = "AppleId"
+      projection_type = "ALL"
+    }
+  ]
+  
   tags = {
     Environment = var.environment
     Name        = "${var.instance_name}-${var.environment}-dynamodb"
@@ -58,6 +79,19 @@ resource "aws_instance" "my_ec2" {
     environment              = var.environment
     instance_name            = var.instance_name
     next_resend_api_key      = var.next_resend_api_key
+    # Feedback API variables
+    feedback_table_name      = module.dynamodb_feedback.table_name
+    s3_bucket_name          = module.s3_storage.bucket_name
+    feedback_queue_url      = module.sqs.queue_urls["feedback"]
+    analytics_queue_url     = module.sqs.queue_urls["analytics"]
+    enable_feedback_api     = var.enable_feedback_api
+    feedback_max_upload_size_mb = var.feedback_max_upload_size_mb
+    feedback_rate_limit_per_minute = var.feedback_rate_limit_per_minute
+    enable_zendesk_integration = var.enable_zendesk_integration
+    api_rate_limit_enabled  = var.api_rate_limit_enabled
+    api_rate_limit_requests_per_minute = var.api_rate_limit_requests_per_minute
+    api_timeout_seconds     = var.api_timeout_seconds
+    api_max_request_size_mb = var.api_max_request_size_mb
   })
 
   tags = {
