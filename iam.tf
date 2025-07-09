@@ -93,8 +93,8 @@ resource "aws_iam_role_policy" "ec2_app_policy" {
           "s3:GetObjectVersion"
         ]
         Resource = [
-          "${module.s3.bucket_arn}/feedback/screenshots/*",
-          "${module.s3.bucket_arn}/feedback/temp/*"
+          "${module.s3_storage.bucket_arn}/feedback/screenshots/*",
+          "${module.s3_storage.bucket_arn}/feedback/temp/*"
         ]
       },
       {
@@ -103,7 +103,7 @@ resource "aws_iam_role_policy" "ec2_app_policy" {
           "s3:ListBucket",
           "s3:GetBucketLocation"
         ]
-        Resource = module.s3.bucket_arn
+        Resource = module.s3_storage.bucket_arn
         Condition = {
           StringLike = {
             "s3:prefix" = ["feedback/screenshots/*", "feedback/temp/*"]
@@ -119,7 +119,7 @@ resource "aws_iam_role_policy" "ec2_app_policy" {
           "sqs:GetQueueAttributes"
         ]
         Resource = [
-          for queue_name, queue_arn in module.sqs.queue_arns : queue_arn
+          for queue_name, queue_arn in module.sqs_processing.queue_arns : queue_arn
           if contains(["feedback", "analytics", "emails"], queue_name)
         ]
       }

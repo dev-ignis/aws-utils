@@ -675,3 +675,75 @@ variable "api_max_request_size_mb" {
   default     = 20
 }
 
+variable "feedback_processing_timeout" {
+  description = "Timeout for processing feedback in seconds"
+  type        = number
+  default     = 300
+}
+
+variable "feedback_screenshot_compression" {
+  description = "Screenshot compression quality (0-1)"
+  type        = number
+  default     = 0.8
+}
+
+variable "enable_feedback_notifications" {
+  description = "Enable notifications for feedback submissions"
+  type        = bool
+  default     = true
+}
+
+variable "feedback_queue_batch_size" {
+  description = "Batch size for processing feedback queue"
+  type        = number
+  default     = 10
+}
+
+variable "feedback_dlq_retry_delay" {
+  description = "Delay before retrying failed feedback messages (seconds)"
+  type        = number
+  default     = 300
+}
+
+variable "feedback_queue_alarm_threshold" {
+  description = "Alarm threshold for feedback queue depth"
+  type        = number
+  default     = 50
+}
+
+variable "feedback_upload_failure_threshold" {
+  description = "Alarm threshold for upload failures"
+  type        = number
+  default     = 5
+}
+
+variable "feedback_processing_error_threshold" {
+  description = "Alarm threshold for processing errors"
+  type        = number
+  default     = 10
+}
+
+variable "dynamodb_feedback_table_name" {
+  description = "Name of the feedback DynamoDB table"
+  type        = string
+  default     = ""
+}
+
+variable "dynamodb_feedback_billing_mode" {
+  description = "Billing mode for feedback DynamoDB table"
+  type        = string
+  default     = "PAY_PER_REQUEST"
+}
+
+variable "dynamodb_feedback_hash_key" {
+  description = "Hash key for feedback DynamoDB table"
+  type        = string
+  default     = "id"
+}
+
+variable "dynamodb_feedback_range_key" {
+  description = "Range key for feedback DynamoDB table"
+  type        = string
+  default     = "created_at"
+}
+

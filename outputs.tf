@@ -220,3 +220,14 @@ output "sqs_cloudwatch_dashboard_config" {
   description = "CloudWatch dashboard configuration for SQS monitoring"
   value       = module.sqs_processing.cloudwatch_dashboard_config
 }
+
+# Feedback table outputs
+output "feedback_table_name" {
+  value       = module.dynamodb_feedback.table_name
+  description = "The name of the feedback DynamoDB table"
+}
+
+output "feedback_table_arn" {
+  value       = module.dynamodb_feedback.table_arn
+  description = "The ARN of the feedback DynamoDB table"
+}

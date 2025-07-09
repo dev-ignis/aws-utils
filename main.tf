@@ -56,6 +56,40 @@ module "dynamodb" {
   }
 }
 
+# DynamoDB table for feedback storage
+module "dynamodb_feedback" {
+  source = "./modules/dynamodb"
+  
+  table_name     = "${var.instance_name}-${var.environment}-feedback"
+  billing_mode   = "PAY_PER_REQUEST"
+  hash_key       = "id"
+  hash_key_type  = "S"
+  range_key      = "created_at"
+  range_key_type = "S"
+  
+  # Additional attributes for feedback table GSIs
+  additional_attributes = [
+    { name = "user_id", type = "S" }
+  ]
+  
+  # GSI for querying feedback by user
+  global_secondary_indexes = [
+    {
+      name            = "UserIdIndex"
+      hash_key        = "user_id"
+      range_key       = "created_at"
+      projection_type = "ALL"
+    }
+  ]
+  
+  tags = {
+    Environment = var.environment
+    Name        = "${var.instance_name}-${var.environment}-feedback-table"
+    Purpose     = "Feedback and bug reports storage"
+    Module      = "feedback-api"
+  }
+}
+
 # Create EC2 instances distributed across subnets
 resource "aws_instance" "my_ec2" {
   count                  = var.instance_count
@@ -82,8 +116,8 @@ resource "aws_instance" "my_ec2" {
     # Feedback API variables
     feedback_table_name      = module.dynamodb_feedback.table_name
     s3_bucket_name          = module.s3_storage.bucket_name
-    feedback_queue_url      = module.sqs.queue_urls["feedback"]
-    analytics_queue_url     = module.sqs.queue_urls["analytics"]
+    feedback_queue_url      = module.sqs_processing.queue_urls["feedback"]
+    analytics_queue_url     = module.sqs_processing.queue_urls["analytics"]
     enable_feedback_api     = var.enable_feedback_api
     feedback_max_upload_size_mb = var.feedback_max_upload_size_mb
     feedback_rate_limit_per_minute = var.feedback_rate_limit_per_minute
