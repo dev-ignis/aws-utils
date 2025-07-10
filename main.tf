@@ -69,14 +69,14 @@ module "dynamodb_feedback" {
   
   # Additional attributes for feedback table GSIs
   additional_attributes = [
-    { name = "user_id", type = "S" }
+    { name = "device_id", type = "S" }
   ]
   
-  # GSI for querying feedback by user
+  # GSI for querying feedback by device
   global_secondary_indexes = [
     {
-      name            = "UserIdIndex"
-      hash_key        = "user_id"
+      name            = "DeviceIdIndex"
+      hash_key        = "device_id"
       range_key       = "created_at"
       projection_type = "ALL"
     }
