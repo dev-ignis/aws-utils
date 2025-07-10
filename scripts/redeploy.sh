@@ -127,12 +127,22 @@ redeploy_service() {
     
     echo "📦 Redeploying $SERVICE_NAME on instance $INSTANCE_NUM ($IP)..."
     
-    # Copy .env file for both backend and frontend deployments
-    # Try different locations for .env file
+    # Copy environment-specific .env file for both backend and frontend deployments
+    # Try different locations for .env file based on environment
     ENV_FILE=""
-    for path in "../.env" "../../.env" ".env"; do
+    ENV_PATHS=(
+        "../.env.$ENVIRONMENT"
+        "../../.env.$ENVIRONMENT"
+        ".env.$ENVIRONMENT"
+        "../.env"
+        "../../.env"
+        ".env"
+    )
+    
+    for path in "${ENV_PATHS[@]}"; do
         if [ -f "$path" ]; then
             ENV_FILE="$path"
+            echo "📁 Found environment file: $ENV_FILE"
             break
         fi
     done
@@ -144,10 +154,13 @@ redeploy_service() {
         echo "✅ .env file copied successfully"
     else
         echo "⚠️  No .env file found in any of these locations:"
-        echo "    - ../.env (parent of submodule)"
-        echo "    - ../../.env (parent of scripts)"  
-        echo "    - .env (current directory)"
-        echo "💡 Make sure .env exists in the parent directory of this submodule"
+        echo "    - ../.env.$ENVIRONMENT (parent of submodule)"
+        echo "    - ../../.env.$ENVIRONMENT (parent of scripts)"  
+        echo "    - .env.$ENVIRONMENT (current directory)"
+        echo "    - ../.env (fallback)"
+        echo "    - ../../.env (fallback)"
+        echo "    - .env (fallback)"
+        echo "💡 Create .env.$ENVIRONMENT file for environment-specific configuration"
     fi
     
     ssh -i ~/.ssh/id_rsa_github ubuntu@$IP << EOF
