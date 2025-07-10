@@ -97,6 +97,9 @@ server {
     listen 80;
     listen [::]:80;
     server_name api.amygdalas.com staging.api.amygdalas.com;
+    
+    # Allow larger file uploads for feedback API
+    client_max_body_size ${nginx_max_body_size};
 
     # Health check endpoint
     location /health {
@@ -122,6 +125,9 @@ server {
     listen 80 default_server;
     listen [::]:80 default_server;
     server_name amygdalas.com www.amygdalas.com _;
+    
+    # Allow larger file uploads for feedback API
+    client_max_body_size ${nginx_max_body_size};
 
     # Health check endpoint
     location /health {

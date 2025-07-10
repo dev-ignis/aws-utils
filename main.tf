@@ -126,6 +126,8 @@ resource "aws_instance" "my_ec2" {
     api_rate_limit_requests_per_minute = var.api_rate_limit_requests_per_minute
     api_timeout_seconds     = var.api_timeout_seconds
     api_max_request_size_mb = var.api_max_request_size_mb
+    # Nginx configuration
+    nginx_max_body_size     = var.nginx_max_body_size
   })
 
   tags = {

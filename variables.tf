@@ -753,3 +753,12 @@ variable "create_app_user_access_key" {
   default     = false
 }
 
+##############################
+# Nginx Configuration
+##############################
+variable "nginx_max_body_size" {
+  description = "Maximum allowed size of client request body for nginx (e.g., '10M', '100M')"
+  type        = string
+  default     = "10M"
+}
+
