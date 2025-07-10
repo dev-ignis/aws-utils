@@ -1,3 +1,6 @@
+# Data source to get current AWS account ID
+data "aws_caller_identity" "current" {}
+
 # IAM role for EC2 instances to access CloudWatch
 resource "aws_iam_role" "ec2_cloudwatch_role" {
   name = "${var.instance_name}-${var.environment}-ec2-cloudwatch-role"
@@ -224,6 +227,32 @@ resource "aws_iam_user_policy" "app_user_sqs_policy" {
         ]
         Resource = [
           for queue_name, queue_arn in module.sqs_processing.queue_arns : queue_arn
+        ]
+      }
+    ]
+  })
+}
+
+# IAM Policy for app_user - CloudWatch Logs access
+resource "aws_iam_user_policy" "app_user_cloudwatch_policy" {
+  name = "app_user_cloudwatch_policy"
+  user = aws_iam_user.app_user.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams",
+          "logs:DescribeLogGroups"
+        ]
+        Resource = [
+          "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:mht-logs-*",
+          "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:mht-logs-*:*"
         ]
       }
     ]
