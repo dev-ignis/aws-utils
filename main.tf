@@ -97,7 +97,7 @@ module "cloudwatch_monitoring" {
   instance_name = var.instance_name
   environment   = var.environment
   region        = var.region
-  alb_arn_suffix = var.enable_load_balancer && length(module.alb) > 0 ? split("/", module.alb[0].alb_arn)[2] : ""
+  alb_arn_suffix = var.enable_load_balancer && length(module.alb) > 0 ? module.alb[0].alb_arn_suffix : ""
   
   # Custom namespace for beta metrics
   custom_namespace = var.cloudwatch_custom_namespace
