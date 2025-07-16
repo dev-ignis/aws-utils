@@ -128,9 +128,16 @@ redeploy_service() {
     echo "📦 Redeploying $SERVICE_NAME on instance $INSTANCE_NUM ($IP)..."
     
     # Copy environment-specific .env file for both backend and frontend deployments
+    # Get the directory where the script was called from
+    SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    CALLING_DIR="$(pwd)"
+    
     # Try different locations for .env file based on environment
     ENV_FILE=""
     ENV_PATHS=(
+        "$CALLING_DIR/.env.$ENVIRONMENT"  # Where script was called from (primary location)
+        "$SCRIPT_DIR/../.env.$ENVIRONMENT" # Parent of scripts directory
+        "$CALLING_DIR/.env"               # Fallback to generic .env
         "../.env.$ENVIRONMENT"
         "../../.env.$ENVIRONMENT"
         ".env.$ENVIRONMENT"
@@ -154,13 +161,12 @@ redeploy_service() {
         echo "✅ .env file copied successfully"
     else
         echo "⚠️  No .env file found in any of these locations:"
-        echo "    - ../.env.$ENVIRONMENT (parent of submodule)"
-        echo "    - ../../.env.$ENVIRONMENT (parent of scripts)"  
-        echo "    - .env.$ENVIRONMENT (current directory)"
-        echo "    - ../.env (fallback)"
-        echo "    - ../../.env (fallback)"
-        echo "    - .env (fallback)"
-        echo "💡 Create .env.$ENVIRONMENT file for environment-specific configuration"
+        echo "    - $CALLING_DIR/.env.$ENVIRONMENT (where you ran the script from)"
+        echo "    - $SCRIPT_DIR/../.env.$ENVIRONMENT (aws-docker-deployment directory)"
+        echo "    - $CALLING_DIR/.env (generic .env in current directory)"
+        echo "    - Various relative paths as fallback"
+        echo "💡 Create .env.$ENVIRONMENT file in the directory where you run the script"
+        echo "   Current directory: $CALLING_DIR"
     fi
     
     ssh -i ~/.ssh/id_rsa_github ubuntu@$IP << EOF
