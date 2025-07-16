@@ -90,6 +90,40 @@ module "dynamodb_feedback" {
   }
 }
 
+# CloudWatch Monitoring Module
+module "cloudwatch_monitoring" {
+  source = "./modules/cloudwatch"
+  
+  instance_name = var.instance_name
+  environment   = var.environment
+  region        = var.region
+  alb_arn_suffix = var.enable_load_balancer && length(module.alb) > 0 ? split("/", module.alb[0].alb_arn)[2] : ""
+  
+  # Custom namespace for beta metrics
+  custom_namespace = var.cloudwatch_custom_namespace
+  
+  # Feature flags (different for staging/production)
+  enable_cloudwatch_dashboard = var.enable_cloudwatch_dashboard
+  enable_cloudwatch_alarms    = var.enable_cloudwatch_alarms
+  enable_sns_alerts          = var.enable_sns_alerts
+  enable_slack_alerts        = var.enable_slack_alerts
+  track_engagement_metrics   = var.track_engagement_metrics
+  
+  # Alert configuration
+  alert_email       = var.cloudwatch_alert_email
+  slack_webhook_url = var.slack_webhook_url
+  
+  # Alarm thresholds (can be different for staging/production)
+  error_rate_threshold          = var.cloudwatch_error_rate_threshold
+  error_rate_evaluation_periods = var.cloudwatch_error_rate_evaluation_periods
+  response_time_threshold       = var.cloudwatch_response_time_threshold
+  engagement_threshold          = var.cloudwatch_engagement_threshold
+  engagement_evaluation_periods = var.cloudwatch_engagement_evaluation_periods
+  
+  # Cost optimization
+  enable_detailed_monitoring = var.enable_detailed_monitoring
+}
+
 # Create EC2 instances distributed across subnets
 resource "aws_instance" "my_ec2" {
   count                  = var.instance_count

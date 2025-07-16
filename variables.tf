@@ -762,3 +762,92 @@ variable "nginx_max_body_size" {
   default     = "10M"
 }
 
+##############################
+# CloudWatch Monitoring Configuration
+##############################
+variable "cloudwatch_custom_namespace" {
+  description = "Custom CloudWatch namespace for application metrics"
+  type        = string
+  default     = "AmygdalaBeta"
+}
+
+variable "enable_cloudwatch_dashboard" {
+  description = "Enable CloudWatch dashboard creation"
+  type        = bool
+  default     = true
+}
+
+variable "enable_cloudwatch_alarms" {
+  description = "Enable CloudWatch alarms"
+  type        = bool
+  default     = true
+}
+
+variable "enable_sns_alerts" {
+  description = "Enable SNS topic for alerts"
+  type        = bool
+  default     = true
+}
+
+variable "enable_slack_alerts" {
+  description = "Enable Slack notifications"
+  type        = bool
+  default     = false
+}
+
+variable "track_engagement_metrics" {
+  description = "Enable engagement metric tracking"
+  type        = bool
+  default     = true
+}
+
+variable "cloudwatch_alert_email" {
+  description = "Email address for CloudWatch alerts"
+  type        = string
+  default     = ""
+}
+
+variable "slack_webhook_url" {
+  description = "Slack webhook URL for notifications"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+# Alarm Thresholds
+variable "cloudwatch_error_rate_threshold" {
+  description = "Error rate percentage threshold for alarms"
+  type        = number
+  default     = 5
+}
+
+variable "cloudwatch_error_rate_evaluation_periods" {
+  description = "Number of periods to evaluate for error rate"
+  type        = number
+  default     = 2
+}
+
+variable "cloudwatch_response_time_threshold" {
+  description = "Response time threshold in seconds"
+  type        = number
+  default     = 3
+}
+
+variable "cloudwatch_engagement_threshold" {
+  description = "Minimum engagement score threshold"
+  type        = number
+  default     = 50
+}
+
+variable "cloudwatch_engagement_evaluation_periods" {
+  description = "Number of periods to evaluate for engagement"
+  type        = number
+  default     = 4
+}
+
+variable "enable_detailed_monitoring" {
+  description = "Enable detailed monitoring (additional cost)"
+  type        = bool
+  default     = false
+}
+
