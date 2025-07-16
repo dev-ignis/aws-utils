@@ -32,7 +32,7 @@ resource "aws_cloudwatch_dashboard" "api_dashboard" {
         properties = {
           metrics = [
             ["AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", var.alb_arn_suffix, { stat = "Average" }],
-            [".", ".", ".", ".", { stat = "p99" }]
+            [".", ".", ".", ".", { stat = "p99", label = "p99" }]
           ]
           period = 300
           stat   = "Average"
@@ -190,9 +190,9 @@ resource "aws_cloudwatch_metric_alarm" "high_response_time" {
   metric_name         = "TargetResponseTime"
   namespace           = "AWS/ApplicationELB"
   period              = 300
-  statistic           = "p99"
+  extended_statistic  = "p99"
   threshold           = var.response_time_threshold
-  alarm_description   = "This metric monitors API response time"
+  alarm_description   = "This metric monitors API response time (99th percentile)"
   alarm_actions       = var.enable_sns_alerts ? [aws_sns_topic.cloudwatch_alerts[0].arn] : []
   
   dimensions = {
