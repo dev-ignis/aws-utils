@@ -231,3 +231,24 @@ output "feedback_table_arn" {
   value       = module.dynamodb_feedback.table_arn
   description = "The ARN of the feedback DynamoDB table"
 }
+
+# CloudWatch Monitoring Outputs
+output "cloudwatch_dashboard_url" {
+  description = "URL to the CloudWatch dashboard"
+  value       = module.cloudwatch_monitoring.dashboard_url
+}
+
+output "cloudwatch_sns_topic_arn" {
+  description = "ARN of the SNS topic for CloudWatch alerts"
+  value       = module.cloudwatch_monitoring.sns_topic_arn
+}
+
+output "cloudwatch_alarm_names" {
+  description = "Names of all CloudWatch alarms created"
+  value       = module.cloudwatch_monitoring.alarm_names
+}
+
+output "cloudwatch_custom_namespace" {
+  description = "Custom CloudWatch namespace for application metrics"
+  value       = module.cloudwatch_monitoring.custom_namespace
+}
