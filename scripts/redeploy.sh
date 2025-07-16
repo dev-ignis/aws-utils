@@ -137,13 +137,9 @@ redeploy_service() {
     ENV_PATHS=(
         "$CALLING_DIR/.env.$ENVIRONMENT"  # Where script was called from (primary location)
         "$SCRIPT_DIR/../.env.$ENVIRONMENT" # Parent of scripts directory
-        "$CALLING_DIR/.env"               # Fallback to generic .env
         "../.env.$ENVIRONMENT"
         "../../.env.$ENVIRONMENT"
         ".env.$ENVIRONMENT"
-        "../.env"
-        "../../.env"
-        ".env"
     )
     
     for path in "${ENV_PATHS[@]}"; do
@@ -160,13 +156,15 @@ redeploy_service() {
         ssh -i ~/.ssh/id_rsa_github ubuntu@$IP "chmod 600 /home/ubuntu/.env"
         echo "✅ .env file copied successfully"
     else
-        echo "⚠️  No .env file found in any of these locations:"
+        echo "⚠️  No .env.$ENVIRONMENT file found in any of these locations:"
         echo "    - $CALLING_DIR/.env.$ENVIRONMENT (where you ran the script from)"
         echo "    - $SCRIPT_DIR/../.env.$ENVIRONMENT (aws-docker-deployment directory)"
-        echo "    - $CALLING_DIR/.env (generic .env in current directory)"
-        echo "    - Various relative paths as fallback"
+        echo "    - Various relative paths"
         echo "💡 Create .env.$ENVIRONMENT file in the directory where you run the script"
         echo "   Current directory: $CALLING_DIR"
+        echo ""
+        echo "❌ Deployment cannot proceed without environment-specific configuration"
+        exit 1
     fi
     
     ssh -i ~/.ssh/id_rsa_github ubuntu@$IP << EOF

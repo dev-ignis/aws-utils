@@ -153,19 +153,42 @@ deploy_to_instance() {
     
     echo "📦 Deploying $SERVICE_NAME to $INACTIVE_TG instance $INSTANCE_NUM ($IP)..."
     
-    # Copy .env file if it exists
+    # Copy environment-specific .env file
+    # Get the directory where the script was called from
+    SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    CALLING_DIR="$(pwd)"
+    
     ENV_FILE=""
-    for path in "../.env" "../../.env" ".env"; do
+    ENV_PATHS=(
+        "$CALLING_DIR/.env.$ENVIRONMENT"  # Where script was called from (primary location)
+        "$SCRIPT_DIR/../.env.$ENVIRONMENT" # Parent of scripts directory
+        "../.env.$ENVIRONMENT"
+        "../../.env.$ENVIRONMENT"
+        ".env.$ENVIRONMENT"
+    )
+    
+    for path in "${ENV_PATHS[@]}"; do
         if [ -f "$path" ]; then
             ENV_FILE="$path"
+            echo "📁 Found environment file: $ENV_FILE"
             break
         fi
     done
     
     if [ -n "$ENV_FILE" ]; then
-        echo "📁 Copying .env file..."
+        echo "📁 Copying $ENV_FILE to instance..."
         scp -i ~/.ssh/id_rsa_github "$ENV_FILE" ubuntu@$IP:/home/ubuntu/.env
         ssh -i ~/.ssh/id_rsa_github ubuntu@$IP "chmod 600 /home/ubuntu/.env"
+        echo "✅ Environment file copied successfully"
+    else
+        echo "⚠️  No .env.$ENVIRONMENT file found. Looking for:"
+        echo "    - $CALLING_DIR/.env.$ENVIRONMENT (preferred)"
+        echo "    - $SCRIPT_DIR/../.env.$ENVIRONMENT"
+        echo "    - Other relative paths"
+        echo "💡 Create .env.$ENVIRONMENT file for environment-specific configuration"
+        echo ""
+        echo "❌ Deployment cannot proceed without environment-specific configuration"
+        exit 1
     fi
     
     # Deploy the service
