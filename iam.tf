@@ -151,10 +151,9 @@ resource "aws_iam_user" "app_user" {
 }
 
 # IAM Policy for app_user - DynamoDB access
-resource "aws_iam_user_policy" "app_user_dynamodb_policy" {
+resource "aws_iam_policy" "app_user_dynamodb_policy" {
   name = "app_user_dynamodb_policy"
-  user = aws_iam_user.app_user.name
-
+  
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -182,11 +181,15 @@ resource "aws_iam_user_policy" "app_user_dynamodb_policy" {
   })
 }
 
-# IAM Policy for app_user - S3 access
-resource "aws_iam_user_policy" "app_user_s3_policy" {
-  name = "app_user_s3_policy"
-  user = aws_iam_user.app_user.name
+resource "aws_iam_user_policy_attachment" "app_user_dynamodb_policy_attachment" {
+  user       = aws_iam_user.app_user.name
+  policy_arn = aws_iam_policy.app_user_dynamodb_policy.arn
+}
 
+# IAM Policy for app_user - S3 access
+resource "aws_iam_policy" "app_user_s3_policy" {
+  name = "app_user_s3_policy"
+  
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -209,11 +212,15 @@ resource "aws_iam_user_policy" "app_user_s3_policy" {
   })
 }
 
-# IAM Policy for app_user - SQS main queues access
-resource "aws_iam_user_policy" "app_user_sqs_policy" {
-  name = "app_user_sqs_policy"
-  user = aws_iam_user.app_user.name
+resource "aws_iam_user_policy_attachment" "app_user_s3_policy_attachment" {
+  user       = aws_iam_user.app_user.name
+  policy_arn = aws_iam_policy.app_user_s3_policy.arn
+}
 
+# IAM Policy for app_user - SQS main queues access
+resource "aws_iam_policy" "app_user_sqs_policy" {
+  name = "app_user_sqs_policy"
+  
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -233,11 +240,15 @@ resource "aws_iam_user_policy" "app_user_sqs_policy" {
   })
 }
 
-# IAM Policy for app_user - SQS DLQ access
-resource "aws_iam_user_policy" "app_user_sqs_dlq_policy" {
-  name = "app_user_sqs_dlq_policy"
-  user = aws_iam_user.app_user.name
+resource "aws_iam_user_policy_attachment" "app_user_sqs_policy_attachment" {
+  user       = aws_iam_user.app_user.name
+  policy_arn = aws_iam_policy.app_user_sqs_policy.arn
+}
 
+# IAM Policy for app_user - SQS DLQ access
+resource "aws_iam_policy" "app_user_sqs_dlq_policy" {
+  name = "app_user_sqs_dlq_policy"
+  
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -257,11 +268,15 @@ resource "aws_iam_user_policy" "app_user_sqs_dlq_policy" {
   })
 }
 
-# IAM Policy for app_user - CloudWatch Logs access
-resource "aws_iam_user_policy" "app_user_cloudwatch_policy" {
-  name = "app_user_cloudwatch_policy"
-  user = aws_iam_user.app_user.name
+resource "aws_iam_user_policy_attachment" "app_user_sqs_dlq_policy_attachment" {
+  user       = aws_iam_user.app_user.name
+  policy_arn = aws_iam_policy.app_user_sqs_dlq_policy.arn
+}
 
+# IAM Policy for app_user - CloudWatch Logs access
+resource "aws_iam_policy" "app_user_cloudwatch_policy" {
+  name = "app_user_cloudwatch_policy"
+  
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -278,7 +293,21 @@ resource "aws_iam_user_policy" "app_user_cloudwatch_policy" {
           "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:mht-logs-*",
           "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:mht-logs-*:*"
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "cloudwatch:PutMetricData",
+          "cloudwatch:GetMetricStatistics",
+          "cloudwatch:ListMetrics"
+        ]
+        Resource = "*"
       }
     ]
   })
+}
+
+resource "aws_iam_user_policy_attachment" "app_user_cloudwatch_policy_attachment" {
+  user       = aws_iam_user.app_user.name
+  policy_arn = aws_iam_policy.app_user_cloudwatch_policy.arn
 }
