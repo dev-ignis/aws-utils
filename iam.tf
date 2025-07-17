@@ -115,10 +115,12 @@ resource "aws_iam_role_policy" "ec2_app_policy" {
           "sqs:GetQueueUrl",
           "sqs:GetQueueAttributes"
         ]
-        Resource = [
-          for queue_name, queue_arn in module.sqs_processing.queue_arns : queue_arn
-          if contains(["feedback", "analytics", "emails"], queue_name)
-        ]
+        Resource = concat(
+          [for queue_name, queue_arn in module.sqs_processing.queue_arns : queue_arn
+          if contains(["feedback", "analytics", "emails", "testflight"], queue_name)],
+          [for dlq_name, dlq_arn in module.sqs_processing.dlq_arns : dlq_arn
+          if contains(["feedback", "analytics", "emails", "testflight"], dlq_name)]
+        )
       }
     ]
   })
@@ -225,9 +227,10 @@ resource "aws_iam_user_policy" "app_user_sqs_policy" {
           "sqs:GetQueueUrl",
           "sqs:ChangeMessageVisibility"
         ]
-        Resource = [
-          for queue_name, queue_arn in module.sqs_processing.queue_arns : queue_arn
-        ]
+        Resource = concat(
+          [for queue_name, queue_arn in module.sqs_processing.queue_arns : queue_arn],
+          [for dlq_name, dlq_arn in module.sqs_processing.dlq_arns : dlq_arn]
+        )
       }
     ]
   })
