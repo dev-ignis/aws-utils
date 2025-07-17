@@ -209,7 +209,7 @@ resource "aws_iam_user_policy" "app_user_s3_policy" {
   })
 }
 
-# IAM Policy for app_user - SQS access
+# IAM Policy for app_user - SQS main queues access
 resource "aws_iam_user_policy" "app_user_sqs_policy" {
   name = "app_user_sqs_policy"
   user = aws_iam_user.app_user.name
@@ -227,10 +227,31 @@ resource "aws_iam_user_policy" "app_user_sqs_policy" {
           "sqs:GetQueueUrl",
           "sqs:ChangeMessageVisibility"
         ]
-        Resource = concat(
-          [for queue_name, queue_arn in module.sqs_processing.queue_arns : queue_arn],
-          [for dlq_name, dlq_arn in module.sqs_processing.dlq_arns : dlq_arn]
-        )
+        Resource = [for queue_name, queue_arn in module.sqs_processing.queue_arns : queue_arn]
+      }
+    ]
+  })
+}
+
+# IAM Policy for app_user - SQS DLQ access
+resource "aws_iam_user_policy" "app_user_sqs_dlq_policy" {
+  name = "app_user_sqs_dlq_policy"
+  user = aws_iam_user.app_user.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "sqs:SendMessage",
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes",
+          "sqs:GetQueueUrl",
+          "sqs:ChangeMessageVisibility"
+        ]
+        Resource = [for dlq_name, dlq_arn in module.sqs_processing.dlq_arns : dlq_arn]
       }
     ]
   })
