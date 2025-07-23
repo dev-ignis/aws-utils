@@ -20,7 +20,7 @@ WITH breathing_data AS (
     year,
     month,
     day
-  FROM ${database_name}.${view_name}
+  FROM mht_api_production_data_analytics.mht_api_production_flattened_analytics
   WHERE event_type = 'breathing_exercise'
     AND breathing_duration IS NOT NULL
     AND year = CAST(YEAR(CURRENT_DATE) AS VARCHAR)
