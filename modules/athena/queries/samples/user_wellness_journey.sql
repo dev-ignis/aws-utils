@@ -1,83 +1,85 @@
-WITH user_sessions AS (
+WITH user_journey AS (
   SELECT 
-    user_id,
-    DATE(from_unixtime(event_timestamp/1000)) as session_date,
+    device_id,
+    DATE(from_unixtime(CAST(event_timestamp AS BIGINT)/1000)) as activity_date,
     event_type,
     
-    CASE WHEN event_type = 'focus_session' THEN focus_duration ELSE NULL END as focus_time,
-    CASE WHEN event_type = 'focus_session' THEN completion_rate ELSE NULL END as focus_completion,
-    CASE WHEN event_type = 'focus_session' AND mood_after IS NOT NULL AND mood_before IS NOT NULL 
-         THEN CAST(mood_after AS DOUBLE) - CAST(mood_before AS DOUBLE) ELSE NULL END as mood_improvement,
-    
-    CASE WHEN event_type = 'breathing_exercise' THEN breathing_duration ELSE NULL END as breathing_time,
-    CASE WHEN event_type = 'breathing_exercise' AND completion_status = 'completed' THEN 1 ELSE 0 END as breathing_completed,
-    
-    CASE WHEN event_type = 'danger_assessment' THEN user_confidence ELSE NULL END as confidence_level,
-    CASE WHEN event_type = 'danger_assessment' THEN outcome_rating ELSE NULL END as assessment_outcome,
+    CASE WHEN event_type = 'anxiety_session_completed' THEN 1 ELSE 0 END as anxiety_session,
+    CASE WHEN event_type = 'anxiety_session_completed' THEN CAST(danger_level AS DOUBLE) END as danger_level,
+    CASE WHEN event_type = 'anxiety_session_completed' THEN CAST(probability_level AS DOUBLE) END as probability_level,
+    CASE WHEN event_type = 'anxiety_session_completed' THEN response END as response_action,
+    CASE WHEN event_type = 'new_focus_selected' THEN focus END as selected_focus,
     
     year,
     month
-  FROM mht_api_production_data_analytics.mht_api_production_flattened_analytics
-  WHERE user_id IS NOT NULL
+  FROM mht_api_production_data_analytics.mht_api_production_flattened_analytics_correct
+  WHERE device_id IS NOT NULL
     AND year = CAST(YEAR(CURRENT_DATE) AS VARCHAR)
+    AND month = CAST(MONTH(CURRENT_DATE) AS VARCHAR)
 ),
 
 daily_user_metrics AS (
   SELECT 
-    user_id,
-    session_date,
+    device_id,
+    activity_date,
     
     COUNT(*) as total_events,
     COUNT(DISTINCT event_type) as unique_event_types,
     
-    COUNT(CASE WHEN event_type = 'focus_session' THEN 1 END) as focus_sessions,
-    AVG(focus_time) as avg_focus_duration,
-    AVG(focus_completion) as avg_focus_completion,
-    AVG(mood_improvement) as avg_mood_improvement,
+    SUM(anxiety_session) as anxiety_sessions_completed,
+    AVG(danger_level) as avg_danger_level,
+    AVG(probability_level) as avg_probability_level,
     
-    COUNT(CASE WHEN event_type = 'breathing_exercise' THEN 1 END) as breathing_sessions,
-    AVG(breathing_time) as avg_breathing_duration,
-    SUM(breathing_completed) as breathing_completed_count,
+    COUNT(CASE WHEN response_action = 'Reduce' THEN 1 END) as reduce_responses,
+    COUNT(CASE WHEN response_action = 'Maintain' THEN 1 END) as maintain_responses,
+    COUNT(CASE WHEN response_action = 'Increase' THEN 1 END) as increase_responses,
     
-    COUNT(CASE WHEN event_type = 'danger_assessment' THEN 1 END) as assessments,
-    AVG(confidence_level) as avg_confidence,
+    COUNT(CASE WHEN selected_focus IS NOT NULL THEN 1 END) as new_focus_selections,
     
-    (COUNT(*) * 0.3 + 
-     COALESCE(AVG(focus_completion), 0) * 0.4 + 
-     COALESCE(AVG(CASE WHEN breathing_completed = 1 THEN 1.0 ELSE 0.0 END), 0) * 0.3) * 100 as daily_engagement_score
+    CASE 
+      WHEN SUM(anxiety_session) >= 3 THEN 'High Activity'
+      WHEN SUM(anxiety_session) >= 1 THEN 'Moderate Activity'
+      ELSE 'Low Activity'
+    END as daily_activity_level
      
-  FROM user_sessions
-  GROUP BY user_id, session_date
+  FROM user_journey
+  GROUP BY device_id, activity_date
 )
 
 SELECT 
-  user_id,
+  device_id,
   
-  COUNT(DISTINCT session_date) as active_days,
-  MIN(session_date) as first_session_date,
-  MAX(session_date) as last_session_date,
-  DATE_DIFF('day', MIN(session_date), MAX(session_date)) + 1 as days_since_first_use,
+  COUNT(DISTINCT activity_date) as active_days,
+  MIN(activity_date) as first_activity_date,
+  MAX(activity_date) as last_activity_date,
   
-  SUM(focus_sessions) as total_focus_sessions,
-  SUM(breathing_sessions) as total_breathing_sessions,
-  SUM(assessments) as total_assessments,
+  SUM(anxiety_sessions_completed) as total_anxiety_sessions,
+  SUM(new_focus_selections) as total_focus_changes,
   SUM(total_events) as total_interactions,
   
-  AVG(avg_focus_completion) as overall_focus_completion_rate,
-  AVG(avg_mood_improvement) as overall_mood_improvement,
-  AVG(avg_confidence) as overall_confidence_trend,
+  AVG(avg_danger_level) as overall_avg_danger_level,
+  AVG(avg_probability_level) as overall_avg_probability_level,
   
-  AVG(daily_engagement_score) as avg_daily_engagement,
-  COUNT(DISTINCT session_date) * 100.0 / GREATEST(DATE_DIFF('day', MIN(session_date), MAX(session_date)) + 1, 1) as retention_rate_percent,
+  SUM(reduce_responses) as total_reduce_responses,
+  SUM(maintain_responses) as total_maintain_responses,
+  SUM(increase_responses) as total_increase_responses,
   
-  STDDEV(daily_engagement_score) as engagement_consistency,
+  ROUND(SUM(reduce_responses) * 100.0 / NULLIF(SUM(reduce_responses + maintain_responses + increase_responses), 0), 2) as reduce_response_percentage,
+  
   CASE 
-    WHEN COUNT(DISTINCT session_date) >= 7 THEN 'Highly Active (7+ days)'
-    WHEN COUNT(DISTINCT session_date) >= 3 THEN 'Moderately Active (3-6 days)'
-    ELSE 'Low Activity (<3 days)'
-  END as user_engagement_category
+    WHEN COUNT(DISTINCT activity_date) >= 7 AND SUM(anxiety_sessions_completed) >= 10 THEN 'Highly Engaged User'
+    WHEN COUNT(DISTINCT activity_date) >= 3 AND SUM(anxiety_sessions_completed) >= 3 THEN 'Regular User'
+    ELSE 'Casual User'
+  END as user_engagement_category,
+  
+  CASE
+    WHEN AVG(avg_danger_level) < 3 THEN 'Low Anxiety Trend'
+    WHEN AVG(avg_danger_level) < 6 THEN 'Moderate Anxiety Trend'
+    ELSE 'High Anxiety Trend'
+  END as anxiety_level_category
 
 FROM daily_user_metrics
-GROUP BY user_id
-HAVING COUNT(DISTINCT session_date) >= 2
-ORDER BY overall_focus_completion_rate DESC, total_focus_sessions DESC
+WHERE anxiety_sessions_completed > 0
+GROUP BY device_id
+HAVING COUNT(DISTINCT activity_date) >= 2
+ORDER BY total_anxiety_sessions DESC, active_days DESC
