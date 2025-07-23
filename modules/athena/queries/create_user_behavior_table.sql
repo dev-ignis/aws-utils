@@ -1,5 +1,5 @@
--- Create User Behavior Table with Partition Projection
--- This table stores detailed user behavior and interaction patterns
+-- Create User Behavior Table for Amygdalas Mental Health Analytics
+-- Focus on user engagement patterns, session effectiveness, and wellness outcomes
 
 CREATE EXTERNAL TABLE IF NOT EXISTS `${database_name}`.`${table_name}` (
   `behavior_id` string,
@@ -10,40 +10,45 @@ CREATE EXTERNAL TABLE IF NOT EXISTS `${database_name}`.`${table_name}` (
   `behavior_type` string,
   `screen_name` string,
   `action` string,
-  `target_element` string,
-  `interaction_data` struct<
-    scroll_depth: double,
-    time_on_screen: double,
-    click_position: struct<x: double, y: double>,
-    gesture_type: string,
-    input_method: string,
-    form_completion_time: double,
-    error_occurred: boolean,
-    error_message: string
+  -- Mental health specific behavior tracking
+  `wellness_metrics` struct<
+    session_completion_rate: double,
+    total_focus_time_minutes: double,
+    breathing_sessions_completed: bigint,
+    mood_improvement_score: double,
+    stress_reduction_rating: double,
+    technique_effectiveness: string,
+    weekly_consistency_score: double,
+    goal_achievement_rate: double
   >,
-  `user_state` struct<
-    mood_before: string,
-    mood_after: string,
-    energy_level: string,
-    stress_level: string,
-    engagement_score: double,
-    satisfaction_rating: double
+  `engagement_patterns` struct<
+    daily_active_minutes: double,
+    preferred_session_times: array<string>,
+    favorite_techniques: array<string>,
+    difficulty_progression: string,
+    feature_usage_frequency: map<string, bigint>,
+    retention_indicators: struct<
+      days_since_first_use: bigint,
+      consecutive_active_days: bigint,
+      last_session_quality: string
+    >
   >,
-  `context` struct<
+  `user_preferences` struct<
+    preferred_session_duration: double,
+    notification_settings: map<string, boolean>,
+    accessibility_options: array<string>,
+    privacy_settings: map<string, string>,
+    theme_preferences: string
+  >,
+  `device_context` struct<
     app_version: string,
     os_name: string,
     os_version: string,
     device_model: string,
     network_type: string,
     battery_level: double,
-    memory_usage: double,
-    storage_available: double
-  >,
-  `metadata` struct<
-    processing_time: double,
-    data_quality_score: double,
-    privacy_level: string,
-    consent_status: string
+    available_storage_gb: double,
+    memory_usage_mb: double
   >
 )
 PARTITIONED BY (

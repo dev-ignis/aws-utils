@@ -167,14 +167,14 @@ resource "aws_athena_named_query" "create_transactions_table" {
   description = "Creates the transactions table with partition projection"
 }
 
-# Sample Queries for Common Analytics
+# Sample Queries for Amygdalas Mental Health Analytics
 resource "aws_athena_named_query" "sample_queries" {
   for_each = var.create_sample_queries ? toset([
+    "focus_session_analytics",
+    "breathing_exercise_effectiveness", 
+    "user_wellness_journey",
     "daily_active_users",
-    "error_rate_analysis",
-    "user_engagement_metrics",
-    "feature_usage_stats",
-    "performance_metrics"
+    "user_engagement_metrics"
   ]) : []
 
   name      = "${var.instance_name}_${var.environment}_${each.key}"
@@ -182,7 +182,22 @@ resource "aws_athena_named_query" "sample_queries" {
   workgroup = aws_athena_workgroup.main.name
   query     = file("${path.module}/queries/samples/${each.key}.sql")
 
-  description = "Sample query for ${replace(each.key, "_", " ")}"
+  description = "Amygdalas analytics: ${replace(each.key, "_", " ")}"
+}
+
+# Flattened View for Amygdalas Batch Data Structure
+resource "aws_athena_named_query" "create_amygdalas_flattened_view" {
+  count     = var.create_analytics_views ? 1 : 0
+  name      = "${var.instance_name}_${var.environment}_create_flattened_view"
+  database  = aws_athena_database.main.name
+  workgroup = aws_athena_workgroup.main.name
+  query     = templatefile("${path.module}/queries/create_amygdalas_flattened_view.sql", {
+    view_name     = "${var.instance_name}_${var.environment}_flattened_analytics"
+    table_name    = "${var.instance_name}_${var.environment}_analytics"
+    database_name = aws_athena_database.main.name
+  })
+
+  description = "Creates a flattened view for easier querying of batch/events structure"
 }
 
 # Data Processing View (Pre-aggregated metrics)
