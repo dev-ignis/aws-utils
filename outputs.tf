@@ -155,6 +155,57 @@ output "s3_white_label_configuration" {
   value       = module.s3_storage.white_label_configuration
 }
 
+# Athena Data Analysis Outputs - White Label Ready
+output "athena_database_name" {
+  description = "Name of the Athena database"
+  value       = module.athena.database_name
+}
+
+output "athena_workgroup_name" {
+  description = "Name of the Athena workgroup"
+  value       = module.athena.workgroup_name
+}
+
+output "athena_workgroup_arn" {
+  description = "ARN of the Athena workgroup"
+  value       = module.athena.workgroup_arn
+}
+
+output "athena_results_bucket" {
+  description = "S3 bucket for Athena query results"
+  value       = module.athena.athena_results_bucket
+}
+
+output "athena_results_bucket_arn" {
+  description = "ARN of the Athena results bucket"
+  value       = module.athena.athena_results_bucket_arn
+}
+
+output "athena_role_arn" {
+  description = "ARN of the Athena service role"
+  value       = module.athena.athena_role_arn
+}
+
+output "athena_create_tables_queries" {
+  description = "Named queries for creating tables"
+  value       = module.athena.create_tables_queries
+}
+
+output "athena_sample_queries" {
+  description = "Sample analytics queries"
+  value       = module.athena.sample_queries
+}
+
+output "athena_console_urls" {
+  description = "URLs for accessing Athena in AWS Console"
+  value       = module.athena.athena_console_urls
+}
+
+output "athena_configuration" {
+  description = "Athena configuration summary"
+  value       = module.athena.athena_config
+}
+
 # SQS Processing Outputs - White Label Ready
 output "sqs_queue_urls" {
   description = "URLs of all SQS queues"

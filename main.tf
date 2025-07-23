@@ -224,6 +224,70 @@ module "s3_storage" {
   log_retention_days   = var.s3_log_retention_days
 }
 
+# Athena Module for S3 Data Analysis
+module "athena" {
+  source = "./modules/athena"
+  
+  instance_name = var.instance_name
+  environment   = var.environment
+  use_case      = var.athena_use_case
+  
+  tags = {
+    Environment = var.environment
+    Project     = "Amygdalas"
+    Purpose     = var.athena_use_case
+    Owner       = var.instance_name
+  }
+  
+  # S3 Data Source Configuration
+  s3_data_bucket     = module.s3_storage.bucket_name
+  s3_data_bucket_arn = module.s3_storage.bucket_arn
+  
+  # Athena Configuration
+  athena_engine_version         = var.athena_engine_version
+  bytes_scanned_cutoff_per_query = var.athena_bytes_scanned_cutoff_per_query
+  enable_cloudwatch_metrics     = var.enable_athena_cloudwatch_metrics
+  
+  # Security Configuration
+  kms_key_id            = var.athena_kms_key_id
+  expected_bucket_owner = var.athena_expected_bucket_owner
+  
+  # Results Configuration
+  enable_athena_results_lifecycle = var.enable_athena_results_lifecycle
+  athena_results_retention_days   = var.athena_results_retention_days
+  
+  # Query Configuration
+  create_sample_queries  = var.create_athena_sample_queries
+  create_analytics_views = var.create_athena_analytics_views
+  
+  # Logging Configuration
+  enable_athena_logging     = var.enable_athena_logging
+  athena_log_retention_days = var.athena_log_retention_days
+  
+  # Cost Control Configuration
+  enable_cost_alerts         = var.enable_athena_cost_alerts
+  cost_alert_threshold_bytes = var.athena_cost_alert_threshold_bytes
+  alarm_actions             = var.athena_alarm_actions
+  
+  # Partition Configuration
+  partition_projection_enabled = var.athena_partition_projection_enabled
+  partition_projection_range   = var.athena_partition_projection_range
+  
+  # Data Format Configuration
+  data_format        = var.athena_data_format
+  compression_format = var.athena_compression_format
+  
+  # Table Configuration
+  enable_analytics_table     = var.enable_athena_analytics_table
+  enable_user_behavior_table = var.enable_athena_user_behavior_table
+  enable_feedback_table      = var.enable_athena_feedback_table
+  enable_transactions_table  = var.enable_athena_transactions_table
+  
+  # Performance Configuration
+  enable_columnar_storage   = var.enable_athena_columnar_storage
+  enable_data_partitioning = var.enable_athena_data_partitioning
+}
+
 module "sqs_processing" {
   source = "./modules/sqs"
   

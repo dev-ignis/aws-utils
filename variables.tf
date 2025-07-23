@@ -432,6 +432,176 @@ variable "create_s3_partition_examples" {
 }
 
 ##############################
+# Athena Data Analysis Variables - White Label Ready
+##############################
+
+variable "athena_use_case" {
+  description = "Use case description for Athena setup (e.g., 'data-analytics', 'business-intelligence', 'log-analysis')"
+  type        = string
+  default     = "data-analytics"
+}
+
+# Basic Athena Configuration
+variable "athena_engine_version" {
+  description = "Athena engine version"
+  type        = string
+  default     = "Athena engine version 3"
+}
+
+variable "athena_bytes_scanned_cutoff_per_query" {
+  description = "Maximum bytes scanned per query (cost control)"
+  type        = number
+  default     = 10737418240  # 10 GB
+}
+
+variable "enable_athena_cloudwatch_metrics" {
+  description = "Enable CloudWatch metrics for Athena"
+  type        = bool
+  default     = true
+}
+
+# Security Configuration
+variable "athena_kms_key_id" {
+  description = "KMS key ID for Athena encryption (optional)"
+  type        = string
+  default     = null
+}
+
+variable "athena_expected_bucket_owner" {
+  description = "Expected bucket owner AWS account ID"
+  type        = string
+  default     = null
+}
+
+# Results Configuration
+variable "enable_athena_results_lifecycle" {
+  description = "Enable lifecycle policy for Athena results bucket"
+  type        = bool
+  default     = true
+}
+
+variable "athena_results_retention_days" {
+  description = "Number of days to retain Athena query results"
+  type        = number
+  default     = 30
+}
+
+# Query Configuration
+variable "create_athena_sample_queries" {
+  description = "Create sample queries for common analytics"
+  type        = bool
+  default     = true
+}
+
+variable "create_athena_analytics_views" {
+  description = "Create pre-aggregated analytics views"
+  type        = bool
+  default     = true
+}
+
+# Logging Configuration
+variable "enable_athena_logging" {
+  description = "Enable CloudWatch logging for Athena"
+  type        = bool
+  default     = true
+}
+
+variable "athena_log_retention_days" {
+  description = "Number of days to retain Athena logs"
+  type        = number
+  default     = 30
+}
+
+# Cost Control Configuration
+variable "enable_athena_cost_alerts" {
+  description = "Enable cost monitoring alerts"
+  type        = bool
+  default     = true
+}
+
+variable "athena_cost_alert_threshold_bytes" {
+  description = "Threshold for cost alerts in bytes scanned"
+  type        = number
+  default     = 107374182400  # 100 GB
+}
+
+variable "athena_alarm_actions" {
+  description = "List of ARNs for alarm actions (SNS topics)"
+  type        = list(string)
+  default     = []
+}
+
+# Partition Configuration
+variable "athena_partition_projection_enabled" {
+  description = "Enable partition projection for tables"
+  type        = bool
+  default     = true
+}
+
+variable "athena_partition_projection_range" {
+  description = "Date range for partition projection"
+  type        = object({
+    start_date = string  # Format: "2025-01-01"
+    end_date   = string  # Format: "2026-12-31"
+  })
+  default = {
+    start_date = "2025-01-01"
+    end_date   = "2026-12-31"
+  }
+}
+
+# Data Format Configuration
+variable "athena_data_format" {
+  description = "Data format for tables (JSON, PARQUET, etc.)"
+  type        = string
+  default     = "JSON"
+}
+
+variable "athena_compression_format" {
+  description = "Compression format for data"
+  type        = string
+  default     = "GZIP"
+}
+
+# Table Configuration
+variable "enable_athena_analytics_table" {
+  description = "Enable analytics events table"
+  type        = bool
+  default     = true
+}
+
+variable "enable_athena_user_behavior_table" {
+  description = "Enable user behavior table"
+  type        = bool
+  default     = true
+}
+
+variable "enable_athena_feedback_table" {
+  description = "Enable feedback table"
+  type        = bool
+  default     = true
+}
+
+variable "enable_athena_transactions_table" {
+  description = "Enable transactions table"
+  type        = bool
+  default     = false
+}
+
+# Performance Configuration
+variable "enable_athena_columnar_storage" {
+  description = "Enable columnar storage optimization (requires Parquet)"
+  type        = bool
+  default     = false
+}
+
+variable "enable_athena_data_partitioning" {
+  description = "Enable data partitioning by date"
+  type        = bool
+  default     = true
+}
+
+##############################
 # SQS Processing Variables - White Label Ready
 ##############################
 
