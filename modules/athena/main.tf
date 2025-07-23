@@ -53,6 +53,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "athena_results_lifecycle" {
     id     = "athena-results-lifecycle"
     status = "Enabled"
 
+    filter {
+      prefix = ""
+    }
+
     expiration {
       days = var.athena_results_retention_days
     }
@@ -68,9 +72,12 @@ resource "aws_athena_database" "main" {
   name   = "${var.instance_name}_${var.environment}_${replace(var.use_case, "-", "_")}"
   bucket = aws_s3_bucket.athena_results.id
 
-  encryption_configuration {
-    encryption_option = var.kms_key_id != null ? "SSE_KMS" : "SSE_S3"
-    kms_key           = var.kms_key_id
+  dynamic "encryption_configuration" {
+    for_each = var.kms_key_id != null ? [1] : []
+    content {
+      encryption_option = "SSE_KMS"
+      kms_key           = var.kms_key_id
+    }
   }
 
   expected_bucket_owner = var.expected_bucket_owner
@@ -87,9 +94,12 @@ resource "aws_athena_workgroup" "main" {
     result_configuration {
       output_location = "s3://${aws_s3_bucket.athena_results.bucket}/queries/"
 
-      encryption_configuration {
-        encryption_option = var.kms_key_id != null ? "SSE_KMS" : "SSE_S3"
-        kms_key           = var.kms_key_id
+      dynamic "encryption_configuration" {
+        for_each = var.kms_key_id != null ? [1] : []
+        content {
+          encryption_option = "SSE_KMS"
+          kms_key           = var.kms_key_id
+        }
       }
     }
 
