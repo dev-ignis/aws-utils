@@ -97,8 +97,8 @@ resource "aws_athena_workgroup" "main" {
       dynamic "encryption_configuration" {
         for_each = var.kms_key_id != null ? [1] : []
         content {
-          encryption_option = "SSE_KMS"
-          kms_key          = var.kms_key_id
+          encryption_option     = "SSE_KMS"
+          kms_master_key_id    = var.kms_key_id
         }
       }
     }
