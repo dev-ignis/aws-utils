@@ -90,9 +90,9 @@ output "athena_config" {
 output "athena_console_urls" {
   description = "URLs for accessing Athena in AWS Console"
   value = {
-    workgroup_url = "https://console.aws.amazon.com/athena/home?region=${data.aws_region.current.name}#workgroups/${aws_athena_workgroup.main.name}"
-    database_url  = "https://console.aws.amazon.com/athena/home?region=${data.aws_region.current.name}#databases/${aws_athena_database.main.name}"
-    queries_url   = "https://console.aws.amazon.com/athena/home?region=${data.aws_region.current.name}#queries/saved"
+    workgroup_url = "https://console.aws.amazon.com/athena/home?region=${data.aws_region.current.id}#workgroups/${aws_athena_workgroup.main.name}"
+    database_url  = "https://console.aws.amazon.com/athena/home?region=${data.aws_region.current.id}#databases/${aws_athena_database.main.name}"
+    queries_url   = "https://console.aws.amazon.com/athena/home?region=${data.aws_region.current.id}#queries/saved"
   }
 }
 

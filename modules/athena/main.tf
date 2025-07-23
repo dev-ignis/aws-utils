@@ -69,7 +69,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "athena_results_lifecycle" {
 
 # Athena Database
 resource "aws_athena_database" "main" {
-  name   = "${var.instance_name}_${var.environment}_${replace(var.use_case, "-", "_")}"
+  name   = "${lower(replace(var.instance_name, "-", "_"))}_${lower(var.environment)}_${lower(replace(var.use_case, "-", "_"))}"
   bucket = aws_s3_bucket.athena_results.id
 
   dynamic "encryption_configuration" {
