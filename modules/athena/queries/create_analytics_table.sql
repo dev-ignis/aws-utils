@@ -1,8 +1,7 @@
 CREATE EXTERNAL TABLE ${database_name}.${table_name} (
-  -- Batch metadata
-  `batch_id` string,
-  `batch_timestamp` bigint,
-  `batch_metadata` struct<
+  batch_id string,
+  batch_timestamp bigint,
+  batch_metadata struct<
     user_id: string,
     device_id: string,
     session_id: string,
@@ -13,8 +12,7 @@ CREATE EXTERNAL TABLE ${database_name}.${table_name} (
     timezone: string,
     network_type: string
   >,
-  -- Individual events array
-  `events` array<struct<
+  events array<struct<
     event_id: string,
     timestamp: bigint,
     event_type: string,
@@ -25,7 +23,6 @@ CREATE EXTERNAL TABLE ${database_name}.${table_name} (
     label: string,
     value: double,
     duration: double,
-    -- Mental health specific properties
     focus_session: struct<
       session_type: string,
       duration_seconds: double,
@@ -63,10 +60,10 @@ CREATE EXTERNAL TABLE ${database_name}.${table_name} (
   >>
 )
 PARTITIONED BY (
-  `year` string,
-  `month` string,
-  `day` string,
-  `hour` string
+  year string,
+  month string,
+  day string,
+  hour string
 )
 ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS INPUTFORMAT 'org.apache.hadoop.mapred.TextInputFormat'

@@ -1,17 +1,17 @@
 CREATE EXTERNAL TABLE ${database_name}.${table_name} (
-  `transaction_id` string,
-  `user_id` string,
-  `device_id` string,
-  `session_id` string,
-  `timestamp` bigint,
-  `transaction_type` string,
-  `product_id` string,
-  `product_name` string,
-  `product_category` string,
-  `amount` double,
-  `currency` string,
-  `payment_method` string,
-  `subscription_info` struct<
+  transaction_id string,
+  user_id string,
+  device_id string,
+  session_id string,
+  timestamp bigint,
+  transaction_type string,
+  product_id string,
+  product_name string,
+  product_category string,
+  amount double,
+  currency string,
+  payment_method string,
+  subscription_info struct<
     subscription_id: string,
     plan_type: string,
     billing_period: string,
@@ -21,35 +21,35 @@ CREATE EXTERNAL TABLE ${database_name}.${table_name} (
     upgrade_from: string,
     downgrade_to: string
   >,
-  `transaction_status` string,
-  `payment_processor` string,
-  `payment_processor_transaction_id` string,
-  `refund_info` struct<
+  transaction_status string,
+  payment_processor string,
+  payment_processor_transaction_id string,
+  refund_info struct<
     refund_id: string,
     refund_amount: double,
     refund_reason: string,
     refund_date: bigint,
     refund_status: string
   >,
-  `promo_code` struct<
+  promo_code struct<
     code: string,
     discount_type: string,
     discount_amount: double,
     campaign_id: string
   >,
-  `tax_info` struct<
+  tax_info struct<
     tax_amount: double,
     tax_rate: double,
     tax_jurisdiction: string,
     tax_exempt: boolean
   >,
-  `receipt_info` struct<
+  receipt_info struct<
     receipt_id: string,
     receipt_url: string,
     receipt_email: string,
     receipt_sent: boolean
   >,
-  `risk_assessment` struct<
+  risk_assessment struct<
     risk_score: double,
     fraud_indicators: array<string>,
     verification_status: string,
@@ -57,9 +57,9 @@ CREATE EXTERNAL TABLE ${database_name}.${table_name} (
   >
 )
 PARTITIONED BY (
-  `year` string,
-  `month` string,
-  `day` string
+  year string,
+  month string,
+  day string
 )
 ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS INPUTFORMAT 'org.apache.hadoop.mapred.TextInputFormat'

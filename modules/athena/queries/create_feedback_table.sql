@@ -1,28 +1,28 @@
 CREATE EXTERNAL TABLE ${database_name}.${table_name} (
-  `feedback_id` string,
-  `user_id` string,
-  `device_id` string,
-  `session_id` string,
-  `timestamp` bigint,
-  `feedback_type` string,
-  `category` string,
-  `severity` string,
-  `priority` string,
-  `title` string,
-  `description` string,
-  `steps_to_reproduce` string,
-  `expected_behavior` string,
-  `actual_behavior` string,
-  `user_rating` double,
-  `tags` array<string>,
-  `attachments` array<struct<
+  feedback_id string,
+  user_id string,
+  device_id string,
+  session_id string,
+  timestamp bigint,
+  feedback_type string,
+  category string,
+  severity string,
+  priority string,
+  title string,
+  description string,
+  steps_to_reproduce string,
+  expected_behavior string,
+  actual_behavior string,
+  user_rating double,
+  tags array<string>,
+  attachments array<struct<
     type: string,
     filename: string,
     size: bigint,
     s3_key: string,
     url: string
   >>,
-  `device_info` struct<
+  device_info struct<
     device_model: string,
     os_name: string,
     os_version: string,
@@ -33,7 +33,7 @@ CREATE EXTERNAL TABLE ${database_name}.${table_name} (
     battery_level: double,
     network_type: string
   >,
-  `app_state` struct<
+  app_state struct<
     current_screen: string,
     previous_screen: string,
     user_actions: array<string>,
@@ -45,7 +45,7 @@ CREATE EXTERNAL TABLE ${database_name}.${table_name} (
       crash_occurred: boolean
     >
   >,
-  `processing_status` struct<
+  processing_status struct<
     status: string,
     assigned_to: string,
     processed_at: bigint,
@@ -55,9 +55,9 @@ CREATE EXTERNAL TABLE ${database_name}.${table_name} (
   >
 )
 PARTITIONED BY (
-  `year` string,
-  `month` string,
-  `day` string
+  year string,
+  month string,
+  day string
 )
 ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS INPUTFORMAT 'org.apache.hadoop.mapred.TextInputFormat'

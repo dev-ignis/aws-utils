@@ -1,14 +1,13 @@
 CREATE EXTERNAL TABLE ${database_name}.${table_name} (
-  `behavior_id` string,
-  `user_id` string,
-  `session_id` string,
-  `device_id` string,
-  `timestamp` bigint,
-  `behavior_type` string,
-  `screen_name` string,
-  `action` string,
-  -- Mental health specific behavior tracking
-  `wellness_metrics` struct<
+  behavior_id string,
+  user_id string,
+  session_id string,
+  device_id string,
+  timestamp bigint,
+  behavior_type string,
+  screen_name string,
+  action string,
+  wellness_metrics struct<
     session_completion_rate: double,
     total_focus_time_minutes: double,
     breathing_sessions_completed: bigint,
@@ -49,10 +48,10 @@ CREATE EXTERNAL TABLE ${database_name}.${table_name} (
   >
 )
 PARTITIONED BY (
-  `year` string,
-  `month` string,
-  `day` string,
-  `hour` string
+  year string,
+  month string,
+  day string,
+  hour string
 )
 ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS INPUTFORMAT 'org.apache.hadoop.mapred.TextInputFormat'
