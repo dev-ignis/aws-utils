@@ -93,14 +93,6 @@ resource "aws_athena_workgroup" "main" {
 
     result_configuration {
       output_location = "s3://${aws_s3_bucket.athena_results.bucket}/queries/"
-
-      dynamic "encryption_configuration" {
-        for_each = var.kms_key_id != null ? [1] : []
-        content {
-          encryption_option     = "SSE_KMS"
-          kms_master_key_id    = var.kms_key_id
-        }
-      }
     }
 
     bytes_scanned_cutoff_per_query     = var.bytes_scanned_cutoff_per_query
