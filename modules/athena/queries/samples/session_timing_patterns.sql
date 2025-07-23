@@ -1,6 +1,7 @@
 WITH session_timing AS (
   SELECT 
     device_id,
+    session_id,
     event_type,
     from_unixtime(CAST(event_timestamp AS BIGINT)/1000) as session_datetime,
     EXTRACT(hour FROM from_unixtime(CAST(event_timestamp AS BIGINT)/1000)) as hour_of_day,
