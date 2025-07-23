@@ -20,7 +20,7 @@ WITH breathing_data AS (
     year,
     month,
     day
-  FROM "${database_name}"."${view_name}"
+  FROM ${database_name}.${view_name}
   WHERE event_type = 'breathing_exercise'
     AND breathing_duration IS NOT NULL
     AND year = CAST(YEAR(CURRENT_DATE) AS VARCHAR)

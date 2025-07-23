@@ -1,7 +1,7 @@
 -- Create Flattened View for Amygdalas Analytics Data
 -- This view unnests the batch/events structure for easier querying
 
-CREATE OR REPLACE VIEW `${database_name}`.`${view_name}` AS
+CREATE OR REPLACE VIEW ${database_name}.${view_name} AS
 SELECT 
   -- Batch level metadata
   batch_id,
@@ -69,6 +69,6 @@ SELECT
   day,
   hour
   
-FROM `${database_name}`.`${table_name}`
+FROM ${database_name}.${table_name}
 CROSS JOIN UNNEST(events) AS t(event)
 WHERE year >= '2025' -- Only current year data for performance

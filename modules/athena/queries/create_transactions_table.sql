@@ -1,7 +1,7 @@
 -- Create Transactions Table with Partition Projection
 -- This table stores financial transactions and subscription events
 
-CREATE EXTERNAL TABLE IF NOT EXISTS `${database_name}`.`${table_name}` (
+CREATE EXTERNAL TABLE IF NOT EXISTS ${database_name}.${table_name} (
   `transaction_id` string,
   `user_id` string,
   `device_id` string,

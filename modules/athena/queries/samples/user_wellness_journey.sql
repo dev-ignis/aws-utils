@@ -22,7 +22,7 @@ WITH user_sessions AS (
     
     year,
     month
-  FROM "${database_name}"."${view_name}"
+  FROM ${database_name}.${view_name}
   WHERE user_id IS NOT NULL
     AND year = CAST(YEAR(CURRENT_DATE) AS VARCHAR)
 ),

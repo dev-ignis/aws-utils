@@ -21,7 +21,7 @@ WITH focus_sessions AS (
     year,
     month,
     day
-  FROM "${database_name}"."${view_name}"
+  FROM ${database_name}.${view_name}
   WHERE event_type = 'focus_session'
     AND focus_duration IS NOT NULL
     AND year = CAST(YEAR(CURRENT_DATE) AS VARCHAR)

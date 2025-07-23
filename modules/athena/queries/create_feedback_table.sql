@@ -1,7 +1,7 @@
 -- Create Feedback Table with Partition Projection
 -- This table stores user feedback, bug reports, and feature requests
 
-CREATE EXTERNAL TABLE IF NOT EXISTS `${database_name}`.`${table_name}` (
+CREATE EXTERNAL TABLE IF NOT EXISTS ${database_name}.${table_name} (
   `feedback_id` string,
   `user_id` string,
   `device_id` string,

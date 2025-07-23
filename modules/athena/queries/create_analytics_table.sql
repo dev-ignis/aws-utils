@@ -1,7 +1,7 @@
 -- Create Analytics Events Table for Amygdalas Mental Health App
 -- Optimized for focus sessions, breathing exercises, and user behavior tracking
 
-CREATE EXTERNAL TABLE IF NOT EXISTS `${database_name}`.`${table_name}` (
+CREATE EXTERNAL TABLE IF NOT EXISTS ${database_name}.${table_name} (
   -- Batch metadata
   `batch_id` string,
   `batch_timestamp` bigint,

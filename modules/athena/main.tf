@@ -117,7 +117,7 @@ resource "aws_athena_named_query" "create_analytics_table" {
   database  = aws_athena_database.main.name
   workgroup = aws_athena_workgroup.main.name
   query     = templatefile("${path.module}/queries/create_analytics_table.sql", {
-    table_name    = "${var.instance_name}_${var.environment}_analytics"
+    table_name    = "${replace(var.instance_name, "-", "_")}_${var.environment}_analytics"
     s3_location   = "s3://${var.s3_data_bucket}/analytics/"
     database_name = aws_athena_database.main.name
   })
@@ -131,7 +131,7 @@ resource "aws_athena_named_query" "create_user_behavior_table" {
   database  = aws_athena_database.main.name
   workgroup = aws_athena_workgroup.main.name
   query     = templatefile("${path.module}/queries/create_user_behavior_table.sql", {
-    table_name    = "${var.instance_name}_${var.environment}_user_behavior"
+    table_name    = "${replace(var.instance_name, "-", "_")}_${var.environment}_user_behavior"
     s3_location   = "s3://${var.s3_data_bucket}/user-behavior/"
     database_name = aws_athena_database.main.name
   })
@@ -145,7 +145,7 @@ resource "aws_athena_named_query" "create_feedback_table" {
   database  = aws_athena_database.main.name
   workgroup = aws_athena_workgroup.main.name
   query     = templatefile("${path.module}/queries/create_feedback_table.sql", {
-    table_name    = "${var.instance_name}_${var.environment}_feedback"
+    table_name    = "${replace(var.instance_name, "-", "_")}_${var.environment}_feedback"
     s3_location   = "s3://${var.s3_data_bucket}/feedback/"
     database_name = aws_athena_database.main.name
   })
@@ -159,7 +159,7 @@ resource "aws_athena_named_query" "create_transactions_table" {
   database  = aws_athena_database.main.name
   workgroup = aws_athena_workgroup.main.name
   query     = templatefile("${path.module}/queries/create_transactions_table.sql", {
-    table_name    = "${var.instance_name}_${var.environment}_transactions"
+    table_name    = "${replace(var.instance_name, "-", "_")}_${var.environment}_transactions"
     s3_location   = "s3://${var.s3_data_bucket}/transactions/"
     database_name = aws_athena_database.main.name
   })
@@ -192,8 +192,8 @@ resource "aws_athena_named_query" "create_amygdalas_flattened_view" {
   database  = aws_athena_database.main.name
   workgroup = aws_athena_workgroup.main.name
   query     = templatefile("${path.module}/queries/create_amygdalas_flattened_view.sql", {
-    view_name     = "${var.instance_name}_${var.environment}_flattened_analytics"
-    table_name    = "${var.instance_name}_${var.environment}_analytics"
+    view_name     = "${replace(var.instance_name, "-", "_")}_${var.environment}_flattened_analytics"
+    table_name    = "${replace(var.instance_name, "-", "_")}_${var.environment}_analytics"
     database_name = aws_athena_database.main.name
   })
 
@@ -207,8 +207,8 @@ resource "aws_athena_named_query" "create_daily_metrics_view" {
   database  = aws_athena_database.main.name
   workgroup = aws_athena_workgroup.main.name
   query     = templatefile("${path.module}/queries/create_daily_metrics_view.sql", {
-    view_name     = "${var.instance_name}_${var.environment}_daily_metrics"
-    analytics_table = "${var.instance_name}_${var.environment}_analytics"
+    view_name     = "${replace(var.instance_name, "-", "_")}_${var.environment}_daily_metrics"
+    analytics_table = "${replace(var.instance_name, "-", "_")}_${var.environment}_analytics"
     database_name = aws_athena_database.main.name
   })
 

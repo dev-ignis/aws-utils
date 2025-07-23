@@ -1,7 +1,7 @@
 -- Create User Behavior Table for Amygdalas Mental Health Analytics
 -- Focus on user engagement patterns, session effectiveness, and wellness outcomes
 
-CREATE EXTERNAL TABLE IF NOT EXISTS `${database_name}`.`${table_name}` (
+CREATE EXTERNAL TABLE IF NOT EXISTS ${database_name}.${table_name} (
   `behavior_id` string,
   `user_id` string,
   `session_id` string,
