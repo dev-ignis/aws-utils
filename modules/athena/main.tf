@@ -171,10 +171,15 @@ resource "aws_athena_named_query" "create_transactions_table" {
 resource "aws_athena_named_query" "sample_queries" {
   for_each = var.create_sample_queries ? toset([
     "focus_session_analytics",
-    "breathing_exercise_effectiveness", 
     "user_wellness_journey",
     "daily_active_users",
-    "user_engagement_metrics"
+    "user_engagement_analytics",
+    "screen_navigation_analytics",
+    "response_effectiveness_analysis",
+    "anxiety_improvement_tracking",
+    "session_timing_patterns",
+    "crisis_intervention_detection",
+    "user_retention_churn_analysis"
   ]) : []
 
   name      = "${var.instance_name}_${var.environment}_${each.key}"
