@@ -1,4 +1,4 @@
-CREATE OR REPLACE EXTERNAL TABLE ${database_name}.${table_name} (
+CREATE EXTERNAL TABLE ${database_name}.${table_name} (
   behavior_id string,
   user_id string,
   session_id string,

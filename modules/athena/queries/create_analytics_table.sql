@@ -1,4 +1,4 @@
-CREATE OR REPLACE EXTERNAL TABLE ${database_name}.${table_name} (
+CREATE EXTERNAL TABLE ${database_name}.${table_name} (
   batch_id string,
   batch_timestamp bigint,
   batch_metadata struct<
