@@ -1,7 +1,4 @@
--- Create Transactions Table with Partition Projection
--- This table stores financial transactions and subscription events
-
-CREATE EXTERNAL TABLE IF NOT EXISTS ${database_name}.${table_name} (
+CREATE EXTERNAL TABLE ${database_name}.${table_name} (
   `transaction_id` string,
   `user_id` string,
   `device_id` string,
@@ -64,9 +61,9 @@ PARTITIONED BY (
   `month` string,
   `day` string
 )
+ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS INPUTFORMAT 'org.apache.hadoop.mapred.TextInputFormat'
 OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
-SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 LOCATION '${s3_location}'
 TBLPROPERTIES (
   'projection.enabled' = 'true',
@@ -81,8 +78,5 @@ TBLPROPERTIES (
   'projection.day.range' = '01,31',
   'projection.day.interval' = '1',
   'projection.day.digits' = '2',
-  'storage.location.template' = '${s3_location}year=$${year}/month=$${month}/day=$${day}/',
-  'classification' = 'json',
-  'compressionType' = 'gzip',
-  'typeOfData' = 'file'
-);
+  'storage.location.template' = '${s3_location}year=$${year}/month=$${month}/day=$${day}/'
+)

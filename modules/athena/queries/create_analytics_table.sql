@@ -1,7 +1,4 @@
--- Create Analytics Events Table for Amygdalas Mental Health App
--- Optimized for focus sessions, breathing exercises, and user behavior tracking
-
-CREATE EXTERNAL TABLE IF NOT EXISTS ${database_name}.${table_name} (
+CREATE EXTERNAL TABLE ${database_name}.${table_name} (
   -- Batch metadata
   `batch_id` string,
   `batch_timestamp` bigint,
@@ -71,9 +68,9 @@ PARTITIONED BY (
   `day` string,
   `hour` string
 )
+ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 STORED AS INPUTFORMAT 'org.apache.hadoop.mapred.TextInputFormat'
 OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
-SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
 LOCATION '${s3_location}'
 TBLPROPERTIES (
   'projection.enabled' = 'true',
@@ -92,8 +89,5 @@ TBLPROPERTIES (
   'projection.hour.range' = '00,23',
   'projection.hour.interval' = '1',
   'projection.hour.digits' = '2',
-  'storage.location.template' = '${s3_location}year=$${year}/month=$${month}/day=$${day}/hour=$${hour}/',
-  'classification' = 'json',
-  'compressionType' = 'gzip',
-  'typeOfData' = 'file'
-);
+  'storage.location.template' = '${s3_location}year=$${year}/month=$${month}/day=$${day}/hour=$${hour}/'
+)
