@@ -1,4 +1,4 @@
-CREATE EXTERNAL TABLE ${database_name}.${table_name} (
+CREATE OR REPLACE EXTERNAL TABLE ${database_name}.${table_name} (
   transaction_id string,
   user_id string,
   device_id string,
