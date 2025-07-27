@@ -5,56 +5,38 @@
 WITH user_stages AS (
   SELECT 
     device_id,
-    MIN(CASE WHEN event_type = 'app_install' THEN event_timestamp END) as install_time,
-    MIN(CASE WHEN event_type = 'new_anxiety_created' THEN event_timestamp END) as first_anxiety_time,
-    MIN(CASE WHEN event_type = 'anxiety_session_completed' THEN event_timestamp END) as first_completion_time
+    MAX(CASE WHEN event_type = 'app_install' THEN 1 ELSE 0 END) as has_install,
+    MAX(CASE WHEN event_type = 'new_anxiety_created' THEN 1 ELSE 0 END) as has_anxiety,
+    MAX(CASE WHEN event_type = 'anxiety_session_completed' THEN 1 ELSE 0 END) as has_completion
   FROM mht_api_production_data_analytics.mht_api_production_flattened_analytics_correct
   WHERE year = CAST(YEAR(CURRENT_DATE) AS VARCHAR) AND month = CAST(MONTH(CURRENT_DATE) AS VARCHAR)
   GROUP BY device_id
-),
-
-funnel_metrics AS (
-  SELECT
-    COUNT(DISTINCT device_id) as total_installs,
-    COUNT(DISTINCT CASE WHEN install_time IS NOT NULL THEN device_id END) as users_installed,
-    COUNT(DISTINCT CASE WHEN first_anxiety_time IS NOT NULL THEN device_id END) as users_created_anxiety,
-    COUNT(DISTINCT CASE WHEN first_completion_time IS NOT NULL THEN device_id END) as users_completed_session,
-    
-    -- Time to conversion metrics
-    AVG(CASE WHEN first_anxiety_time IS NOT NULL AND install_time IS NOT NULL 
-        THEN (CAST(first_anxiety_time AS BIGINT) - CAST(install_time AS BIGINT))/1000/60 END) as avg_minutes_to_first_anxiety,
-    AVG(CASE WHEN first_completion_time IS NOT NULL AND first_anxiety_time IS NOT NULL 
-        THEN (CAST(first_completion_time AS BIGINT) - CAST(first_anxiety_time AS BIGINT))/1000/60 END) as avg_minutes_to_completion
-  FROM user_stages
 )
 
 SELECT
   'App Install' as stage,
-  users_installed as users,
-  users_installed as previous_stage_users,
-  100.0 as conversion_rate,
-  NULL as avg_time_to_next_stage_minutes
-FROM funnel_metrics
+  SUM(has_install) as users,
+  SUM(has_install) as previous_stage_users,
+  100.0 as conversion_rate
+FROM user_stages
 
 UNION ALL
 
 SELECT
   'First Anxiety Created' as stage,
-  users_created_anxiety as users,
-  users_installed as previous_stage_users,
-  ROUND(users_created_anxiety * 100.0 / users_installed, 2) as conversion_rate,
-  ROUND(avg_minutes_to_first_anxiety, 1) as avg_time_to_next_stage_minutes
-FROM funnel_metrics
+  SUM(has_anxiety) as users,
+  SUM(has_install) as previous_stage_users,
+  ROUND(SUM(has_anxiety) * 100.0 / NULLIF(SUM(has_install), 0), 2) as conversion_rate
+FROM user_stages
 
 UNION ALL
 
 SELECT
   'First Session Completed' as stage,
-  users_completed_session as users,
-  users_created_anxiety as previous_stage_users,
-  ROUND(users_completed_session * 100.0 / users_created_anxiety, 2) as conversion_rate,
-  ROUND(avg_minutes_to_completion, 1) as avg_time_to_next_stage_minutes
-FROM funnel_metrics
+  SUM(has_completion) as users,
+  SUM(has_anxiety) as previous_stage_users,
+  ROUND(SUM(has_completion) * 100.0 / NULLIF(SUM(has_anxiety), 0), 2) as conversion_rate
+FROM user_stages
 
 ORDER BY 
   CASE 
