@@ -10,6 +10,6 @@ SELECT
   ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) as percentage_of_total_events,
   ROUND(COUNT(DISTINCT session_id) * 1.0 / COUNT(DISTINCT device_id), 2) as sessions_per_user
 FROM mht_api_production_data_analytics.mht_api_production_flattened_analytics_correct
-WHERE DATE(from_unixtime(CAST(event_timestamp AS BIGINT)/1000)) >= CURRENT_DATE - INTERVAL '30' DAY
+WHERE year = CAST(YEAR(CURRENT_DATE) AS VARCHAR) AND month = CAST(MONTH(CURRENT_DATE) AS VARCHAR)
 GROUP BY event_type
 ORDER BY total_events DESC;
