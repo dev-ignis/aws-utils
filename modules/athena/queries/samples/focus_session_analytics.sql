@@ -13,8 +13,7 @@ SELECT
   ROUND(COUNT(CASE WHEN response = 'Reduce' THEN 1 END) * 100.0 / COUNT(*), 2) as reduce_response_percentage
 FROM mht_api_production_data_analytics.mht_api_production_flattened_analytics_correct
 WHERE event_type = 'anxiety_session_completed'
-  AND year = CAST(YEAR(CURRENT_DATE) AS VARCHAR)
-  AND month = CAST(MONTH(CURRENT_DATE) AS VARCHAR)
+  AND DATE(from_unixtime(CAST(event_timestamp AS BIGINT)/1000)) >= CURRENT_DATE - INTERVAL '30' DAY
   AND focus IS NOT NULL
 GROUP BY focus, specific_focus
 ORDER BY unique_sessions DESC
