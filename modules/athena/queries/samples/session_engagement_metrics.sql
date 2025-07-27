@@ -23,7 +23,7 @@ WITH session_metrics AS (
     COUNT(CASE WHEN event_type = 'app_background' THEN 1 END) as background_events,
     COUNT(CASE WHEN event_type = 'app_foreground' THEN 1 END) as foreground_events
   FROM mht_api_production_data_analytics.mht_api_production_flattened_analytics_correct
-  WHERE DATE(from_unixtime(CAST(event_timestamp AS BIGINT)/1000)) >= CURRENT_DATE - INTERVAL '30' DAY
+  WHERE year = CAST(YEAR(CURRENT_DATE) AS VARCHAR) AND month = CAST(MONTH(CURRENT_DATE) AS VARCHAR)
     AND session_id IS NOT NULL
   GROUP BY session_id, device_id
 ),

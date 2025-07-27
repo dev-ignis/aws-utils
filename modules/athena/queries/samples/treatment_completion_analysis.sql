@@ -17,7 +17,7 @@ WITH treatment_sessions AS (
     MIN(CASE WHEN event_type = 'behave_step_completed' THEN event_timestamp END) as behave_time,
     MIN(CASE WHEN event_type = 'anxiety_session_completed' THEN event_timestamp END) as completion_time
   FROM mht_api_production_data_analytics.mht_api_production_flattened_analytics_correct
-  WHERE DATE(from_unixtime(CAST(event_timestamp AS BIGINT)/1000)) >= CURRENT_DATE - INTERVAL '30' DAY
+  WHERE year = CAST(YEAR(CURRENT_DATE) AS VARCHAR) AND month = CAST(MONTH(CURRENT_DATE) AS VARCHAR)
     AND event_type IN ('be_cool_step_completed', 'believe_step_completed', 'behave_step_completed', 'anxiety_session_completed')
   GROUP BY session_id, device_id
 ),

@@ -30,7 +30,7 @@ WITH anxiety_flow_sessions AS (
     MIN(CASE WHEN event_type = 'anxiety_session_completed' THEN event_timestamp END) as completion_time
     
   FROM mht_api_production_data_analytics.mht_api_production_flattened_analytics_correct
-  WHERE DATE(from_unixtime(CAST(event_timestamp AS BIGINT)/1000)) >= CURRENT_DATE - INTERVAL '30' DAY
+  WHERE year = CAST(YEAR(CURRENT_DATE) AS VARCHAR) AND month = CAST(MONTH(CURRENT_DATE) AS VARCHAR)
     AND event_type IN (
       'new_focus_selected', 'specific_focus_selected', 
       'danger_level_selected', 'probability_level_selected',
