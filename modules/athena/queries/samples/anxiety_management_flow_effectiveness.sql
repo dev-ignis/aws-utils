@@ -24,10 +24,7 @@ WITH anxiety_flow_sessions AS (
     MAX(CASE WHEN event_type = 'danger_level_selected' THEN danger_level END) as danger_assessment,
     MAX(CASE WHEN event_type = 'probability_level_selected' THEN probability_level END) as probability_assessment,
     
-    -- Timing analysis
-    MIN(CASE WHEN event_type IN ('new_focus_selected', 'specific_focus_selected') THEN event_timestamp END) as focus_selection_time,
-    MIN(CASE WHEN event_type = 'response_selected' THEN event_timestamp END) as response_time,
-    MIN(CASE WHEN event_type = 'anxiety_session_completed' THEN event_timestamp END) as completion_time
+    -- Remove timing analysis due to timestamp parsing issues
     
   FROM mht_api_production_data_analytics.mht_api_production_flattened_analytics_correct
   WHERE year = CAST(YEAR(CURRENT_DATE) AS VARCHAR) AND month = CAST(MONTH(CURRENT_DATE) AS VARCHAR)
@@ -62,13 +59,7 @@ flow_effectiveness AS (
     
     -- Assessment patterns
     SUM(CASE WHEN danger_assessment IN ('High', 'Very High') THEN 1 ELSE 0 END) as high_danger_assessments,
-    SUM(CASE WHEN probability_assessment IN ('High', 'Very High') THEN 1 ELSE 0 END) as high_probability_assessments,
-    
-    -- Flow timing
-    AVG(CASE WHEN response_time IS NOT NULL AND focus_selection_time IS NOT NULL 
-        THEN (CAST(response_time AS BIGINT) - CAST(focus_selection_time AS BIGINT))/1000/60 END) as avg_focus_to_response_minutes,
-    AVG(CASE WHEN completion_time IS NOT NULL AND response_time IS NOT NULL 
-        THEN (CAST(completion_time AS BIGINT) - CAST(response_time AS BIGINT))/1000/60 END) as avg_response_to_completion_minutes
+    SUM(CASE WHEN probability_assessment IN ('High', 'Very High') THEN 1 ELSE 0 END) as high_probability_assessments
   FROM anxiety_flow_sessions
 ),
 
@@ -99,9 +90,7 @@ SELECT
   ROUND(complete_flow_sessions * 100.0 / total_anxiety_sessions, 2) as complete_flow_rate_percent,
   ROUND(reduce_responses * 100.0 / response_selections, 2) as reduce_response_rate_percent,
   ROUND(high_danger_assessments * 100.0 / danger_assessments, 2) as high_danger_rate_percent,
-  ROUND(high_probability_assessments * 100.0 / probability_assessments, 2) as high_probability_rate_percent,
-  ROUND(avg_focus_to_response_minutes, 2) as avg_focus_to_response_minutes,
-  ROUND(avg_response_to_completion_minutes, 2) as avg_response_to_completion_minutes
+  ROUND(high_probability_assessments * 100.0 / probability_assessments, 2) as high_probability_rate_percent
 FROM flow_effectiveness
 
 UNION ALL
@@ -119,9 +108,7 @@ SELECT
   NULL as complete_flow_rate_percent,
   NULL as reduce_response_rate_percent,
   NULL as high_danger_rate_percent,
-  NULL as high_probability_rate_percent,
-  NULL as avg_focus_to_response_minutes,
-  NULL as avg_response_to_completion_minutes
+  NULL as high_probability_rate_percent
 FROM response_effectiveness_by_assessment
 WHERE response_count >= 5  -- Only show patterns with meaningful sample size
 ORDER BY metric_type;
